@@ -56,6 +56,55 @@ table{border-collapse:collapse;width:100%;font-size:12px}th{text-align:left;colo
 .backups{margin-top:16px;padding:15px;border:1px solid #465e7b;border-radius:13px;background:#0d1b2c}.backups p{margin:6px 0 12px}
 input[type=file]{display:none}
 .flash{animation:arrival .32s cubic-bezier(.2,.75,.35,1)}@keyframes arrival{0%{box-shadow:0 0 0 8px #fff4;filter:brightness(1.6)}100%{box-shadow:none;filter:brightness(1)}}
+
+/* Match-first 1on1 battle deck: giant series score, instant build changes, analysis below. */
+.topbar{padding:12px 0 13px}
+.duel-score{position:relative;overflow:hidden;border:1px solid #62718a;border-radius:18px;padding:11px 18px 14px;margin-bottom:12px;background:linear-gradient(100deg,#39212b 0%,#192b42 35%,#152a46 65%,#16273e 100%);box-shadow:inset 0 1px #ffffff1c,0 14px 28px #0004}
+.duel-score:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,#edc2751b,transparent 52%)}
+.duel-caption{position:relative;text-align:center;font-size:10px;font-weight:950;letter-spacing:.23em;color:#e7c88a}
+.duel-scoreline{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,.45fr) minmax(0,1fr);align-items:center;text-align:center;min-height:110px}
+.duel-side{display:flex;flex-direction:column;align-items:center;min-width:0}
+.duel-side span{font-size:11px;letter-spacing:.16em;color:#f0cfca;font-weight:950}.duel-side.x span{color:#c9deff}
+.duel-side strong{font-size:clamp(58px,8.2vw,111px);line-height:.93;font-weight:1000;font-variant-numeric:tabular-nums;color:#ff8178;text-shadow:0 0 28px #fa5c6a4a}
+.duel-side.x strong{color:#73b3ff;text-shadow:0 0 28px #549ef955}
+.duel-middle{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.duel-middle strong{font-size:clamp(24px,3.7vw,47px);font-style:italic;letter-spacing:.05em;color:#f7d58a;line-height:1}
+.duel-middle span{font-weight:900;font-size:clamp(10px,1.2vw,14px);color:#e2ecfa;white-space:nowrap}
+.duel-middle small{font-size:9px;letter-spacing:.1em;color:#afc3db}
+.duel-scoreline.pulse-b .duel-side:not(.x) strong{animation:scorePunch .48s ease-out}
+.duel-scoreline.pulse-x .duel-side.x strong{animation:scorePunch .48s ease-out}
+@keyframes scorePunch{0%{transform:scale(1);filter:brightness(1)}36%{transform:scale(1.2);filter:brightness(1.75)}100%{transform:scale(1);filter:brightness(1)}}
+.versus{grid-template-columns:minmax(0,1fr) 65px minmax(0,1fr);gap:9px}
+.fighter{padding:13px 15px}
+.sidehead{padding-bottom:6px;margin-bottom:7px}
+.field{margin:6px 0}.field span{margin-bottom:3px}
+.partpick-main{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;min-height:41px;gap:8px;padding:7px 11px;border:1px solid #647c9b;border-radius:9px;background:#0a192e;font-weight:900}
+.partpick-main .current-text{font-size:clamp(13px,1.6vw,17px);text-overflow:ellipsis;overflow:hidden;white-space:nowrap;min-width:0}
+.partpick-main small{color:var(--accent);font-size:10px;flex:none;font-weight:850}
+.partsection{min-width:0}
+.quickrow{display:flex;flex-wrap:wrap;align-content:start;gap:5px;margin:5px 0 4px;min-height:30px}
+.quickchip{min-height:30px;max-width:100%;font-weight:800;font-size:11px;border:1px solid #425c78;border-radius:7px;background:#1b304a;padding:5px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quickchip.on{color:#fff;background:color-mix(in srgb,var(--accent) 25%,#1b304a);border-color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.build{margin-top:7px;min-height:57px;padding:8px 11px}.build strong{font-size:clamp(14px,1.75vw,20px);margin-top:2px}
+.vs{font-size:clamp(22px,3vw,39px)}
+.battle{margin-top:12px;padding:12px 15px}.battlehead{padding-bottom:9px}.battlehead b{font-size:16px}
+.finishbtn{min-height:53px}.after{margin-top:9px}
+.scroll-cue{display:flex;justify-content:center;align-items:center;gap:8px;margin:9px 0 3px;color:#a7bdd9;font-size:11px;letter-spacing:.1em;font-weight:850}
+.scroll-cue a{color:#d1bb86;text-decoration:none}
+.picker-overlay{display:none;position:fixed;inset:0;z-index:120;background:#030811d9;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.picker-overlay.show{display:flex}
+.picker-card{--accent:#ff847c;width:min(680px,100%);max-height:91dvh;display:flex;flex-direction:column;min-height:0;background:linear-gradient(135deg,#1c2c43,#09182a);border:2px solid var(--accent);border-radius:16px;padding:16px;box-shadow:0 24px 75px #0009}
+.picker-card.x{--accent:#78b5ff}
+.picker-head{display:flex;gap:9px;align-items:center;justify-content:space-between;margin-bottom:12px}.picker-head strong{font-size:clamp(18px,2.3vw,26px);color:var(--accent)}
+.picker-search{min-height:44px;background:#071526;color:#fff;border-radius:9px;border:1px solid #5c7897;padding:9px 11px;font-size:15px;margin-bottom:10px}
+.picker-grid{overflow-y:auto;min-height:45px;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));grid-auto-rows:minmax(45px,max-content);gap:8px;align-content:start;padding:3px 1px 10px;overscroll-behavior:contain}
+.picker-option{min-height:45px;border:1px solid #596c89;background:#1c2f47;border-radius:9px;padding:8px 10px;font-size:14px;font-weight:850;text-align:left;overflow-wrap:anywhere}
+.picker-option.on{border-color:var(--accent);color:#fff;background:color-mix(in srgb,var(--accent) 27%,#1b2d43)}
+.picker-add{display:flex;flex-wrap:wrap;gap:8px;padding-top:11px;margin-top:7px;border-top:1px solid #52637b}
+.picker-add input{min-width:150px;flex:1;min-height:44px;border:1px solid #607895;border-radius:9px;background:#071526;color:#fff;padding:9px 11px;font-size:14px}
+.picker-add button{min-height:44px}
+@media(max-width:740px){.duel-score{padding:11px}.duel-scoreline{min-height:92px;grid-template-columns:1fr 94px 1fr}.duel-side strong{font-size:64px}.duel-middle strong{font-size:30px}.versus{grid-template-columns:minmax(0,1fr);gap:7px}.vs{min-height:29px;font-size:24px}.picker-card{max-height:89dvh}.picker-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))}}
+@media(prefers-reduced-motion:reduce){.duel-scoreline.pulse-b .duel-side:not(.x) strong,.duel-scoreline.pulse-x .duel-side.x strong{animation:none!important}}
 @media(max-width:740px){.versus{grid-template-columns:minmax(0,1fr);gap:8px}.vs{min-height:37px;font-size:28px}.fighter{padding:12px}.twocol{grid-template-columns:1fr}.finishbtn{min-height:54px}.wrap{padding-top:max(13px,env(safe-area-inset-top))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
@@ -66,20 +115,28 @@ input[type=file]{display:none}
  <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE FINISH · ONE RESULT · INFINITE RESEARCH</p></div>
  <div><label class="field" style="margin:0"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></div>
 </div>
+<section class="duel-score" aria-label="今回の研究の試合勝利数">
+  <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE</div>
+  <div class="duel-scoreline" id="duelScore">
+    <div class="duel-side"><span>B-SIDE WINS</span><strong id="winsB">0</strong></div>
+    <div class="duel-middle"><strong>VS</strong><span id="duelRound">ROUND 01</span><small>1 FINISH = 1 WIN</small></div>
+    <div class="duel-side x"><span>X-SIDE WINS</span><strong id="winsX">0</strong></div>
+  </div>
+</section>
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
   <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
-  <label class="field"><span>ブレード</span><select id="bladeB" data-field="blade" data-side="B"></select></label>
-  <div class="pieces"><label class="field"><span>ラチェット</span><input id="ratchetB" data-field="ratchet" data-side="B" list="ratchets" placeholder="例：9-60" maxlength="22"></label>
-  <label class="field"><span>ビット</span><input id="bitB" data-field="bit" data-side="B" list="bits" placeholder="例：R" maxlength="22"></label></div>
+  <div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="blade"><span class="current-text" id="bladeB">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeB"></div></div>
+  <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="ratchet"><span class="current-text" id="ratchetB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetB"></div></div>
+  <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="bit"><span class="current-text" id="bitB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitB"></div></div></div>
   <div class="build"><small>CURRENT CUSTOM</small><strong id="buildB">—</strong></div>
  </section>
  <div class="vs">VS</div>
  <section class="fighter x"><div class="sidehead"><strong>X-SIDE</strong><small>TEST UNIT / 02</small></div>
   <label class="field"><span>プレイヤー</span><select id="playerX" data-field="player" data-side="X"></select></label>
-  <label class="field"><span>ブレード</span><select id="bladeX" data-field="blade" data-side="X"></select></label>
-  <div class="pieces"><label class="field"><span>ラチェット</span><input id="ratchetX" data-field="ratchet" data-side="X" list="ratchets" placeholder="例：5-60" maxlength="22"></label>
-  <label class="field"><span>ビット</span><input id="bitX" data-field="bit" data-side="X" list="bits" placeholder="例：B" maxlength="22"></label></div>
+  <div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="blade"><span class="current-text" id="bladeX">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeX"></div></div>
+  <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="ratchet"><span class="current-text" id="ratchetX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetX"></div></div>
+  <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="bit"><span class="current-text" id="bitX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitX"></div></div></div>
   <div class="build"><small>CURRENT CUSTOM</small><strong id="buildX">—</strong></div>
  </section>
 </div>
@@ -92,7 +149,8 @@ input[type=file]{display:none}
  <div class="after"><div id="lastNotice" class="notice" aria-live="polite">構成を選んで、検証を始めよう。</div><button class="btn" data-action="undo">↶ 直前の結果を取り消す</button></div>
 </section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
-<div class="twocol">
+<div class="scroll-cue"><a href="#analysis">↓ SWIPE TO ANALYSIS · 下へスクロールして研究結果を見る</a></div>
+<div class="twocol" id="analysis">
 <section class="card">
  <div class="info"><h2>📈 性能カルテ</h2><select id="scope" class="scope" aria-label="分析対象の研究期間"><option value="all">全期間</option><option value="series">今回の研究のみ</option></select></div>
  <label class="field"><span>分析したいカスタム</span><select id="focus" class="scope" style="width:100%"></select></label>
@@ -112,6 +170,14 @@ input[type=file]{display:none}
 <div class="toolrow"><button class="btn primary" data-action="export-json">⬇ 研究JSON保存</button><button class="btn" data-action="import-json">⬆ 研究JSON復元</button><button class="btn" data-action="export-csv">⬇ CSV保存</button></div>
 <input id="importFile" type="file" accept=".json,application/json"></section>
 <p class="hint" style="margin-top:17px">BEY LAB · DEEP RESEARCH β版 / 1フィニッシュで1対戦を記録。獲得ポイントはスピン1、オーバー2、バースト2、エクストリーム3。勝ち抜きモードの4点先取と混同しないでください。</p>
+</div>
+<div class="picker-overlay" id="pickerOverlay" role="dialog" aria-modal="true" aria-label="機体・パーツの選択">
+<section class="picker-card" id="pickerCard">
+  <div class="picker-head"><strong id="pickerHeading">SELECT YOUR GEAR</strong><button type="button" class="btn" data-action="close-picker">✕ 戻る</button></div>
+  <input id="pickerSearch" type="search" class="picker-search" placeholder="候補を絞り込み" autocomplete="off" autocorrect="off" spellcheck="false">
+  <div class="picker-grid" id="pickerGrid"></div>
+  <form class="picker-add" id="pickerAdd"><input id="pickerNew" maxlength="70" placeholder="一覧にないパーツを入力" autocomplete="off" autocorrect="off" spellcheck="false"><button class="btn gold" type="submit" id="pickerAddButton">＋ 登録・選択</button></form>
+</section>
 </div>
 <script>
 (function(){
