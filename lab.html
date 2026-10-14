@@ -143,7 +143,7 @@ try{const old=JSON.parse(localStorage.getItem(KEY));if(valid(old))data=old;}catc
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));$("saveState").textContent="✓ 端末内保存済み";return true}catch(e){$("saveState").textContent="⚠ 保存失敗";alert("端末への保存に失敗しました。JSONバックアップを試してください。");return false;}}
 function getSession(){return data.sessions.find(x=>x.id===data.activeId)||null}
 function ensureSession(){
- let s=getSession();if(s)return s;
+ let s=getSession();if(s&&s.date===day())return s;
  s={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[]};data.sessions.push(s);data.activeId=s.id;return s;
 }
 ensureSession();save();
@@ -261,7 +261,7 @@ function download(name,text,type){
  setTimeout(()=>URL.revokeObjectURL(url),3000);
 }
 function exportCsv(){
- const q=x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"';
+ const q=x=>{let s=String(x==null?"":x);if(/^[\s]*[=+@-]/.test(s))s="\u0027"+s;return '"'+s.replace(/"/g,'""')+'"'};
  const rows=[["研究日","研究名","日時","勝利者","勝利者ブレード","勝利者ラチェット","勝利者ビット","敗者","敗者ブレード","敗者ラチェット","敗者ビット","勝者サイド","フィニッシュ","得点"]];
  for(const s of data.sessions)for(const r of s.records){const w=r.slots[r.winnerSide],l=r.slots[r.winnerSide==="B"?"X":"B"];rows.push([s.date,s.title,r.time,w.player,w.blade,w.ratchet,w.bit,l.player,l.blade,l.ratchet,l.bit,r.winnerSide,FIN.find(f=>f[0]===r.finish)?.[1]||r.finish,r.points]);}
  download("bey-lab-1on1.csv","\ufeff"+rows.map(row=>row.map(q).join(",")).join("\r\n"),"text/csv;charset=utf-8");
