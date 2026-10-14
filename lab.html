@@ -154,6 +154,24 @@ input[type=file]{display:none}
 .picker-grid{overflow-y:auto;min-height:45px;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));grid-auto-rows:minmax(45px,max-content);gap:8px;align-content:start;padding:3px 1px 10px;overscroll-behavior:contain}
 .picker-option{min-height:45px;border:1px solid #596c89;background:#1c2f47;border-radius:9px;padding:8px 10px;font-size:14px;font-weight:850;text-align:left;overflow-wrap:anywhere}
 .picker-option.on{border-color:var(--accent);color:#fff;background:color-mix(in srgb,var(--accent) 27%,#1b2d43)}
+
+/* Fixed-position selection and an explicit, touch-friendly separate ordering mode. */
+.partpick-main.has-selection{border-color:color-mix(in srgb,var(--accent) 65%,#647c9b);box-shadow:inset 3px 0 color-mix(in srgb,var(--accent) 85%,#fff)}
+.partpick-main.has-selection .current-text{color:#f6f9ff}
+.quickchip.on{position:relative;box-shadow:inset 0 0 0 1px var(--accent),0 0 0 1px color-mix(in srgb,var(--accent) 20%,transparent)}
+.picker-order-note{color:#cad8ea;font-size:12px;margin:0 0 9px;line-height:1.55}
+.picker-order-note strong{color:#f1d59b}
+.picker-grid.sorting{display:flex;flex-direction:column;gap:7px;grid-auto-rows:auto}
+.picker-order-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #49617e;border-radius:10px;background:#12243a;min-height:54px}
+.picker-order-row.pinned{border-color:#937e5b;background:linear-gradient(95deg,#343126,#12253c 75%)}
+.picker-order-name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px;font-weight:850}
+.picker-order-name small{display:block;color:#e9c98b;font-size:10px;line-height:1.3;margin-top:2px}
+.picker-order-tool{font-size:13px;font-weight:900;padding:7px 8px;min-height:41px;min-width:39px;border:1px solid #7184a1;border-radius:8px;background:#243850}
+.picker-order-tool:disabled{opacity:.3;cursor:default}
+.picker-order-tool.pin{font-size:11px;color:#f9dd9c;border-color:#ae8e4b;background:#342b2a;min-width:75px}
+.picker-head .btn.is-editing{background:#4b3b26;color:#ffe5a8;border-color:#c9a362}
+@media(max-width:480px){.picker-order-row{padding:5px}.picker-order-tool{min-width:36px;padding:7px 6px}.picker-order-tool.pin{min-width:68px;font-size:10px}}
+
 .picker-add{display:flex;flex-wrap:wrap;gap:8px;padding-top:11px;margin-top:7px;border-top:1px solid #52637b}
 .picker-add input{min-width:150px;flex:1;min-height:44px;border:1px solid #607895;border-radius:9px;background:#071526;color:#fff;padding:9px 11px;font-size:14px}
 .picker-add button{min-height:44px}
@@ -228,7 +246,8 @@ input[type=file]{display:none}
 </div>
 <div class="picker-overlay" id="pickerOverlay" role="dialog" aria-modal="true" aria-label="機体・パーツの選択">
 <section class="picker-card" id="pickerCard">
-  <div class="picker-head"><strong id="pickerHeading">SELECT YOUR GEAR</strong><button type="button" class="btn" data-action="close-picker">✕ 戻る</button></div>
+  <div class="picker-head"><strong id="pickerHeading">SELECT YOUR GEAR</strong><div class="toolrow" style="margin-top:0"><button type="button" class="btn" id="orderToggle" data-action="toggle-picker-order">⚙ 並び替え</button><button type="button" class="btn" data-action="close-picker">✕ 戻る</button></div></div>
+  <p class="picker-order-note" id="pickerOrderNote">パーツを選んでも配置は動きません。</p>
   <input id="pickerSearch" type="search" class="picker-search" placeholder="候補を絞り込み" autocomplete="off" autocorrect="off" spellcheck="false">
   <div class="picker-grid" id="pickerGrid"></div>
   <form class="picker-add" id="pickerAdd"><input id="pickerNew" maxlength="70" placeholder="一覧にないパーツを入力" autocomplete="off" autocorrect="off" spellcheck="false"><button class="btn gold" type="submit" id="pickerAddButton">＋ 登録・選択</button></form>
@@ -329,7 +348,7 @@ const PRESETS={
  bit:["R","F","B","T","H","C","A","GF","FB","LR","N","P","LF"]
 };
 const PICKER_NAMES={blade:"ブレード",ratchet:"ラチェット",bit:"ビット"};
-let pickerSide=null,pickerPart=null;
+let pickerSide=null,pickerPart=null,pickerEditing=false;
 // Stable quick-slot order: choices never jump to the first position upon selection.
 // Orders are user-editable, shared between B and X, and included in the JSON backup.
 const DEFAULT_ORDER={
@@ -440,29 +459,60 @@ function drawPicker(){
  if(!pickerSide||!pickerPart)return;
  const part=pickerPart,active=data.slots[pickerSide][part];
  const term=$("pickerSearch").value.trim().toLocaleLowerCase("ja");
- const vals=partOptions(part).filter(v=>v.toLocaleLowerCase("ja").includes(term));
- const list=part==="blade"?vals:["",...vals];
- $("pickerGrid").innerHTML=list.map(value=>{
-  const label=value||"未設定";
-  return '<button type="button" class="picker-option '+(active===value?"on":"")+
-  '" data-action="select-part" data-side="'+pickerSide+'" data-part="'+part+'" data-value="'+esc(value)+'">'+esc(label)+'</button>';
- }).join("")||'<p class="empty">候補はありません。下の入力欄から追加できます。</p>';
+ const all=partOptions(part),vals=all.filter(v=>v.toLocaleLowerCase("ja").includes(term));
+ const n=QUICK_COUNT[part],grid=$("pickerGrid");
+ const scroll=grid.scrollTop;
+ grid.classList.toggle("sorting",pickerEditing);
+ $("pickerSearch").style.display=pickerEditing?"none":"";
+ $("pickerAdd").style.display=pickerEditing?"none":"";
+ $("pickerOrderNote").innerHTML=pickerEditing?
+  '<strong>配置編集モード</strong> · ↑↓で並び替え。「クイックへ」で上部の即選択枠に配置できます。変更はB・X両側に反映され、保存されます。':
+  '選んだパーツは移動しません。並びを変えるときだけ「⚙ 並び替え」を押してください。';
+ $("orderToggle").textContent=pickerEditing?"✓ 編集完了":"⚙ 並び替え";
+ $("orderToggle").classList.toggle("is-editing",pickerEditing);
+ if(pickerEditing){
+  grid.innerHTML=all.map((value,i)=>{
+   const pinned=i<n;
+   return '<div class="picker-order-row '+(pinned?"pinned":"")+'"><span class="picker-order-name">'+esc(value)+
+    (pinned?'<small>★ クイック '+(i+1)+' / '+n+'</small>':'')+'</span>'+
+    (pinned?'':'<button type="button" class="picker-order-tool pin" data-action="pin-part" data-part="'+part+'" data-value="'+esc(value)+'" aria-label="'+esc(value)+'をクイック枠に移動">クイックへ</button>')+
+    '<button type="button" class="picker-order-tool" data-action="move-part" data-part="'+part+'" data-value="'+esc(value)+'" data-dir="-1" '+(i===0?"disabled":"")+' aria-label="'+esc(value)+'を上へ移動">↑</button>'+
+    '<button type="button" class="picker-order-tool" data-action="move-part" data-part="'+part+'" data-value="'+esc(value)+'" data-dir="1" '+(i===all.length-1?"disabled":"")+' aria-label="'+esc(value)+'を下へ移動">↓</button></div>';
+  }).join("");
+ }else{
+  const list=part==="blade"?vals:["",...vals];
+  grid.innerHTML=list.map(value=>{
+   const label=value||"未設定";
+   return '<button type="button" class="picker-option '+(active===value?"on":"")+
+   '" data-action="select-part" data-side="'+pickerSide+'" data-part="'+part+'" data-value="'+esc(value)+'">'+
+   (active===value?"✓ ":"")+esc(label)+'</button>';
+  }).join("")||'<p class="empty">候補はありません。下の入力欄から追加できます。</p>';
+ }
+ grid.scrollTop=scroll;
+}
+function togglePickerOrder(){
+ if(!pickerSide||!pickerPart)return;
+ pickerEditing=!pickerEditing;
+ $("pickerSearch").value="";
+ $("pickerGrid").scrollTop=0;
+ drawPicker();
 }
 function openPicker(side,part){
  if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return;
- pickerSide=side;pickerPart=part;
+ pickerSide=side;pickerPart=part;pickerEditing=false;
  $("pickerHeading").textContent=side+"-SIDE · "+PICKER_NAMES[part]+"を選択";
  $("pickerCard").className="picker-card"+(side==="X"?" x":"");
  $("pickerSearch").value="";$("pickerNew").value="";
  $("pickerNew").placeholder=part==="blade"?"新しいブレード名":part==="ratchet"?"例：9-60":"例：R / GF";
  $("pickerNew").maxLength=part==="blade"?70:22;
  $("pickerAddButton").textContent=part==="blade"?"＋ 名簿へ登録して選択":"✓ 入力したパーツを選択";
+ $("pickerGrid").scrollTop=0;
  drawPicker();
  $("pickerOverlay").classList.add("show");
 }
 function closePicker(){
  $("pickerOverlay").classList.remove("show");
- pickerSide=null;pickerPart=null;
+ pickerSide=null;pickerPart=null;pickerEditing=false;
 }
 function submitPicker(value){
  if(!pickerSide||!pickerPart)return false;
@@ -483,9 +533,13 @@ function renderSelectors(){
   const x=data.slots[side];
   $("player"+side).innerHTML=options(data.players,x.player);
   $("player"+side).value=x.player;
-  $("blade"+side).textContent=x.blade;
-  $("ratchet"+side).textContent=x.ratchet||"未設定";
-  $("bit"+side).textContent=x.bit||"未設定";
+  $("blade"+side).textContent="✓ "+x.blade;
+  $("ratchet"+side).textContent=x.ratchet?"✓ "+x.ratchet:"未設定";
+  $("bit"+side).textContent=x.bit?"✓ "+x.bit:"未設定";
+  for(const part of ["blade","ratchet","bit"]){
+   const btn=document.querySelector('.partpick-main[data-side="'+side+'"][data-part="'+part+'"]');
+   if(btn)btn.classList.toggle("has-selection",Boolean(x[part]));
+  }
   for(const part of ["blade","ratchet","bit"])renderPartQuick(side,part);
   $("build"+side).textContent=combo(x);
  }
@@ -738,6 +792,9 @@ document.addEventListener("click",e=>{
  if(action==="finish")commitResult(b.dataset.side,b.dataset.finish);
  else if(action==="open-picker")openPicker(b.dataset.side,b.dataset.part);
  else if(action==="close-picker")closePicker();
+ else if(action==="toggle-picker-order")togglePickerOrder();
+ else if(action==="move-part"){if(pickerEditing&&moveOrderedPart(b.dataset.part,b.dataset.value,Number(b.dataset.dir)))drawPicker();}
+ else if(action==="pin-part"){if(pickerEditing&&pinOrderedPart(b.dataset.part,b.dataset.value))drawPicker();}
  else if(action==="quick-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
  else if(action==="select-part"){if(changePart(b.dataset.side,b.dataset.part,b.dataset.value))closePicker();}
  else if(action==="undo")undoResult();
