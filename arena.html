@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080f20">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BEY LAB ARENA">
+<title>BEY LAB | KING OF THE STADIUM</title>
+<link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
+<style>
+:root{color-scheme:dark;--bg:#060e1d;--panel:#111d31;--panel2:#162943;--edge:#334661;--text:#f2f7ff;--muted:#a5b7d1;--red:#ff695f;--blue:#60a8ff;--gold:#f5c55d}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;background:radial-gradient(ellipse at 10% 35%,#56222e55,transparent 45%),radial-gradient(ellipse at 90% 35%,#183d715a,transparent 48%),linear-gradient(#0d1728,#050b17);color:var(--text);font:14px/1.35 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;min-height:100svh}
+button,input{font:inherit}button{cursor:pointer;color:inherit;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.97)}button:focus-visible,input:focus-visible{outline:3px solid white;outline-offset:2px}button:disabled{opacity:.45;cursor:default}
+a{color:#c8dafa} .wrap{max-width:1500px;margin:auto;padding:12px max(12px,env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.brand{display:flex;align-items:center;gap:11px}.brandmark{width:38px;height:38px;display:grid;place-items:center;border:2px solid var(--gold);border-radius:50%;color:var(--gold);font-size:25px;font-weight:900;box-shadow:0 0 18px #ffd54b28}
+.brand strong{font-size:23px;letter-spacing:.07em;line-height:1}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.19em;margin-top:3px}
+.top-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.minibtn{border:1px solid #47607d;border-radius:9px;background:#182940;padding:8px 11px;font-weight:750;font-size:12px;min-height:36px}
+.minibtn.accent{color:var(--gold);border-color:#76643f}.status{color:#a4c2df;font-size:11px}
+.arena{display:grid;grid-template-columns:minmax(0,1fr) minmax(205px,.74fr) minmax(0,1fr);gap:10px;align-items:stretch}
+.fighter{--accent:var(--red);position:relative;min-width:0;border-radius:18px;border:1px solid color-mix(in srgb,var(--accent) 55%,#405071);background:linear-gradient(155deg,color-mix(in srgb,var(--accent) 14%,#132037),#111d32 54%,#0c1728);overflow:hidden;box-shadow:inset 0 1px #ffffff14,0 12px 28px #0005}
+.fighter.x{--accent:var(--blue)}
+.fighter:before{content:"";position:absolute;right:-44px;top:-52px;width:205px;height:205px;border:12px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:50%;box-shadow:0 0 0 14px #ffffff07,0 0 50px color-mix(in srgb,var(--accent) 15%,transparent);pointer-events:none}
+.fhead{padding:12px 14px 9px;display:flex;align-items:center;justify-content:space-between;gap:6px;border-bottom:1px solid #ffffff19;position:relative}
+.side{font-size:25px;line-height:1;font-weight:950;font-style:italic;letter-spacing:.06em;color:var(--accent);text-shadow:0 0 24px color-mix(in srgb,var(--accent) 45%,transparent)}
+.subhead{font-size:9px;letter-spacing:.15em;color:#b3c3d8;font-weight:750}
+.role{font-size:10px;color:#d4e1f8;background:#ffffff12;border:1px solid #ffffff1c;padding:5px 8px;border-radius:15px}
+.fbody{position:relative;padding:10px 12px 12px}
+.eyebrow{font-size:10px;color:#b5c7da;font-weight:800;letter-spacing:.08em;margin:3px 0 5px}
+.selected{display:flex;align-items:center;gap:8px;background:#06102099;border:1px solid color-mix(in srgb,var(--accent) 36%,#28354a);border-radius:10px;padding:7px 10px;min-height:39px;font-size:clamp(13px,1.65vw,19px);font-weight:880;overflow-wrap:anywhere}
+.selected .gem{color:var(--accent);font-size:14px;flex:none}
+.picklist{display:flex;flex-wrap:wrap;gap:5px;max-height:84px;overflow-y:auto;scrollbar-width:thin;padding:2px 0 5px;align-content:flex-start}
+.pick{background:#1d3046;border:1px solid #465773;border-radius:8px;padding:7px 9px;min-height:32px;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:11px;font-weight:750;white-space:nowrap}
+.pick.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 24%,#111e2c);color:#fff;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 28%,transparent)}
+.listlabel{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 5px}
+.listlabel span{font-size:10px;color:#b5c5dc;font-weight:800}.listlabel button{border:0;background:none;color:#fbd882;font-size:11px;font-weight:800}
+.center{min-width:0;border:1px solid #53647a;background:linear-gradient(180deg,#1c2e49,#111d31 72%,#172439);border-radius:18px;padding:10px 9px;box-shadow:inset 0 1px #ffffff21,0 12px 25px #0003;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:9px}
+.center .center-top{display:flex;justify-content:space-between;align-items:center;gap:5px;width:100%}
+.center small{color:#b7c9e0;font-size:9px;letter-spacing:.09em}
+.swap{font-weight:850;color:#ffdd81;background:#283349;border:1px solid #9a7a42;border-radius:9px;padding:7px 9px;font-size:11px}
+.scoreline{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;white-space:nowrap}
+.score{font-size:clamp(54px,9.1vw,110px);font-weight:1000;line-height:.94;font-variant-numeric:tabular-nums;text-shadow:0 0 20px #0008;min-width:1ch;text-align:center}
+.score.red{color:var(--red)}.score.blue{color:var(--blue)}.dash{font-size:24px;color:#91a3bf}
+.vs{font-size:10px;font-weight:900;letter-spacing:.32em;color:#abbfd9}
+.scorecontrols{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;width:100%}
+.scorecontrols button{background:#273951;border:1px solid #566c85;min-height:30px;border-radius:7px;font-size:12px;font-weight:850}
+.scorecontrols button.add{background:#31496a}
+.rounds{width:100%;text-align:center;border-top:1px solid #485b74;padding-top:9px}
+.rounds strong{font-size:16px;color:var(--gold)}.rounds p{margin:5px 0;font-size:11px;color:#a9c0da}
+.counter{font-weight:800;color:#f5c55d;font-size:12px}
+.actions{margin-top:11px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actionbox{--accent:var(--red);border-radius:15px;border:1px solid color-mix(in srgb,var(--accent) 50%,#34485f);padding:10px;background:linear-gradient(140deg,color-mix(in srgb,var(--accent) 12%,#111c2d),#101b2d)}
+.actionbox.x{--accent:var(--blue)}
+.actheader{font-size:13px;font-weight:900;color:var(--accent);letter-spacing:.05em;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.actiongrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.finishbtn{min-width:0;min-height:52px;border-radius:10px;border:1px solid color-mix(in srgb,var(--accent) 49%,#3b526b);background:color-mix(in srgb,var(--accent) 15%,#15263c);font-weight:900;font-size:clamp(11px,1.5vw,16px);padding:7px 3px;line-height:1.24}
+.finishbtn small{display:block;margin-top:3px;opacity:.85;font-size:10px}
+.bottom{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:9px}
+.bottom .notice{font-size:12px;color:#b7c8df;flex:1}
+.bottom button{min-width:92px}
+footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
+.overlay{position:fixed;inset:0;background:#020611dc;display:none;align-items:center;justify-content:center;padding:16px;z-index:50;backdrop-filter:blur(6px)}
+.overlay.show{display:flex}
+.modal{width:min(700px,100%);max-height:90svh;overflow:auto;background:#152239;border:1px solid #6680a3;border-radius:18px;padding:16px;box-shadow:0 25px 80px #0009}
+.modalhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.modal h2{margin:0;font-size:19px}
+.editgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.editgroup{min-width:0;border:1px solid #40526d;border-radius:13px;padding:10px}
+.editrow{display:flex;align-items:center;gap:4px;padding:5px 0;border-bottom:1px solid #ffffff13}
+.editrow span{flex:1;min-width:0;font-size:12px;overflow-wrap:anywhere}
+.smallaction{min-width:27px;min-height:30px;border-radius:6px;background:#2a3d56;border:1px solid #536885;font-size:13px;font-weight:850}
+.editform{display:flex;gap:5px;margin-top:9px}
+.editform input{min-width:0;width:100%;padding:10px 9px;color:white;background:#071326;border:1px solid #4d6786;border-radius:9px;font-size:14px}
+.history{max-height:48vh;overflow:auto}.historyrow{border-bottom:1px solid #ffffff18;padding:8px 0;font-size:12px}
+.historyrow small{color:#b2c6db}.confirmation{font-weight:850;color:#f0c667}
+@media(max-width:690px){.wrap{padding:8px}.arena{grid-template-columns:minmax(0,1fr) minmax(135px,.65fr) minmax(0,1fr);gap:5px}.fhead{padding:8px}.side{font-size:17px}.fbody{padding:7px}.selected{font-size:12px}.pick{font-size:10px;padding:5px 6px;min-height:28px}.center{padding:7px 5px;gap:4px}.score{font-size:clamp(40px,9vw,72px)}.rounds p{display:none}.actionbox{padding:7px}.actiongrid{gap:3px}.finishbtn{font-size:10px;min-height:47px}.brand strong{font-size:17px}.brandmark{width:30px;height:30px}.minibtn{padding:6px}.top-actions .status{display:none}.picklist{max-height:65px}}
+@media(orientation:portrait) and (max-width:690px){.rotate{display:block!important}.arena{grid-template-columns:minmax(0,1fr) minmax(130px,.6fr) minmax(0,1fr);min-width:690px}.actions{min-width:690px}.wrap{overflow-x:auto}.bottom{min-width:690px}}
+.rotate{display:none;padding:7px 10px;margin-bottom:7px;color:#ffe3a0;background:#51402566;border:1px solid #a78b51;border-radius:10px;font-size:12px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div class="wrap">
+<header>
+ <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
+ <div class="top-actions"><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn" href="./index.html">旧画面 ↗</a></div>
+</header>
+<div class="rotate">📱 横向きでの利用をおすすめします（この画面は横スクロール可能）。</div>
+<div class="arena" id="arena">
+ <section id="left" class="fighter" aria-label="左サイド"></section>
+ <section class="center" aria-label="スコア">
+  <div class="center-top"><small>LIVE SCORE</small><button class="swap" data-action="swap">⇄ B/X 入れ替え</button></div>
+  <div class="vs">KING OF THE STADIUM</div>
+  <div class="scoreline"><strong class="score red" id="leftScore">0</strong><span class="dash">—</span><strong class="score blue" id="rightScore">0</strong></div>
+  <div class="scorecontrols">
+   <button id="leftPlus" class="add" data-action="plus-left">左 ＋1</button><button id="rightPlus" class="add" data-action="plus-right">右 ＋1</button>
+   <button data-action="minus-left">左 −1</button><button data-action="minus-right">右 −1</button>
+  </div>
+  <div class="rounds"><div class="counter" id="matchCount">0 FINISHES</div><p>ボタン1つで勝敗＋得点を記録</p><strong>⚡ VS ⚡</strong></div>
+ </section>
+ <section id="right" class="fighter x" aria-label="右サイド"></section>
+</div>
+<div class="actions" id="finishActions"></div>
+<div class="bottom">
+ <span class="notice" id="resultNotice" aria-live="polite">ブレードを選んで、勝った側のフィニッシュを押せ！</span>
+ <button class="minibtn" data-action="undo">↶ 取り消す</button>
+ <button class="minibtn" data-action="new-game">＋ 新しい対戦</button>
+</div>
+<footer>© BEY LAB · 対戦ボード β版。得点・試合結果はこの端末に保存。既存の「分析」データとは別管理です。大事な記録は履歴からバックアップを。<br>ブレード名やプレイヤー名は自由に登録・変更可能。横画面でお楽しみください。</footer>
+</div>
+<div class="overlay" id="overlay"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<script>
+(function(){
+"use strict";
+const KEY="bey-lab-arena-v1", OLD="bey-lab-recorder-v1";
+const FIN=[["spin","スピン",1,"◉"],["over","オーバー",2,"↗"],["burst","バースト",2,"✦"],["extreme","エクストリーム",3,"⚡"]];
+const defaults=["ドランストライク","エアロペガサス","シルバーウルフ","コバルトドラグーン","ドランブレイブ","ラスタードラグーン"];
+const ids=x=>document.getElementById(x);
+const esc=x=>String(x==null?"":x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clean=x=>typeof x==="string"?x.trim().slice(0,70):"";
+function initial(){
+ let bladeList=defaults.slice();
+ try{const old=JSON.parse(localStorage.getItem(OLD));if(old&&Array.isArray(old.beys)){for(const b of old.beys){const base=clean(b).replace(/\s+\d+-\d+\S*$/,"");if(base&&!bladeList.includes(base))bladeList.push(base);}}}catch(e){}
+ return {players:["自分","けーくん","おっすん"],blades:bladeList.slice(0,150),slots:{B:{player:"自分",blade:"ドランストライク"},X:{player:"けーくん",blade:"エアロペガサス"}},scores:{B:0,X:0},flipped:false,events:[],sessions:[]};
+}
+let state=initial(),undo=[];
+try{let old=JSON.parse(localStorage.getItem(KEY));if(old&&Array.isArray(old.players)&&Array.isArray(old.blades)&&old.slots&&old.scores&&Array.isArray(old.events)&&Array.isArray(old.sessions)){state=old;}}catch(e){}
+state.players=state.players.filter(x=>typeof x==="string"&&x.length<=70).slice(0,120);
+state.blades=state.blades.filter(x=>typeof x==="string"&&x.length<=70).slice(0,200);
+if(!state.players.length)state.players=["自分"];if(!state.blades.length)state.blades=["ドランストライク"];
+for(const side of ["B","X"]){if(!state.slots[side])state.slots[side]={player:state.players[0],blade:state.blades[0]};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));ids("saved").textContent="✓ 保存済み"}catch(e){ids("saved").textContent="保存できません";ids("resultNotice").textContent="⚠ 保存失敗。履歴からバックアップを保存してください"}}
+function snapshot(){undo.push(JSON.stringify(state));if(undo.length>30)undo.shift()}
+function sides(){return state.flipped?["X","B"]:["B","X"]}
+function playerButton(name,side){const on=state.slots[side].player===name;return '<button class="pick'+(on?' on':'')+'" type="button" data-action="choose" data-kind="player" data-side="'+side+'" data-value="'+esc(name)+'">'+esc(name)+'</button>'}
+function bladeButton(name,side){const on=state.slots[side].blade===name;return '<button class="pick'+(on?' on':'')+'" type="button" data-action="choose" data-kind="blade" data-side="'+side+'" data-value="'+esc(name)+'">'+esc(name)+'</button>'}
+function renderFighter(id,side){let el=ids(id);el.className="fighter"+(side==="X"?" x":"");const slot=state.slots[side];el.innerHTML='<div class="fhead"><div><div class="side">'+side+'-SIDE</div><div class="subhead">BLADE FIGHTER</div></div><span class="role">'+(side==="B"?"🔥 RED":"❄ BLUE")+'</span></div><div class="fbody">'+
+'<div class="eyebrow">プレイヤー名</div><div class="selected"><span class="gem">◆</span>'+esc(slot.player)+'</div>'+
+'<div class="listlabel"><span>登録済みプレイヤー</span><button type="button" data-action="edit">＋ 編集</button></div><div class="picklist">'+state.players.map(v=>playerButton(v,side)).join('')+'</div>'+
+'<div class="eyebrow">ブレード名</div><div class="selected"><span class="gem">◉</span>'+esc(slot.blade)+'</div>'+
+'<div class="listlabel"><span>登録済みブレード</span><button type="button" data-action="edit">＋ 編集</button></div><div class="picklist">'+state.blades.map(v=>bladeButton(v,side)).join('')+'</div></div>';}
+function render(){const [left,right]=sides();renderFighter("left",left);renderFighter("right",right);
+ids("leftScore").textContent=state.scores[left];ids("rightScore").textContent=state.scores[right];
+ids("leftScore").className="score "+(left==="B"?"red":"blue");ids("rightScore").className="score "+(right==="B"?"red":"blue");
+ids("leftPlus").textContent=left+" ＋1";ids("rightPlus").textContent=right+" ＋1";
+ids("matchCount").textContent=state.events.filter(x=>x.type==="finish").length+" FINISHES";
+ids("finishActions").innerHTML=[left,right].map(side=>'<section class="actionbox'+(side==="X"?" x":"")+'"><div class="actheader">'+side+'-SIDE WIN <small>フィニッシュを選択</small></div><div class="actiongrid">'+FIN.map(f=>'<button class="finishbtn" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'">'+f[3]+' '+f[1]+'<small>＋'+f[2]+'点</small></button>').join('')+'</div></section>').join('');}
+function sideAction(side,type,points,finish){snapshot();const slot=state.slots[side];state.scores[side]=Math.max(0,Number(state.scores[side]||0)+points);
+const other=side==="B"?"X":"B";
+state.events.push({type,side,points,finish:finish||"",time:new Date().toISOString(),player:slot.player,blade:slot.blade,againstPlayer:state.slots[other].player,againstBlade:state.slots[other].blade});
+if(state.events.length>5000)state.events=state.events.slice(-5000);save();render();
+const label=FIN.find(f=>f[0]===finish);ids("resultNotice").textContent=side+"-SIDE "+slot.player+" / "+slot.blade+" "+(label?label[1]+"勝ち +"+points+"点":"スコア変更 "+(points>0?"+":"")+points);}
+function download(name,text,type){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+function historyHtml(){const rows=state.events.slice(-35).reverse();return '<div class="modalhead"><h2>📖 対戦履歴</h2><button class="minibtn" data-action="close">閉じる</button></div>'+
+'<p style="color:#c0d2e6">今回 '+state.events.filter(x=>x.type==="finish").length+'試合 / 保存済み対戦 '+state.sessions.length+'件</p>'+
+'<div class="top-actions" style="justify-content:flex-start"><button class="minibtn accent" data-action="export-json">⬇ JSON保存</button><button class="minibtn" data-action="export-csv">⬇ CSV保存</button></div>'+
+'<div class="history">'+(rows.length?rows.map(ev=>'<div class="historyrow"><strong>'+esc(ev.side)+'-SIDE '+esc(ev.player)+'</strong> '+(ev.type==="finish"?esc((FIN.find(f=>f[0]===ev.finish)||["","結果"])[1])+"勝ち":"スコア調整")+'　<span class="confirmation">'+(ev.points>0?"+":"")+esc(ev.points)+'点</span><br><small>'+esc(ev.blade)+' vs '+esc(ev.againstBlade)+'</small></div>').join(''):'<p>まだ試合記録はありません。</p>')+'</div><p style="color:#a6bcd4;font-size:11px">JSONはこのアリーナ専用のバックアップ。現行BEY LABの旧形式とは別データです。</p>';}
+function editorHtml(){return '<div class="modalhead"><h2>⚙ 登録・並べ替え</h2><button class="minibtn" data-action="close">完了</button></div><p style="color:#adbed6;font-size:12px">各項目は名前の変更・上下移動が可能。並び順がB/X両側に反映されます。</p><div class="editgrid">'+["player","blade"].map(kind=>{const list=kind==="player"?state.players:state.blades;const title=kind==="player"?"プレイヤー":"ブレード";return '<section class="editgroup"><strong>'+title+'</strong>'+list.map((name,i)=>'<div class="editrow"><span>'+esc(name)+'</span><button class="smallaction" title="名前変更" data-action="rename" data-kind="'+kind+'" data-index="'+i+'">✎</button><button class="smallaction" title="上へ" data-action="move" data-kind="'+kind+'" data-index="'+i+'" data-dir="-1" '+(i===0?"disabled":"")+'>↑</button><button class="smallaction" title="下へ" data-action="move" data-kind="'+kind+'" data-index="'+i+'" data-dir="1" '+(i===list.length-1?"disabled":"")+'>↓</button></div>').join('')+'<form class="editform" data-form="'+kind+'"><input type="search" autocomplete="off" autocorrect="off" spellcheck="false" name="roster-'+kind+'" maxlength="70" placeholder="'+title+'名を追加" required><button class="minibtn accent" type="submit">＋</button></form></section>'}).join('')+'</div>';}
+function showModal(mode){ids("overlay").classList.add("show");ids("modal").innerHTML=mode==="edit"?editorHtml():historyHtml();}
+function closeModal(){ids("overlay").classList.remove("show");ids("modal").innerHTML="";}
+function roster(kind){return kind==="player"?state.players:state.blades}
+function addRoster(kind,name){const list=roster(kind);name=clean(name);if(!name||list.includes(name)||list.length>=200)return false;snapshot();list.push(name);save();render();return true}
+function renameRoster(kind,i){const list=roster(kind),prior=list[i];if(prior==null)return;const incoming=prompt("新しい"+(kind==="player"?"プレイヤー":"ブレード")+"名",prior);if(incoming==null)return;const name=clean(incoming);if(!name||name===prior||list.includes(name))return;snapshot();list[i]=name;for(const s of ["B","X"]){if(state.slots[s][kind]===prior)state.slots[s][kind]=name}save();render();showModal("edit")}
+function moveRoster(kind,i,dir){const list=roster(kind),j=i+dir;if(i<0||j<0||i>=list.length||j>=list.length)return;snapshot();[list[i],list[j]]=[list[j],list[i]];save();render();showModal("edit")}
+function exportCsv(){const records=state.sessions.flatMap(s=>s.events.concat([])).concat(state.events);const header=["日時","サイド","勝者","ブレード","相手","相手のブレード","結果","得点"];const q=t=>'"'+String(t==null?"":t).replace(/"/g,'""')+'"';const body=records.filter(x=>x.type==="finish").map(x=>[x.time,x.side,x.player,x.blade,x.againstPlayer,x.againstBlade,(FIN.find(f=>f[0]===x.finish)||["",""])[1],x.points].map(q).join(","));download("bey-lab-arena.csv","\ufeff"+[header.map(q).join(","),...body].join("\r\n"),"text/csv;charset=utf-8")}
+document.addEventListener("click",e=>{
+const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
+if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();}
+else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
+else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
+else if(action==="swap"){snapshot();state.flipped=!state.flipped;save();render();}
+else if(action==="undo"){if(!undo.length){ids("resultNotice").textContent="取り消せる操作がありません";return;}state=JSON.parse(undo.pop());save();render();ids("resultNotice").textContent="直前の操作を取り消しました";}
+else if(action==="new-game"){if(!confirm("現在のスコアを終了し、新しい対戦を始めますか？\n終了した試合は履歴に残ります。"))return;snapshot();if(state.events.length||state.scores.B||state.scores.X){state.sessions.push({finished:new Date().toISOString(),events:state.events.slice(),scores:{...state.scores}});if(state.sessions.length>200)state.sessions.shift()}state.events=[];state.scores={B:0,X:0};save();render();ids("resultNotice").textContent="新しい対戦を開始！";}
+else if(action==="edit"||action==="history")showModal(action);
+else if(action==="close")closeModal();
+else if(action==="rename")renameRoster(kind,Number(b.dataset.index));
+else if(action==="move")moveRoster(kind,Number(b.dataset.index),Number(b.dataset.dir));
+else if(action==="export-json")download("bey-lab-arena-backup.json",JSON.stringify(state,null,2),"application/json;charset=utf-8");
+else if(action==="export-csv")exportCsv();
+});
+ids("modal").addEventListener("submit",e=>{const form=e.target.closest("form[data-form]");if(!form)return;e.preventDefault();const input=form.querySelector("input");if(addRoster(form.dataset.form,input.value)){showModal("edit");}else{alert("登録済みか、名前が空欄です。別の名前を入力してください。")}});
+ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeModal()});
+render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
+})();
+</script></body></html>
