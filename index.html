@@ -33,9 +33,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;-webkit-tap-high
     <div class="panel">
       <div class="panelTitle">対戦条件 <span class="small">選んだ機体で記録</span></div>
       <div class="field"><label for="myBey">自分のベイ / カスタム</label><select id="myBey"></select></div>
-      <div class="field"><label for="rivalBey">対戦相手 / 相手機体</label><input id="rivalBey" placeholder="例：けーくん / エアロペガサス" maxlength="90" autocomplete="off" list="rivalOptions"><datalist id="rivalOptions"></datalist></div>
-      <div class="session"><div class="field"><label for="sessionName">実験名（任意）</label><input id="sessionName" placeholder="例：11/21 兄弟大会" maxlength="90" autocomplete="off"></div><button class="button mini outline" id="todayName" type="button">今日の日付</button></div>
-      <div class="field" style="margin-top:11px"><label for="memo">観察メモ（次の1試合に付ける）</label><input id="memo" placeholder="例：低空シュート成功、跳ねた" maxlength="240" autocomplete="off"></div>
+      <div class="field"><label for="rivalBey">対戦相手 / 相手機体</label><input type="search" id="rivalBey" placeholder="例：けーくん / エアロペガサス" maxlength="90" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="beylab-rivalbey" list="rivalOptions"><datalist id="rivalOptions"></datalist></div>
+      <div class="session"><div class="field"><label for="sessionName">実験名（任意）</label><input type="search" id="sessionName" placeholder="例：11/21 兄弟大会" maxlength="90" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="beylab-sessionname"></div><button class="button mini outline" id="todayName" type="button">今日の日付</button></div>
+      <div class="field" style="margin-top:11px"><label for="memo">観察メモ（次の1試合に付ける）</label><input type="search" id="memo" placeholder="例：低空シュート成功、跳ねた" maxlength="240" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="beylab-memo"></div>
       <div class="notice">勝ち・負けのボタンを押すと、確認なしで1試合を記録します。誤操作は「直前を取り消す」で戻せます。</div>
     </div>
 
@@ -66,7 +66,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;-webkit-tap-high
 
   <section id="screen-settings" class="screen" aria-label="設定とバックアップ">
     <div class="sectionHeading"><h2>⚙️ 設定・データ管理</h2></div>
-    <div class="panel"><div class="panelTitle">自分の機体を登録</div><div class="field"><label for="newBey">機体とカスタム（セットで名前を付ける）</label><input id="newBey" placeholder="例：ドランストライク 9-60R" maxlength="90" autocomplete="off"></div><button class="button yellow" id="addBey" type="button" style="width:100%">＋ 機体を追加する</button><div class="hint">同じブレードでもカスタムが違えば別機体として登録すると、性能比較ができます。</div><div id="beyList" style="margin-top:12px"></div></div>
+    <div class="panel"><div class="panelTitle">自分の機体を登録</div><div class="field"><label for="newBey">機体とカスタム（セットで名前を付ける）</label><input type="search" id="newBey" placeholder="例：ドランストライク 9-60R" maxlength="90" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="beylab-newbey"></div><button class="button yellow" id="addBey" type="button" style="width:100%">＋ 機体を追加する</button><div class="hint">同じブレードでもカスタムが違えば別機体として登録すると、性能比較ができます。</div><div id="beyList" style="margin-top:12px"></div></div>
     <div class="panel"><div class="panelTitle">バックアップと共有</div><div class="settingBtns"><button class="button green" id="exportJson" type="button">⬇ 保存用JSON</button><button class="button outline" id="exportCsv" type="button">⬇ 集計用CSV</button><button class="button outline" id="importBtn" type="button">⬆ JSONから復元</button><button class="button outline" id="shareSummary" type="button">📋 結果をコピー</button></div><input id="importInput" style="display:none" type="file" accept="application/json,.json"><p class="hint">JSONは記録・機体の復元用。CSVは表計算やChatGPTでの分析用です。どちらも定期的に保存しよう。</p></div>
     <div class="panel"><div class="panelTitle">データの保存について</div><p class="footer">このアプリは試合のたびにブラウザ内へ自動保存します。サーバーへ対戦記録を送信しません。ただしブラウザのデータ削除、ホーム画面アプリの削除、機種変更で失われることがあります。重要な記録はJSONでバックアップしてください。</p><p class="footer">Safariとホーム画面に追加したアプリでは保存領域が別になる場合があります。最初に使う方法を決めて継続してください。</p><div class="reminder">注意：このGitHub PagesのURLとアプリ本体は公開されます。機密情報をプログラムの中に入れないでください。</div></div>
     <div class="panel"><div class="panelTitle">危険な操作</div><button class="button danger" id="deleteAll" type="button">すべての試合記録を削除</button><p class="hint">機体登録は残ります。削除前にはJSONバックアップをおすすめします。</p></div>
