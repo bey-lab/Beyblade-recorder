@@ -193,6 +193,14 @@ function initial(){
 }
 let state=initial(),undo=[];
 try{let old=JSON.parse(localStorage.getItem(KEY));if(old&&Array.isArray(old.players)&&Array.isArray(old.blades)&&old.slots&&old.scores&&Array.isArray(old.events)&&Array.isArray(old.sessions)){state=old;}}catch(e){}
+// Replace only the untouched beta sample roster; preserve customized lists and all battle records.
+if(Array.isArray(state.players)
+ && JSON.stringify(state.players)===JSON.stringify(["自分","けーくん","おっすん"])
+ && state.events.length===0 && state.sessions.length===0){
+ state.players=["プレイヤー1","プレイヤー2","プレイヤー3"];
+ for(const side of ["B","X"]){const slot=state.slots[side];if(slot){const oldIndex=["自分","けーくん","おっすん"].indexOf(slot.player);if(oldIndex>=0)slot.player=state.players[oldIndex];}}
+ try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}
+}
 state.players=state.players.filter(x=>typeof x==="string"&&x.length<=70).slice(0,120);
 state.blades=state.blades.filter(x=>typeof x==="string"&&x.length<=70).slice(0,200);
 if(!state.players.length)state.players=["プレイヤー1"];if(!state.blades.length)state.blades=["ドランソード"];
