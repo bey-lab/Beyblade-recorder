@@ -589,20 +589,38 @@ function download(name,text,type){
 }
 function exportCsv(){
  const q=x=>{let s=String(x==null?"":x);if(/^[\s]*[=+@-]/.test(s))s="\u0027"+s;return '"'+s.replace(/"/g,'""')+'"'};
- const rows=[["研究日","研究名","日時","勝利者","勝利者ブレード","勝利者ラチェット","勝利者ビット","敗者","敗者ブレード","敗者ラチェット","敗者ビット","勝者サイド","フィニッシュ","得点"]];
- for(const s of data.sessions)for(const r of s.records){const w=r.slots[r.winnerSide],l=r.slots[r.winnerSide==="B"?"X":"B"];rows.push([s.date,s.title,r.time,w.player,w.blade,w.ratchet,w.bit,l.player,l.blade,l.ratchet,l.bit,r.winnerSide,FIN.find(f=>f[0]===r.finish)?.[1]||r.finish,r.points]);}
+ const rows=[["研究日","研究名","試合ID","記録種別","日時","B選手","Bブレード","Bラチェット","Bビット","X選手","Xブレード","Xラチェット","Xビット","フィニッシュ獲得側","フィニッシュ","得点","試合勝者サイド","試合最終B得点","試合最終X得点"]];
+ const write=(date,title,id,status,time,slots,side,finish,points,winner,scoreB,scoreX)=>{
+  rows.push([date,title,id,status,time,slots.B.player,slots.B.blade,slots.B.ratchet,slots.B.bit,
+   slots.X.player,slots.X.blade,slots.X.ratchet,slots.X.bit,side,
+   FIN.find(f=>f[0]===finish)?.[1]||finish,points,winner||"",scoreB??"",scoreX??""]);
+ };
+ for(const session of data.sessions){
+  for(const m of session.matches)for(const e of m.events)
+   write(session.date,session.title,m.id,"4点先取・完了",e.time,m.slots,e.side,e.finish,e.points,m.winnerSide,m.scores.B,m.scores.X);
+  if(session.id===data.activeId&&data.activeMatch){
+   const m=data.activeMatch;
+   for(const e of m.events)write(session.date,session.title,m.id,m.winnerSide?"4点先取・決着済み":"4点先取・途中",e.time,m.slots,e.side,e.finish,e.points,m.winnerSide,m.winnerSide?m.scores.B:"",m.winnerSide?m.scores.X:"");
+  }
+  for(const r of session.records)
+   write(session.date,session.title,r.id,"旧版・単発記録",r.time,r.slots,r.winnerSide,r.finish,r.points,"","","");
+ }
  download("bey-lab-1on1.csv","\ufeff"+rows.map(row=>row.map(q).join(",")).join("\r\n"),"text/csv;charset=utf-8");
 }
 async function importJson(file){
- if(!file)return;if(file.size>20*1024*1024){alert("20MB以内のファイルを選んでください。");return;}
+ if(!file)return false;
+ if(file.size>20*1024*1024){alert("20MB以内のファイルを選んでください。");return false;}
  try{
   const parsed=JSON.parse(await file.text());
-  if(!valid(parsed)){alert("これは1on1研究室の有効なバックアップではありません。今の記録はそのままです。");return;}
-  const oldN=records().length,newN=parsed.sessions.reduce((n,s)=>n+s.records.length,0);
-  if(!confirm("1on1研究室をJSONから復元します。\n現在："+oldN+"戦 → バックアップ："+newN+"戦\n\n研究テーマ・カスタム・履歴がすべて入れ替わります。\n現在のデータを残す場合は先にJSON保存してください。\n\n復元しますか？"))return;
-  localStorage.setItem(KEY,JSON.stringify(parsed));
-  data=parsed;ensureSession();render();$("lastNotice").textContent="✓ JSONから研究記録 "+newN+"戦を復元しました。";
- }catch(e){alert("復元できません。JSONファイルまたは端末の空き容量を確認してください。");}
+  if(!valid(parsed)){alert("これは1on1研究室の有効なバックアップではありません。今の記録はそのままです。");return false;}
+  const restored=migrate(parsed),oldN=completedMatches().length,newN=restored.sessions.reduce((n,s)=>n+s.matches.length,0)+(restored.activeMatch?.winnerSide?1:0);
+  const oldLegacy=data.sessions.reduce((n,s)=>n+s.records.length,0),legacyN=restored.sessions.reduce((n,s)=>n+s.records.length,0);
+  if(!confirm("1on1研究室をJSONから復元します。\n現在："+oldN+"試合（旧版"+oldLegacy+"件）\n復元データ："+newN+"試合（旧版"+legacyN+"件）\n\n研究テーマ・カスタム・履歴・途中スコアがすべて入れ替わります。\n現在の記録を残したい場合は先にJSON保存してください。\n\n復元しますか？"))return false;
+  localStorage.setItem(KEY,JSON.stringify(restored));
+  data=restored;ensureSession();save();render();
+  $("lastNotice").textContent="✓ JSONから研究記録 "+newN+"試合を復元しました。";
+  return true;
+ }catch(e){alert("復元できません。JSONファイルまたは端末の空き容量を確認してください。");return false;}
 }
 document.addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");if(!b)return;
