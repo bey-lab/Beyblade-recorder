@@ -134,7 +134,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 
 /* Tournament/day selection and grouped match archive */
 .meeting-strip{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 11px;border:1px solid #465a75;border-radius:12px;padding:8px 12px;background:linear-gradient(100deg,#2e293a,#162a44)}
-.meeting-label{font-size:14px;color:#ffe4a1;font-weight:880;overflow-wrap:anywhere;min-width:0}
+.meeting-label{font-size:14px;color:#ffe4a1;font-weight:880;overflow-wrap:anywhere;min-width:0}.meeting-record{display:inline-block;background:#2b3447;border:1px solid #ae9059;padding:7px 10px;border-radius:9px;color:#ffdc92;font-size:12px;font-weight:800;overflow-wrap:anywhere}
 .meeting-label small{font-size:11px;color:#bbcade;display:inline-block;margin-left:9px;font-weight:600}
 .meeting-overlay{display:none;position:fixed;inset:0;z-index:90;justify-content:center;align-items:center;background:#030817f2;backdrop-filter:blur(8px);padding:16px}
 .meeting-overlay.show{display:flex}
@@ -170,6 +170,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 </header>
 <div class="meeting-strip">
  <div class="meeting-label" id="meetingLabel">📅 大会未設定</div>
+ <div class="meeting-record" id="meetingRecord">🏆 最長連勝：記録なし</div>
  <button class="minibtn accent" type="button" data-action="meeting">📅 大会を新しく作る</button>
 </div>
 <div class="rotate">📱 横向きでの利用をおすすめします（この画面は横スクロール可能）。</div>
@@ -326,6 +327,21 @@ function startMeeting(date,title){
  ids("resultNotice").textContent="「"+title+"」開幕！ 対戦を始めよう。";
  return true;
 }
+// A consecutive win means winning 4-point matches with the same player name
+// inside one tournament. An unfinished match breaks the chain; other days are isolated.
+function longestStreak(){
+ const m=tournament();if(!m)return {count:0,names:[]};
+ const winners=state.sessions.filter(s=>s.meetingId===m.id).map(s=>s.winner?.player||null);
+ if(state.winner)winners.push(state.winner.player);
+ let current="",run=0,best=0,names=[];
+ for(const name of winners){
+  if(!name){current="";run=0;continue;}
+  run=name===current?run+1:1;current=name;
+  if(run>best){best=run;names=[name];}
+  else if(run===best&&!names.includes(name))names.push(name);
+ }
+ return {count:best,names};
+}
 function meetingHtml(g){
  const matches=state.sessions.filter(s=>s.meetingId===g.id);
  const live=state.activeMeetingId===g.id&&(state.events.length||state.scores.B||state.scores.X);
@@ -350,6 +366,10 @@ function nextBattle(){
 function render(){
  const m=tournament();
  ids("meetingLabel").innerHTML=m?'📅 '+esc(m.title)+' <small>'+esc(m.date)+'</small>':'📅 大会未設定';
+ const record=longestStreak();
+ ids("meetingRecord").textContent=record.count?
+  "🏆 本日最長："+record.count+"連勝 · "+record.names.join(" / "):
+  "🏆 本日最長：記録なし";
  const [left,right]=sides();renderFighter("left",left);renderFighter("right",right);
 ids("leftScore").textContent=state.scores[left];ids("rightScore").textContent=state.scores[right];
 ids("leftScore").className="score "+(left==="B"?"red":"blue");ids("rightScore").className="score "+(right==="B"?"red":"blue");
