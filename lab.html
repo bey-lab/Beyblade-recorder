@@ -225,15 +225,118 @@ function rosterSync(notify){
  if(notify)$("lastNotice").textContent="✓ 名簿同期完了："+added+"件追加（研究記録はそのまま）";
  return true;
 }
+
+const PRESETS={
+ ratchet:["1-60","3-60","5-60","9-60","1-70","3-70","5-70","9-70","1-80","3-80","5-80"],
+ bit:["R","F","B","T","H","C","A","GF","FB","LR","N","P","LF"]
+};
+const PICKER_NAMES={blade:"ブレード",ratchet:"ラチェット",bit:"ビット"};
+let pickerSide=null,pickerPart=null;
+function getPartHistory(part){
+ const scores=new Map();
+ for(const r of records())for(const side of ["B","X"]){
+  const value=clean(r.slots[side][part],part==="blade"?70:22);
+  if(value)scores.set(value,(scores.get(value)||0)+1);
+ }
+ return [...scores].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+}
+function partOptions(part){
+ if(part==="blade")return data.blades.slice();
+ return [...new Set([...getPartHistory(part),...PRESETS[part],...["B","X"].map(s=>data.slots[s][part]).filter(Boolean)])];
+}
+function quickOptions(part,side){
+ const active=data.slots[side][part];
+ const pool=part==="blade"?data.blades.slice(0,6):partOptions(part);
+ const preferred=part==="blade"?getPartHistory("blade"):getPartHistory(part);
+ const defaults=part==="ratchet"?["3-60","9-60","5-60"]:part==="bit"?["R","B","F"]:[];
+ const count=part==="blade"?3:4;
+ const items=[active,...preferred,...defaults,...pool].filter(Boolean);
+ return [...new Set(items)].slice(0,count);
+}
+function renderPartQuick(side,part){
+ const value=data.slots[side][part];
+ const quick=quickOptions(part,side);
+ const prefix=part[0].toUpperCase()+part.slice(1);
+ $("quick"+prefix+side).innerHTML=quick.map(item=>
+  '<button type="button" class="quickchip '+(item===value?"on":"")+
+  '" data-action="quick-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(item)+'">'+esc(item)+'</button>'
+ ).join("");
+}
+function flashBuild(side){
+ const el=$("build"+side);
+ if(!el)return;
+ el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+}
+function changePart(side,part,value){
+ if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return false;
+ const v=clean(value,part==="blade"?70:22);
+ if(part==="blade"&&!data.blades.includes(v))return false;
+ if(data.slots[side][part]===v)return true;
+ const prev=data.slots[side][part];
+ data.slots[side][part]=v;
+ if(!save()){data.slots[side][part]=prev;return false}
+ render();flashBuild(side);
+ return true;
+}
+function drawPicker(){
+ if(!pickerSide||!pickerPart)return;
+ const part=pickerPart,active=data.slots[pickerSide][part];
+ const term=$("pickerSearch").value.trim().toLocaleLowerCase("ja");
+ const vals=partOptions(part).filter(v=>v.toLocaleLowerCase("ja").includes(term));
+ const list=part==="blade"?vals:["",...vals];
+ $("pickerGrid").innerHTML=list.map(value=>{
+  const label=value||"未設定";
+  return '<button type="button" class="picker-option '+(active===value?"on":"")+
+  '" data-action="select-part" data-side="'+pickerSide+'" data-part="'+part+'" data-value="'+esc(value)+'">'+esc(label)+'</button>';
+ }).join("")||'<p class="empty">候補はありません。下の入力欄から追加できます。</p>';
+}
+function openPicker(side,part){
+ if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return;
+ pickerSide=side;pickerPart=part;
+ $("pickerHeading").textContent=side+"-SIDE · "+PICKER_NAMES[part]+"を選択";
+ $("pickerCard").className="picker-card"+(side==="X"?" x":"");
+ $("pickerSearch").value="";$("pickerNew").value="";
+ $("pickerNew").placeholder=part==="blade"?"新しいブレード名":part==="ratchet"?"例：9-60":"例：R / GF";
+ $("pickerNew").maxLength=part==="blade"?70:22;
+ $("pickerAddButton").textContent=part==="blade"?"＋ 名簿へ登録して選択":"✓ 入力したパーツを選択";
+ drawPicker();
+ $("pickerOverlay").classList.add("show");
+}
+function closePicker(){
+ $("pickerOverlay").classList.remove("show");
+ pickerSide=null;pickerPart=null;
+}
+function submitPicker(value){
+ if(!pickerSide||!pickerPart)return false;
+ const side=pickerSide,part=pickerPart,v=clean(value,part==="blade"?70:22);
+ if(!v){$("lastNotice").textContent="パーツ名を入力してください。";return false}
+ if(part==="blade"&&!data.blades.includes(v)){
+  if(data.blades.length>=200){alert("ブレードの登録上限に達しています。");return false}
+  data.blades.push(v);
+ }
+ const ok=changePart(side,part,v);
+ if(ok){closePicker();$("lastNotice").textContent="⚙ "+side+"-SIDE · "+combo(data.slots[side])+" に変更した！"}
+ return ok;
+}
 function renderSelectors(){
  for(const side of ["B","X"]){
   const x=data.slots[side];
   $("player"+side).innerHTML=options(data.players,x.player);
-  $("blade"+side).innerHTML=options(data.blades,x.blade);
-  $("player"+side).value=x.player;$("blade"+side).value=x.blade;
-  $("ratchet"+side).value=x.ratchet;$("bit"+side).value=x.bit;
+  $("player"+side).value=x.player;
+  $("blade"+side).textContent=x.blade;
+  $("ratchet"+side).textContent=x.ratchet||"未設定";
+  $("bit"+side).textContent=x.bit||"未設定";
+  for(const part of ["blade","ratchet","bit"])renderPartQuick(side,part);
   $("build"+side).textContent=combo(x);
  }
+}
+function renderScore(){
+ const session=getSession();
+ const wins={B:0,X:0};
+ for(const r of (session?.records||[]))if(r.winnerSide==="B"||r.winnerSide==="X")wins[r.winnerSide]++;
+ $("winsB").textContent=wins.B;
+ $("winsX").textContent=wins.X;
+ $("duelRound").textContent="ROUND "+String((session?.records?.length||0)+1).padStart(2,"0");
 }
 function renderFinishes(){
  $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+'" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
@@ -294,7 +397,7 @@ function history(){
  '</div></details>').join("")||'<p class="empty">研究ログはまだありません。</p>';
 }
 function render(){
- renderSelectors();renderFocus();summary();history();
+ renderSelectors();renderScore();renderFocus();summary();history();
  const s=getSession();$("seriesTitle").value=s?.title||"";
  $("seriesLine").textContent=(s?.date||day())+" · この研究 "+(s?.records.length||0)+"戦 / 総計 "+records().length+"戦";
 }
@@ -308,6 +411,7 @@ function commitResult(side,finish){
  render();
  $("lastNotice").textContent="⚡ "+slots[side].player+" · "+combo(slots[side])+"　"+f[1]+" +"+f[2]+"点！ 保存完了";
  const el=document.querySelector(".battle");el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+ const board=$("duelScore");board.classList.remove("pulse-b","pulse-x");void board.offsetWidth;board.classList.add(side==="B"?"pulse-b":"pulse-x");
 }
 function newSeries(){
  const s=getSession();if(s&&s.records.length===0){$("lastNotice").textContent="今の研究テーマはまだ0戦です。研究名を変更して使ってね。";return;}
@@ -347,6 +451,10 @@ document.addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");if(!b)return;
  const action=b.dataset.action;
  if(action==="finish")commitResult(b.dataset.side,b.dataset.finish);
+ else if(action==="open-picker")openPicker(b.dataset.side,b.dataset.part);
+ else if(action==="close-picker")closePicker();
+ else if(action==="quick-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
+ else if(action==="select-part"){if(changePart(b.dataset.side,b.dataset.part,b.dataset.value))closePicker();}
  else if(action==="undo")undoResult();
  else if(action==="new-series")newSeries();
  else if(action==="sync-roster")rosterSync(true);
@@ -354,13 +462,21 @@ document.addEventListener("click",e=>{
  else if(action==="export-csv")exportCsv();
  else if(action==="import-json"){$("importFile").value="";$("importFile").click();}
 });
+$("pickerSearch").addEventListener("input",drawPicker);
+$("pickerAdd").addEventListener("submit",e=>{e.preventDefault();submitPicker($("pickerNew").value);});
+$("pickerOverlay").addEventListener("click",e=>{if(e.target===$("pickerOverlay"))closePicker();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&pickerSide)closePicker();});
 document.addEventListener("change",e=>{
  const target=e.target;
  if(target.dataset?.field){
   const side=target.dataset.side,field=target.dataset.field;if(!["B","X"].includes(side)||!["player","blade","ratchet","bit"].includes(field))return;
   const v=clean(target.value,field==="ratchet"||field==="bit"?22:70);
   if(field==="player"&&!data.players.includes(v)||field==="blade"&&!data.blades.includes(v))return;
-  data.slots[side][field]=v;save();render();
+  if(field==="player"){
+   const prior=data.slots[side][field];data.slots[side][field]=v;
+   if(!save())data.slots[side][field]=prior;
+   render();
+  }else changePart(side,field,v);
  }
  else if(target.id==="scope"){renderFocus();summary();}
  else if(target.id==="focus"){summary();}
