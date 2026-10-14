@@ -194,25 +194,68 @@ const uid=()=>typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID()
 const clone=o=>JSON.parse(JSON.stringify(o));
 const baseRoster=()=>({players:["プレイヤー1","プレイヤー2","プレイヤー3"],blades:["ドランソード","ヘルズサイズ","ウィザードアロー","ナイトシールド"]});
 function arenaRoster(){try{const a=JSON.parse(localStorage.getItem(ARENA_KEY));if(a&&Array.isArray(a.players)&&Array.isArray(a.blades))return {players:a.players.filter(x=>typeof x==="string").slice(0,200),blades:a.blades.filter(x=>typeof x==="string").slice(0,200)}}catch(e){}return null}
-function initial(){const r=arenaRoster()||baseRoster();const players=r.players.length?r.players:baseRoster().players;const blades=r.blades.length?r.blades:baseRoster().blades;return {version:1,players:clone(players),blades:clone(blades),slots:{B:{player:players[0],blade:blades[0],ratchet:"",bit:""},X:{player:players[Math.min(1,players.length-1)],blade:blades[Math.min(1,blades.length-1)],ratchet:"",bit:""}},sessions:[],activeId:null}}
+function initial(){
+ const r=arenaRoster()||baseRoster(),players=r.players.length?r.players:baseRoster().players,blades=r.blades.length?r.blades:baseRoster().blades;
+ return {version:2,players:clone(players),blades:clone(blades),
+ slots:{B:{player:players[0],blade:blades[0],ratchet:"",bit:""},
+ X:{player:players[Math.min(1,players.length-1)],blade:blades[Math.min(1,blades.length-1)],ratchet:"",bit:""}},
+ sessions:[],activeId:null,activeMatch:null};
+}
 function valid(s){
- if(!s||typeof s!=="object"||s.version!==1||!Array.isArray(s.players)||!Array.isArray(s.blades)||!s.slots||!Array.isArray(s.sessions))return false;
+ if(!s||typeof s!=="object"||![1,2].includes(s.version)||!Array.isArray(s.players)||!Array.isArray(s.blades)||!s.slots||!Array.isArray(s.sessions))return false;
  if(!s.players.length||s.players.length>200||!s.blades.length||s.blades.length>200||s.sessions.length>10000)return false;
- const names=a=>a.every(x=>typeof x==="string"&&x.length>0&&x.length<=70);
- if(!names(s.players)||!names(s.blades))return false;
- for(const side of ["B","X"]){const x=s.slots[side];if(!x||typeof x!=="object"||!s.players.includes(x.player)||!s.blades.includes(x.blade)||!["ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=22))return false;}
+ const names=a=>a.every(x=>typeof x==="string"&&x.trim()&&x.length<=70);
+ const slot=x=>x&&["player","blade","ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=70);
+ const sides=x=>x&&slot(x.B)&&slot(x.X);
+ if(!names(s.players)||!names(s.blades)||!sides(s.slots))return false;
+ for(const side of ["B","X"]){
+  if(!s.players.includes(s.slots[side].player)||!s.blades.includes(s.slots[side].blade))return false;
+  if(s.slots[side].ratchet.length>22||s.slots[side].bit.length>22)return false;
+ }
  if(!(s.activeId===null||typeof s.activeId==="string"))return false;
- if(!s.sessions.every(v=>v&&typeof v.id==="string"&&typeof v.date==="string"&&typeof v.title==="string"&&v.title.length<=70&&Array.isArray(v.records)&&v.records.length<=50000))return false;
- if(!s.sessions.every(v=>v.records.every(r=>r&&typeof r.id==="string"&&["B","X"].includes(r.winnerSide)&&FIN.some(f=>f[0]===r.finish&&f[2]===r.points)&&r.slots&&["B","X"].every(side=>{const x=r.slots[side];return x&&["player","blade","ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=70)}))))return false;
+ const validLegacy=r=>r&&typeof r.id==="string"&&["B","X"].includes(r.winnerSide)&&FIN.some(f=>f[0]===r.finish&&f[2]===r.points)&&sides(r.slots);
+ const validMatch=m=>{
+  if(!m||typeof m.id!=="string"||!sides(m.slots)||!m.scores||!Number.isFinite(m.scores.B)||!Number.isFinite(m.scores.X))return false;
+  if(!Array.isArray(m.events)||m.events.length>10000||!m.events.every(e=>e&&["B","X"].includes(e.side)&&FIN.some(f=>f[0]===e.finish&&f[2]===e.points)&&typeof e.time==="string"))return false;
+  const sum={B:0,X:0};
+  for(const e of m.events)sum[e.side]+=e.points;
+  if(sum.B!==m.scores.B||sum.X!==m.scores.X)return false;
+  if(!(m.winnerSide===null||["B","X"].includes(m.winnerSide)))return false;
+  if(m.winnerSide&&m.scores[m.winnerSide]<4)return false;
+  if(!m.winnerSide&&(sum.B>=4||sum.X>=4))return false;
+  return true;
+ };
+ if(!s.sessions.every(v=>v&&typeof v.id==="string"&&typeof v.date==="string"&&typeof v.title==="string"&&v.title.length<=70&&Array.isArray(v.records)&&v.records.length<=50000&&v.records.every(validLegacy)))return false;
+ if(s.version===1)return true;
+ if(!s.sessions.every(v=>Array.isArray(v.matches)&&v.matches.length<=50000&&v.matches.every(m=>validMatch(m)&&m.winnerSide)))return false;
+ if(!(s.activeMatch===null||validMatch(s.activeMatch)))return false;
  return true;
 }
+function migrate(s){
+ if(s.version===2)return s;
+ const updated=clone(s);
+ updated.version=2;
+ updated.activeMatch=null;
+ for(const sess of updated.sessions)sess.matches=[];
+ return updated;
+}
 let data=initial();
-try{const old=JSON.parse(localStorage.getItem(KEY));if(valid(old))data=old;}catch(e){}
+try{const old=JSON.parse(localStorage.getItem(KEY));if(valid(old))data=migrate(old);}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));$("saveState").textContent="✓ 端末内保存済み";return true}catch(e){$("saveState").textContent="⚠ 保存失敗";alert("端末への保存に失敗しました。JSONバックアップを試してください。");return false;}}
 function getSession(){return data.sessions.find(x=>x.id===data.activeId)||null}
+function archiveActiveMatch(){
+ const s=getSession(),m=data.activeMatch;
+ if(!s||!m||!m.winnerSide)return false;
+ s.matches.push(clone(m));data.activeMatch=null;return true;
+}
 function ensureSession(){
- let s=getSession();if(s&&s.date===day())return s;
- s={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[]};data.sessions.push(s);data.activeId=s.id;return s;
+ let s=getSession();
+ if(s&&s.date===day())return s;
+ // Do not abandon an unfinished test just because midnight passed.
+ if(s&&data.activeMatch?.events?.length&&!data.activeMatch.winnerSide)return s;
+ if(s&&data.activeMatch?.winnerSide)archiveActiveMatch();
+ s={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[],matches:[]};
+ data.sessions.push(s);data.activeId=s.id;return s;
 }
 ensureSession();save();
 const combo=x=>[x.blade,x.ratchet,x.bit].filter(Boolean).join(" ");
