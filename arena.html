@@ -504,7 +504,7 @@ function nextBattle(){
 }
 function render(){
  const m=tournament();
- ids("meetingLabel").innerHTML=m?'📅 '+esc(m.date.replace(/-/g,"/"))+(m.title?' <small>'+esc(m.title)+'</small>':""):'📅 大会未設定';
+ ids("meetingLabel").innerHTML=m?'📅 '+esc(m.date.replace(/-/g,"/"))+((m.title&&m.title!==m.date&&m.title!==m.date.replace(/-/g,"/"))?' <small>'+esc(m.title)+'</small>':""):'📅 大会未設定';
  const record=longestStreak();
  ids("meetingRecord").textContent=record.count?
   "🏆 本日最長："+record.count+"連勝 · "+record.names.join(" / "):
