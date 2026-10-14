@@ -386,10 +386,31 @@ function renderScore(){
 function renderFinishes(){
  $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+'" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
 }
-function records(){return data.sessions.flatMap(s=>s.records.map(r=>({sessionId:s.id,date:s.date,title:s.title,...r})))}
+function completedMatches(){
+ const all=data.sessions.flatMap(s=>s.matches.map(m=>({...m,sessionId:s.id,date:s.date,title:s.title})));
+ if(data.activeMatch?.winnerSide){
+  const s=getSession(),m=data.activeMatch;
+  all.push({...m,sessionId:s?.id||"",date:s?.date||day(),title:s?.title||""});
+ }
+ return all;
+}
+function records(){
+ const all=[];
+ const addEvent=(e,m,s)=>all.push({id:e.id||m.id,time:e.time||m.started||"",slots:m.slots,sessionId:s.id,
+  winnerSide:e.side,finish:e.finish,points:e.points,matchId:m.id,legacy:false});
+ for(const sess of data.sessions){
+  for(const legacy of sess.records)all.push({...legacy,sessionId:sess.id,date:sess.date,title:sess.title,legacy:true});
+  for(const m of sess.matches)for(const e of m.events)addEvent(e,m,sess);
+ }
+ const active=data.activeMatch,current=getSession();
+ if(active&&current)for(const e of active.events)addEvent(e,active,current);
+ return all;
+}
 function selectedRecords(){return records().filter(r=>$("scope").value==="all"||r.sessionId===data.activeId)}
+function selectedMatches(){return completedMatches().filter(r=>$("scope").value==="all"||r.sessionId===data.activeId)}
 function availableFocus(){
- const keys=new Set();for(const r of selectedRecords())for(const side of ["B","X"])keys.add(key(r.slots[side]));
+ const keys=new Set();
+ for(const r of selectedRecords())for(const side of ["B","X"])keys.add(key(r.slots[side]));
  for(const side of ["B","X"])keys.add(key(data.slots[side]));
  return [...keys].sort((a,b)=>keyName(a).localeCompare(keyName(b),"ja"));
 }
@@ -402,18 +423,32 @@ function renderFocus(){
 }
 function statsFor(k,all){
  let wins=0,losses=0,pointsFor=0,pointsAgainst=0;
+ let finishWon=0,finishLost=0,legacyCount=0;
  const acquired={spin:0,over:0,burst:0,extreme:0},conceded={spin:0,over:0,burst:0,extreme:0},opponents=new Map();
- for(const r of all){
+ // One 4-point match is one win/loss. Never count individual finishes as match wins.
+ for(const m of selectedMatches()){
   for(const side of ["B","X"]){
-   const own=r.slots[side];if(key(own)!==k)continue;
-   const other=r.slots[side==="B"?"X":"B"],isWin=r.winnerSide===side;
-   if(isWin){wins++;pointsFor+=r.points;acquired[r.finish]++}else{losses++;pointsAgainst+=r.points;conceded[r.finish]++}
-   const o=key(other),entry=opponents.get(o)||{key:o,blade:other.blade,win:0,loss:0};
+   if(key(m.slots[side])!==k)continue;
+   const other=m.slots[side==="B"?"X":"B"],isWin=m.winnerSide===side;
+   if(isWin)wins++;else losses++;
+   const opponent=key(other),entry=opponents.get(opponent)||{key:opponent,blade:other.blade,win:0,loss:0};
    if(isWin)entry.win++;else entry.loss++;
-   opponents.set(o,entry);
+   opponents.set(opponent,entry);
   }
  }
- return {wins,losses,total:wins+losses,pointsFor,pointsAgainst,acquired,conceded,opponents:[...opponents.values()].sort((a,b)=>(b.win+b.loss)-(a.win+a.loss))};
+ // Every recorded finish (even a partial, unfinished match) contributes to the finish profile.
+ // Legacy v1 one-finish records are preserved here but do not count as confirmed 4-point matches.
+ for(const r of all){
+  for(const side of ["B","X"]){
+   if(key(r.slots[side])!==k)continue;
+   const isFinishWinner=r.winnerSide===side;
+   if(isFinishWinner){finishWon++;pointsFor+=r.points;acquired[r.finish]++}
+   else{finishLost++;pointsAgainst+=r.points;conceded[r.finish]++}
+   if(r.legacy)legacyCount++;
+  }
+ }
+ return {wins,losses,total:wins+losses,pointsFor,pointsAgainst,finishWon,finishLost,legacyCount,acquired,conceded,
+  opponents:[...opponents.values()].sort((a,b)=>(b.win+b.loss)-(a.win+a.loss))};
 }
 const pct=(a,b)=>b?(100*a/b).toFixed(1)+"%":"—";
 function bars(dataMap,total,loss){
@@ -422,24 +457,46 @@ function bars(dataMap,total,loss){
 function summary(){
  const all=selectedRecords(),focus=$("focus").value;
  const st=statsFor(focus,all);
- $("analysisBody").innerHTML='<div class="bigstats"><div class="metric"><small>1on1試合勝率</small><strong>'+pct(st.wins,st.total)+'</strong></div><div class="metric"><small>試合勝敗</small><strong>'+st.wins+'-'+st.losses+'</strong></div><div class="metric"><small>獲得ポイント</small><strong>'+st.pointsFor+'</strong></div></div>'+
- '<p class="hint" style="margin-top:9px">試合数 '+st.total+'戦 / 被ポイント '+st.pointsAgainst+'点'+(st.total<10?' · 少数データのため参考値':'')+'</p>'+
- '<div class="barchart"><h3>⚔️ どう勝つ？　獲得フィニッシュ</h3>'+bars(st.acquired,st.wins,false)+'</div>'+
- '<div class="barchart"><h3>🛡️ どう負ける？　被フィニッシュ</h3>'+bars(st.conceded,st.losses,true)+'</div>';
+ $("analysisBody").innerHTML='<div class="bigstats"><div class="metric"><small>4点先取 試合勝率</small><strong>'+pct(st.wins,st.total)+'</strong></div><div class="metric"><small>試合勝敗</small><strong>'+st.wins+'-'+st.losses+'</strong></div><div class="metric"><small>獲得ポイント</small><strong>'+st.pointsFor+'</strong></div></div>'+
+ '<p class="hint" style="margin-top:9px">4点先取 '+st.total+'試合 / フィニッシュ獲得 '+st.finishWon+'回・被 '+st.finishLost+'回 / 被ポイント '+st.pointsAgainst+'点'+
+ (st.total<10?' · 試合数が少ないため勝率は参考値':'')+
+ (st.legacyCount?' · <span class="legacy-note">旧版の単発記録 '+st.legacyCount+'件はフィニッシュ集計のみ対象</span>':'')+'</p>'+
+ '<div class="barchart"><h3>⚔️ どう勝つ？　獲得フィニッシュ</h3>'+bars(st.acquired,st.finishWon,false)+'</div>'+
+ '<div class="barchart"><h3>🛡️ どう負ける？　被フィニッシュ</h3>'+bars(st.conceded,st.finishLost,true)+'</div>';
  $("matchups").innerHTML=st.opponents.length?
- '<table><thead><tr><th>相手カスタム</th><th>勝-敗</th><th>勝率</th></tr></thead><tbody>'+st.opponents.map(o=>'<tr><td>'+esc(keyName(o.key))+'</td><td>' +o.win+'-'+o.loss+'</td><td>'+pct(o.win,o.win+o.loss)+'</td></tr>').join("")+'</tbody></table>':
- '<p class="empty">まだこのカスタムの対戦記録はありません。まずは1戦！</p>';
- const blade=JSON.parse(focus)[0];
+ '<table><thead><tr><th>相手カスタム</th><th>試合勝-敗</th><th>試合勝率</th></tr></thead><tbody>'+st.opponents.map(o=>'<tr><td>'+esc(keyName(o.key))+'</td><td>'+o.win+'-'+o.loss+'</td><td>'+pct(o.win,o.win+o.loss)+'</td></tr>').join("")+'</tbody></table>':
+ '<p class="empty">このカスタムの4点先取試合の成績はまだありません。まずは1試合！</p>';
+ let blade="";
+ try{blade=JSON.parse(focus)[0]}catch(e){}
  const matching=availableFocus().filter(k=>{try{return JSON.parse(k)[0]===blade}catch(e){return false}});
  $("comparisons").innerHTML=matching.length?
  '<table><thead><tr><th>カスタム</th><th>試合数</th><th>勝率</th></tr></thead><tbody>'+matching.map(k=>{const a=statsFor(k,all);return '<tr><td>'+esc(keyName(k))+'</td><td>'+a.total+'</td><td>'+pct(a.wins,a.total)+'</td></tr>'}).join("")+'</tbody></table>':
  '<p class="empty">同じブレードの別カスタムを記録すると比較できます。</p>';
 }
 function history(){
- $("history").innerHTML=data.sessions.slice().reverse().map((s,i)=>
- '<details class="series" '+(s.id===data.activeId?'open':"")+'><summary>📅 '+esc(s.date)+' · '+esc(s.title||"無題の研究")+'　('+s.records.length+'戦)'+(s.id===data.activeId?' · 進行中':'')+'</summary><div class="series-inner">'+
- (s.records.length?s.records.slice().reverse().map((r,j)=>{const winning=r.slots[r.winnerSide],losing=r.slots[r.winnerSide==="B"?"X":"B"];const f=FIN.find(f=>f[0]===r.finish);return '<div class="record"><div><strong>'+esc(winning.player)+' 勝利 · '+esc(combo(winning))+'</strong><small>対 '+esc(losing.player)+' · '+esc(combo(losing))+'</small></div><div>'+esc(f?.[1]||r.finish)+' +'+r.points+'点<small>'+esc(r.time?.slice(11,16)||"")+'</small></div></div>'}).join(""):'<p class="empty">この研究テーマには、まだ試合がありません。</p>')+
- '</div></details>').join("")||'<p class="empty">研究ログはまだありません。</p>';
+ const scoreText=m=>'B '+m.scores.B+' — '+m.scores.X+' X';
+ const finishList=m=>m.events.map((e,i)=>'<div class="record"><div>'+String(i+1)+'. '+esc(e.side)+'側 · '+esc(FIN.find(f=>f[0]===e.finish)?.[1]||e.finish)+'</div><strong>+'+e.points+'点</strong></div>').join("");
+ const matchView=(m,i,live=false)=>{
+  const winning=m.winnerSide?m.slots[m.winnerSide]:null;
+  return '<div class="record"><div><strong>第'+i+'試合 · '+(winning?'🏆 '+esc(winning.player)+' 勝利':'試合進行中')+'</strong>'+
+   '<small>'+esc(combo(m.slots.B))+' VS '+esc(combo(m.slots.X))+'</small>'+
+   '<details><summary>'+ (live?'LIVE · ':'')+scoreText(m)+' · '+m.events.length+'フィニッシュ（詳細）</summary>'+
+   '<div style="padding:3px 9px">'+finishList(m)+'</div></details></div><span style="white-space:nowrap;color:#f2d38a">'+scoreText(m)+'</span></div>';
+ };
+ $("history").innerHTML=data.sessions.slice().reverse().map(s=>{
+  const active=s.id===data.activeId,live=active?data.activeMatch:null;
+  const matchCount=s.matches.length+(live?.winnerSide?1:0);
+  return '<details class="series" '+(active?'open':"")+'><summary>📅 '+esc(s.date)+' · '+esc(s.title||"無題の研究")+
+  '　('+matchCount+'試合'+(s.records.length?' / 旧記録'+s.records.length+'件':'')+')'+(active?' · 進行中':'')+'</summary><div class="series-inner">'+
+  s.matches.slice().reverse().map((m,i)=>matchView(m,s.matches.length-i)).join("")+
+  (live?matchView(live,s.matches.length+1,true):"")+
+  (s.records.length?'<details class="series"><summary>📦 旧版の単発フィニッシュ記録 · '+s.records.length+'件（4点先取の試合数に含めない）</summary><div class="series-inner">'+
+   s.records.slice().reverse().map(r=>{
+    const w=r.slots[r.winnerSide],l=r.slots[r.winnerSide==="B"?"X":"B"];
+    return '<div class="record"><div><strong>'+esc(w.player)+' · '+esc(combo(w))+'</strong><small>対 '+esc(l.player)+' · '+esc(combo(l))+'</small></div><span>'+esc(FIN.find(f=>f[0]===r.finish)?.[1]||r.finish)+' +'+r.points+'</span></div>';
+   }).join("")+'</div></details>':"")+
+  (!s.matches.length&&!live&&!s.records.length?'<p class="empty">まだ試合がありません。</p>':"")+'</div></details>';
+ }).join("")||'<p class="empty">研究ログはまだありません。</p>';
 }
 function render(){
  renderSelectors();renderScore();renderFocus();summary();history();
