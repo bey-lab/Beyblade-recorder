@@ -404,15 +404,42 @@ function localDate(){
  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 function matchId(){return (typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)}
-function showMeeting(){
- ids("meetingDate").value=localDate();
- ids("meetingTitle").value="";
- const canCancel=!!tournament();
- ids("meetingCancel").style.display=canCancel?"block":"none";
- ids("meetingHeading").textContent=canCancel?"新しい大会を開催":"今日のバトルを始めよう";
+let meetingMode="edit";
+function showMeeting(mode="edit"){
+ meetingMode=mode;
+ const m=tournament(),isNew=mode==="new";
+ ids("meetingDate").value=isNew?localDate():(m?.date||localDate());
+ ids("meetingTitle").value=isNew?"":(m?.title||"");
+ ids("meetingCancel").style.display="block";
+ ids("meetingNew").style.display=isNew?"none":"block";
+ ids("meetingHeading").textContent=isNew?"新しい大会を作成":"大会の日付・タイトル";
+ ids("meetingSubmit").textContent=isNew?"⚔ 新しい大会を始める":"✓ 変更を保存";
  ids("meetingOverlay").classList.add("show");
 }
-function closeMeeting(){if(tournament())ids("meetingOverlay").classList.remove("show")}
+function closeMeeting(){ids("meetingOverlay").classList.remove("show")}
+function validDate(date){return /^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(new Date(date+"T12:00:00").getTime())}
+function saveMeeting(date,title){
+ const m=tournament();if(!m||!validDate(date))return false;
+ title=clean(title);
+ snapshot();m.date=date;m.title=title;m.keepDate=(date!==localDate());
+ for(const game of state.sessions){if(game.meetingId===m.id){game.meetingDate=date;game.meetingTitle=title;}}
+ save();render();closeMeeting();
+ ids("resultNotice").textContent="大会の情報を保存しました";
+ return true;
+}
+function ensureMeeting(){
+ const today=localDate(),m=tournament();
+ if(m&&(m.date>=today||m.keepDate))return;
+ if(m){archiveMatch();resetMatch();}
+ else if(state.events.length||state.scores.B||state.scores.X){archiveMatch();resetMatch();}
+ const sameDay=state.meetings.find(g=>g.date===today&&g.auto===true);
+ if(sameDay){state.activeMeetingId=sameDay.id;}
+ else{
+  const fresh={id:matchId(),date:today,title:"",created:new Date().toISOString(),auto:true};
+  state.meetings.push(fresh);state.activeMeetingId=fresh.id;
+ }
+ save();
+}
 function archiveMatch(){
  if(!(state.events.length||Number(state.scores.B)||Number(state.scores.X)))return;
  const m=tournament();
@@ -428,16 +455,15 @@ function resetMatch(){
  state.events=[];state.scores={B:0,X:0};state.winner=null;
 }
 function startMeeting(date,title){
- const goodDate=/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(new Date(date+"T12:00:00").getTime());
+ if(!validDate(date))return false;
  title=clean(title);
- if(!goodDate||!title)return false;
- if(tournament()&&(state.events.length||state.scores.B||state.scores.X)
-    &&!confirm("進行中の対戦を履歴に保存して、新しい大会を始めますか？"))return false;
+ if((state.events.length||state.scores.B||state.scores.X)&&
+    !confirm("現在の試合を終了して、別の大会を始めますか？\n現在の試合は元の大会に保存されます。"))return false;
  snapshot();archiveMatch();resetMatch();
- const m={id:matchId(),date,title,created:new Date().toISOString()};
+ const m={id:matchId(),date,title,created:new Date().toISOString(),auto:date===localDate(),keepDate:date!==localDate()};
  state.meetings.push(m);state.activeMeetingId=m.id;
  save();render();closeMeeting();
- ids("resultNotice").textContent="「"+title+"」開幕！ 対戦を始めよう。";
+ ids("resultNotice").textContent=(title?"「"+title+"」":"新しい大会")+" 開幕！";
  return true;
 }
 // A consecutive win means winning 4-point matches with the same player name
@@ -478,7 +504,7 @@ function nextBattle(){
 }
 function render(){
  const m=tournament();
- ids("meetingLabel").innerHTML=m?'📅 '+esc(m.title)+' <small>'+esc(m.date)+'</small>':'📅 大会未設定';
+ ids("meetingLabel").innerHTML=m?'📅 '+esc(m.date.replace(/-/g,"/"))+(m.title?' <small>'+esc(m.title)+'</small>':""):'📅 大会未設定';
  const record=longestStreak();
  ids("meetingRecord").textContent=record.count?
   "🏆 本日最長："+record.count+"連勝 · "+record.names.join(" / "):
@@ -534,6 +560,7 @@ else if(action==="new-game"){if(!state.winner&&!confirm("現在のスコアを�
 else if(action==="all-blades")showBladePicker(side);
 else if(action==="close-blade")closeBladePicker();
 else if(action==="meeting")showMeeting();
+else if(action==="new-meeting")showMeeting("new");
 else if(action==="cancel-meeting")closeMeeting();
 else if(action==="edit"||action==="history")showModal(action);
 else if(action==="close")closeModal();
@@ -545,9 +572,9 @@ else if(action==="export-csv")exportCsv();
 });
 ids("bladeFilter").addEventListener("input",e=>drawBladeGrid(e.target.value));
 ids("bladeOverlay").addEventListener("click",e=>{if(e.target===ids("bladeOverlay"))closeBladePicker()});
-ids("meetingForm").addEventListener("submit",e=>{e.preventDefault();startMeeting(ids("meetingDate").value,ids("meetingTitle").value)});
+ids("meetingForm").addEventListener("submit",e=>{e.preventDefault();const date=ids("meetingDate").value,title=ids("meetingTitle").value;if(meetingMode==="new")startMeeting(date,title);else saveMeeting(date,title)});
 ids("modal").addEventListener("submit",e=>{const form=e.target.closest("form[data-form]");if(!form)return;e.preventDefault();const input=form.querySelector("input");if(addRoster(form.dataset.form,input.value)){showModal("edit");}else{alert("登録済みか、名前が空欄です。別の名前を入力してください。")}});
 ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeModal()});
-render();if(!tournament())showMeeting();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
+ensureMeeting();render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
 </script></body></html>
