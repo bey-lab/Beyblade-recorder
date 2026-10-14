@@ -71,6 +71,7 @@ input[type=file]{display:none}
 .duel-middle strong{font-size:clamp(24px,3.7vw,47px);font-style:italic;letter-spacing:.05em;color:#f7d58a;line-height:1}
 .duel-middle span{font-weight:900;font-size:clamp(10px,1.2vw,14px);color:#e2ecfa;white-space:nowrap}
 .duel-middle small{font-size:9px;letter-spacing:.1em;color:#afc3db}
+.duel-status{position:relative;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid #8392aa3c;padding-top:8px;font-size:12px;color:#d9e9ff;font-weight:750}.duel-status strong{color:#f6d692}.duel-status span{font-size:11px;color:#c6d8ef}.duel-score.champion{border-color:#f1c977;box-shadow:0 0 0 1px #b69352,inset 0 1px #ffffff28,0 0 28px #f3c76a2b}.finishbtn:disabled{opacity:.4;cursor:default;transform:none}.legacy-note{color:#f1cc89;font-size:10px}
 .duel-scoreline.pulse-b .duel-side:not(.x) strong{animation:scorePunch .48s ease-out}
 .duel-scoreline.pulse-x .duel-side.x strong{animation:scorePunch .48s ease-out}
 @keyframes scorePunch{0%{transform:scale(1);filter:brightness(1)}36%{transform:scale(1.2);filter:brightness(1.75)}100%{transform:scale(1);filter:brightness(1)}}
@@ -112,16 +113,17 @@ input[type=file]{display:none}
 <header><div class="brand"><strong>BEY LAB</strong><small>DEEP RESEARCH · 1ON1</small></div>
 <nav><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html">旧画面 ↗</a><span id="saveState" class="hint">端末内保存</span></nav></header>
 <div class="topbar">
- <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE FINISH · ONE RESULT · INFINITE RESEARCH</p></div>
+ <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE BLADE · FIRST TO 4 POINTS · DEEP RESEARCH</p></div>
  <div><label class="field" style="margin:0"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></div>
 </div>
 <section class="duel-score" aria-label="今回の研究の試合勝利数">
-  <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE</div>
+  <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE / FIRST TO 4</div>
   <div class="duel-scoreline" id="duelScore">
     <div class="duel-side"><span>B-SIDE WINS</span><strong id="winsB">0</strong></div>
-    <div class="duel-middle"><strong>VS</strong><span id="duelRound">ROUND 01</span><small>1 FINISH = 1 WIN</small></div>
+    <div class="duel-middle"><strong>VS</strong><span id="duelRound">MATCH 01</span><small>FIRST TO 4 PTS</small></div>
     <div class="duel-side x"><span>X-SIDE WINS</span><strong id="winsX">0</strong></div>
   </div>
+<div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
 </section>
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
@@ -143,10 +145,10 @@ input[type=file]{display:none}
 <datalist id="ratchets"><option value="1-60"><option value="3-60"><option value="5-60"><option value="9-60"><option value="1-70"><option value="3-70"><option value="5-70"><option value="9-70"><option value="1-80"><option value="3-80"><option value="5-80"></datalist>
 <datalist id="bits"><option value="R"><option value="F"><option value="B"><option value="T"><option value="H"><option value="C"><option value="A"><option value="GF"><option value="FB"><option value="LR"><option value="N"><option value="P"><option value="LF"></datalist>
 <section class="battle" aria-label="1on1の試合結果入力">
- <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST FINISH WINS</div><b>勝った側のフィニッシュを1回タップ！</b></div><small class="hint">決着した時点で自動保存 · 同じ組み合わせで連戦OK</small></div>
+ <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST TO FOUR POINTS</div><b>勝った側のフィニッシュをタップ！ 4点先取で勝利</b></div><small class="hint">途中スコアは自動保存 · 決着後に1試合として戦績確定</small></div>
  <div class="winnerline"><strong style="color:#ffaca7">B 勝利</strong><strong style="color:#a4cdff">X 勝利</strong></div>
  <div class="finishgrid" id="finishGrid"></div>
- <div class="after"><div id="lastNotice" class="notice" aria-live="polite">構成を選んで、検証を始めよう。</div><button class="btn" data-action="undo">↶ 直前の結果を取り消す</button></div>
+ <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
 </section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
 <div class="scroll-cue"><a href="#analysis">↓ SWIPE TO ANALYSIS · 下へスクロールして研究結果を見る</a></div>
@@ -169,7 +171,7 @@ input[type=file]{display:none}
 <section class="backups"><h3>💾 データの保存・復元</h3><p class="hint">1on1研究室の記録は、勝ち抜きアリーナとは別に保存されます。JSONで研究テーマ・カスタム・全対戦をバックアップできます。復元時は現在の1on1記録と入れ替わるため、事前に保存してください。</p>
 <div class="toolrow"><button class="btn primary" data-action="export-json">⬇ 研究JSON保存</button><button class="btn" data-action="import-json">⬆ 研究JSON復元</button><button class="btn" data-action="export-csv">⬇ CSV保存</button></div>
 <input id="importFile" type="file" accept=".json,application/json"></section>
-<p class="hint" style="margin-top:17px">BEY LAB · DEEP RESEARCH β版 / 1フィニッシュで1対戦を記録。獲得ポイントはスピン1、オーバー2、バースト2、エクストリーム3。勝ち抜きモードの4点先取と混同しないでください。</p>
+<p class="hint" style="margin-top:17px">BEY LAB · DEEP RESEARCH β版 / 1機を固定して4点先取の1on1。獲得ポイントはスピン1、オーバー2、バースト2、エクストリーム3。4点以上に達したら1試合の勝敗が確定します。途中の得点とフィニッシュも自動保存。</p>
 </div>
 <div class="picker-overlay" id="pickerOverlay" role="dialog" aria-modal="true" aria-label="機体・パーツの選択">
 <section class="picker-card" id="pickerCard">
