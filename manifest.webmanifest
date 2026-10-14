@@ -1,0 +1,15 @@
+{
+  "name": "BEY LAB — ベイブレード対戦記録",
+  "short_name": "BEY LAB",
+  "description": "ベイブレードXの勝敗・得点・機体相性を記録、分析",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#0b1120",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
