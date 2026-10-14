@@ -317,7 +317,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 <div class="wrap">
 <header>
  <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
- <div class="top-actions"><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn" href="./index.html">旧画面 ↗</a></div>
+ <div class="top-actions"><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn accent" href="./lab.html">🔬 1on1研究</a><a class="minibtn" href="./index.html">旧画面 ↗</a></div>
 </header>
 <div class="meeting-strip">
  <div class="meeting-label" id="meetingLabel">📅 大会未設定</div>
@@ -393,6 +393,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
  </section>
 </div>
 <div class="overlay" id="overlay"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<input type="file" accept=".json,application/json" id="arenaImportFile" style="display:none" aria-label="バックアップJSONを復元">
 <script>
 (function(){
 "use strict";
@@ -681,14 +682,14 @@ function repairHistoryName(){
 }
 function historyHtml(){const rows=state.events.slice(-35).reverse();const recent=state.sessions.slice(-8).reverse();const groupList=state.meetings.slice().reverse();const legacy=state.sessions.filter(s=>!s.meetingId);return '<div class="modalhead"><h2>📖 対戦履歴</h2><button class="minibtn" data-action="close">閉じる</button></div>'+
 '<p style="color:#c0d2e6">大会ごとに記録を保存。タイトルを開くとその日の勝敗が見られます。</p>'+
-'<div class="top-actions" style="justify-content:flex-start"><button class="minibtn accent" data-action="export-json">⬇ JSON保存</button><button class="minibtn" data-action="export-csv">⬇ CSV保存</button></div>'+
+'<div class="top-actions" style="justify-content:flex-start"><button class="minibtn accent" data-action="export-json">⬇ JSON保存</button><button class="minibtn" data-action="import-json">⬆ JSON復元</button><button class="minibtn" data-action="export-csv">⬇ CSV保存</button></div>'+
 historyRepairHtml()+'<div class="history">'+groupList.map(meetingHtml).join("")+
 (legacy.length?'<details class="meeting-group"><summary>📦 以前の記録（大会未設定）<small>'+legacy.length+'試合</small></summary>'+
 legacy.map((r,i)=>'<div class="meeting-round">第'+(i+1)+'戦　'+esc(r.winner?.player||'対戦終了')+
 '　<small>B '+esc(r.scores?.B??0)+' — '+esc(r.scores?.X??0)+' X</small></div>').join("")+'</details>':"")+
 (!tournament()&&(state.events.length||state.scores.B||state.scores.X)?'<p>大会設定前の進行中スコアがあります。新しい大会を作ると以前の記録として保存されます。</p>':"")+
 (!groupList.length&&!legacy.length?'<p class="historyrow">まだ大会の記録がありません。</p>':"")+
-'</div><p style="color:#a6bcd4;font-size:11px">JSONはこのアリーナ専用のバックアップ。現行BEY LABの旧形式とは別データです。</p>';}
+'</div><p style="color:#a6bcd4;font-size:11px">JSONは勝ち抜きアリーナ専用のバックアップ。復元すると現在のアリーナの登録・試合データと入れ替わります。復元前に今の記録をJSON保存してください。1on1研究室は別データです。</p>';}
 function editorHtml(){return '<div class="modalhead"><h2>⚙ 登録・並べ替え</h2><button class="minibtn" data-action="close">完了</button></div><p style="color:#adbed6;font-size:12px">名前変更・並び替え・削除が可能。削除しても過去の対戦記録は残ります。</p><div class="editgrid">'+["player","blade"].map(kind=>{const list=kind==="player"?state.players:state.blades;const title=kind==="player"?"プレイヤー":"ブレード";return '<section class="editgroup"><strong>'+title+'</strong>'+list.map((name,i)=>'<div class="editrow"><span>'+esc(name)+'</span><button class="smallaction" title="名前変更" data-action="rename" data-kind="'+kind+'" data-index="'+i+'">✎</button><button class="smallaction" title="上へ" data-action="move" data-kind="'+kind+'" data-index="'+i+'" data-dir="-1" '+(i===0?"disabled":"")+'>↑</button><button class="smallaction" title="下へ" data-action="move" data-kind="'+kind+'" data-index="'+i+'" data-dir="1" '+(i===list.length-1?"disabled":"")+'>↓</button><button class="smallaction delete" title="削除" aria-label="'+esc(name)+'を削除" data-action="delete" data-kind="'+kind+'" data-index="'+i+'" '+(list.length===1?"disabled":"")+'>✕</button></div>').join('')+'<form class="editform" data-form="'+kind+'"><input type="search" autocomplete="off" autocorrect="off" spellcheck="false" name="roster-'+kind+'" maxlength="70" placeholder="'+title+'名を追加" required><button class="minibtn accent" type="submit">＋</button></form></section>'}).join('')+'</div>';}
 function showModal(mode){ids("overlay").classList.add("show");ids("modal").innerHTML=mode==="edit"?editorHtml():historyHtml();}
 function closeModal(){ids("overlay").classList.remove("show");ids("modal").innerHTML="";}
@@ -704,6 +705,39 @@ function deleteRoster(kind,i){
  save();render();showModal("edit");
 }
 function moveRoster(kind,i,dir){const list=roster(kind),j=i+dir;if(i<0||j<0||i>=list.length||j>=list.length)return;snapshot();[list[i],list[j]]=[list[j],list[i]];save();render();showModal("edit")}
+function validateArenaBackup(v){
+ if(!v||typeof v!=="object"||Array.isArray(v))return false;
+ const strings=(arr,max)=>Array.isArray(arr)&&arr.length>0&&arr.length<=max&&arr.every(x=>typeof x==="string"&&x.trim()&&x.length<=70);
+ if(!strings(v.players,200)||!strings(v.blades,200))return false;
+ if(!v.slots||!v.slots.B||!v.slots.X||!v.scores)return false;
+ for(const side of ["B","X"]){
+  if(!v.players.includes(v.slots[side].player)||!v.blades.includes(v.slots[side].blade))return false;
+  if(!Number.isFinite(v.scores[side])||v.scores[side]<0||v.scores[side]>10000)return false;
+ }
+ if(!Array.isArray(v.events)||v.events.length>10000||!Array.isArray(v.sessions)||v.sessions.length>100000)return false;
+ if(!Array.isArray(v.meetings)||v.meetings.length>10000)return false;
+ if(!(v.activeMeetingId==null||typeof v.activeMeetingId==="string"))return false;
+ if(!(v.winner==null||(typeof v.winner==="object"&&["B","X"].includes(v.winner.side))))return false;
+ if(!v.events.every(e=>e&&typeof e==="object"&&["finish","adjust"].includes(e.type)&&["B","X"].includes(e.side)))return false;
+ if(!v.sessions.every(g=>g&&typeof g==="object"&&Array.isArray(g.events)&&g.scores&&Number.isFinite(g.scores.B)&&Number.isFinite(g.scores.X)&&(!g.winner||["B","X"].includes(g.winner.side))))return false;
+ if(!v.meetings.every(m=>m&&typeof m==="object"&&typeof m.id==="string"&&typeof m.date==="string"))return false;
+ return true;
+}
+async function restoreArenaFile(file){
+ if(!file)return false;
+ if(file.size>20*1024*1024){alert("20MB以内のJSONファイルを選んでください。");return false;}
+ try{
+  const next=JSON.parse(await file.text());
+  if(!validateArenaBackup(next)){alert("これはBEY LABアリーナの有効なバックアップではありません。現在の記録は変更していません。");return false;}
+  const oldCount=state.sessions.length,restoreCount=next.sessions.length;
+  if(!confirm("JSONバックアップを復元します。\n\n現在のアリーナ："+oldCount+"試合\n復元するアリーナ："+restoreCount+"試合\n\n現在の選手・ブレード・試合記録を【すべて入れ替え】ます。\n今のデータを残したい場合は、先にJSON保存してください。\n\n復元を実行しますか？"))return false;
+  const json=JSON.stringify(next);
+  localStorage.setItem(KEY,json); // Only commit after validation and confirmation.
+  state=next;undo=[];ensureMeeting();closeAllBladePickers();closeModal();closeMeeting();render();
+  ids("resultNotice").textContent="✓ バックアップを復元しました（"+restoreCount+"試合）";
+  return true;
+ }catch(e){alert("復元できませんでした。ファイル形式または端末の空き容量を確認してください。\n現在の記録は変更していません。");return false;}
+}
 function exportCsv(){const m=tournament();const records=state.sessions.flatMap(s=>s.events.map(e=>({...e,meetingDate:s.meetingDate||"",meetingTitle:s.meetingTitle||""}))).concat(state.events.map(e=>({...e,meetingDate:m?.date||"",meetingTitle:m?.title||""})));const header=["開催日","大会タイトル","日時","サイド","勝者","ブレード","相手","相手のブレード","結果","得点"];const q=t=>'"'+String(t==null?"":t).replace(/"/g,'""')+'"';const body=records.filter(x=>x.type==="finish").map(x=>[x.meetingDate,x.meetingTitle,x.time,x.side,x.player,x.blade,x.againstPlayer,x.againstBlade,(FIN.find(f=>f[0]===x.finish)||["",""])[1],x.points].map(q).join(","));download("bey-lab-arena.csv","\ufeff"+[header.map(q).join(","),...body].join("\r\n"),"text/csv;charset=utf-8")}
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
@@ -726,8 +760,10 @@ else if(action==="repair-history-name")repairHistoryName();
 else if(action==="delete")deleteRoster(kind,Number(b.dataset.index));
 else if(action==="move")moveRoster(kind,Number(b.dataset.index),Number(b.dataset.dir));
 else if(action==="export-json")download("bey-lab-arena-backup.json",JSON.stringify(state,null,2),"application/json;charset=utf-8");
+else if(action==="import-json"){const input=ids("arenaImportFile");input.value="";input.click();}
 else if(action==="export-csv")exportCsv();
 });
+ids("arenaImportFile").addEventListener("change",e=>{const file=e.target.files?.[0];if(file)restoreArenaFile(file);});
 for(const position of ["left","right"]){ids("bladeFilter"+capPosition(position)).addEventListener("input",e=>drawBladeGrid(position,e.target.value));}
 ids("meetingForm").addEventListener("submit",e=>{e.preventDefault();const date=ids("meetingDate").value,title=ids("meetingTitle").value;if(meetingMode==="new")startMeeting(date,title);else saveMeeting(date,title)});
 ids("modal").addEventListener("submit",e=>{const form=e.target.closest("form[data-form]");if(!form)return;e.preventDefault();const input=form.querySelector("input");if(addRoster(form.dataset.form,input.value)){showModal("edit");}else{alert("登録済みか、名前が空欄です。別の名前を入力してください。")}});
