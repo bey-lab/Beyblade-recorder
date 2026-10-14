@@ -410,6 +410,14 @@ function renderFinishes(){
  '" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" '+(locked?'disabled aria-disabled="true"':'')+
  ' aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
 }
+function completedMatches(){
+ const all=data.sessions.flatMap(sess=>sess.matches.map(m=>({...m,sessionId:sess.id,date:sess.date,title:sess.title})));
+ if(data.activeMatch?.winnerSide){
+  const sess=getSession(),m=data.activeMatch;
+  all.push({...m,sessionId:sess?.id||"",date:sess?.date||day(),title:sess?.title||""});
+ }
+ return all;
+}
 function records(){
  const all=[];
  const addEvent=(e,m,s)=>all.push({id:e.id||m.id,time:e.time||m.started||"",slots:m.slots,sessionId:s.id,
