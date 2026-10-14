@@ -87,6 +87,59 @@ input[type=file]{display:none}
 .quickchip{min-height:30px;max-width:100%;font-weight:800;font-size:11px;border:1px solid #425c78;border-radius:7px;background:#1b304a;padding:5px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .quickchip.on{color:#fff;background:color-mix(in srgb,var(--accent) 25%,#1b304a);border-color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
 .build{margin-top:7px;min-height:57px;padding:8px 11px}.build strong{font-size:clamp(14px,1.75vw,20px);margin-top:2px}
+
+/* BLADE ENTRY / metallic slash. Visual-only; never blocks the next tap. */
+.build,.partpick-main{position:relative;isolation:isolate;overflow:hidden;transform:translateZ(0)}
+.build small,.build strong,.partpick-main .current-text,.partpick-main small{position:relative;z-index:1}
+.build::before,.partpick-main::before{
+ content:"";pointer-events:none;position:absolute;z-index:3;opacity:0;
+ top:-65%;left:-42%;width:38%;height:230%;
+ background:linear-gradient(90deg,
+  transparent 0%,rgba(211,229,247,.02) 12%,rgba(211,229,247,.22) 32%,
+  rgba(249,253,255,.94) 47%,rgba(255,232,181,.99) 51%,
+  rgba(236,246,255,.45) 57%,rgba(255,211,131,.09) 75%,transparent 100%);
+ transform:skewX(-25deg) translateX(0);
+}
+.build::after,.partpick-main::after{
+ content:"";pointer-events:none;position:absolute;z-index:4;opacity:0;
+ top:-70%;left:-35%;width:2px;height:240%;
+ transform:rotate(24deg);
+ background:linear-gradient(to bottom,transparent 4%,#eff8ff 23%,#fff 43%,#ffe1a5 52%,#fdfaff 68%,transparent 95%);
+ box-shadow:0 0 8px 1px #f5f5ec55;
+}
+.build.entry-slash,.partpick-main.entry-slash{
+ animation:metalLock .42s cubic-bezier(.16,.72,.28,1) both;
+}
+.build.entry-slash::before,.partpick-main.entry-slash::before{
+ animation:metalSweep .38s cubic-bezier(.12,.66,.26,1) both;
+}
+.build.entry-slash::after,.partpick-main.entry-slash::after{
+ animation:bladeCut .33s cubic-bezier(.12,.66,.26,1) both;
+}
+.build.entry-slash strong{animation:engravedName .42s ease-out both}
+@keyframes metalSweep{
+ 0%{opacity:0;transform:skewX(-25deg) translateX(-18%)}
+ 13%{opacity:1}
+ 75%{opacity:1}
+ 100%{opacity:0;transform:skewX(-25deg) translateX(600%)}
+}
+@keyframes bladeCut{
+ 0%{left:-35%;opacity:0}
+ 12%{opacity:1}
+ 73%{opacity:.95}
+ 100%{left:130%;opacity:0}
+}
+@keyframes metalLock{
+ 0%{border-color:#7e8b9e;box-shadow:inset 0 0 0 0 #f4cf8566;filter:brightness(1)}
+ 32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 12px #dec58b40;filter:brightness(1.15)}
+ 100%{box-shadow:none;filter:brightness(1)}
+}
+@keyframes engravedName{
+ 0%{color:#fff;text-shadow:none}
+ 35%{color:#fff0ce;text-shadow:0 0 12px #f5d79b92}
+ 100%{color:#fff;text-shadow:none}
+}
+
 .vs{font-size:clamp(22px,3vw,39px)}
 .battle{margin-top:12px;padding:12px 15px}.battlehead{padding-bottom:9px}.battlehead b{font-size:16px}
 .finishbtn{min-height:53px}.after{margin-top:9px}
@@ -307,10 +360,16 @@ function renderPartQuick(side,part){
   '" data-action="quick-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(item)+'">'+esc(item)+'</button>'
  ).join("");
 }
-function flashBuild(side){
- const el=$("build"+side);
- if(!el)return;
- el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+function flashBuild(side,part){
+ const field=document.querySelector('.partpick-main[data-side="'+side+'"][data-part="'+part+'"]');
+ // The selected part and complete build receive the same quick, nonblocking slash.
+ // Restart synchronously when changing parts rapidly.
+ for(const el of [field,$("build"+side)]){
+  if(!el)continue;
+  el.classList.remove("entry-slash");
+  void el.offsetWidth;
+  el.classList.add("entry-slash");
+ }
 }
 function readyForBuildEdit(){
  const match=data.activeMatch;
@@ -332,7 +391,7 @@ function changePart(side,part,value){
  const prev=data.slots[side][part];
  data.slots[side][part]=v;
  if(!save()){data.slots[side][part]=prev;return false}
- render();flashBuild(side);
+ render();flashBuild(side,part);
  return true;
 }
 function drawPicker(){
