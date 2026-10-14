@@ -633,10 +633,56 @@ state.events.push({type,side,points,finish:finish||"",time:new Date().toISOStrin
 if(state.events.length>5000)state.events=state.events.slice(-5000);if(state.scores[side]>=4&&!state.winner){closeAllBladePickers();state.winner={side,player:slot.player,blade:slot.blade,time:new Date().toISOString()};}save();render();
 const label=FIN.find(f=>f[0]===finish);ids("resultNotice").textContent=side+"-SIDE "+slot.player+" / "+slot.blade+" "+(label?label[1]+"勝ち +"+points+"点":"スコア変更 "+(points>0?"+":"")+points);}
 function download(name,text,type){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+function rewriteHistoryName(kind,oldName,newName){
+ const field=kind==="player"?"player":"blade";
+ const opponentField=kind==="player"?"againstPlayer":"againstBlade";
+ const fixEvent=e=>{
+  if(!e||typeof e!=="object")return;
+  if(e[field]===oldName)e[field]=newName;
+  if(e[opponentField]===oldName)e[opponentField]=newName;
+ };
+ for(const e of state.events)fixEvent(e);
+ for(const game of state.sessions){
+  if(game?.winner?.[field]===oldName)game.winner[field]=newName;
+  if(Array.isArray(game?.events))for(const e of game.events)fixEvent(e);
+ }
+ if(state.winner?.[field]===oldName)state.winner[field]=newName;
+}
+function historicUnknownPlayerNames(){
+ const names=new Set();
+ const add=n=>{if(typeof n==="string"&&n.trim())names.add(n)};
+ const fromEvent=e=>{add(e?.player);add(e?.againstPlayer)};
+ for(const game of state.sessions){
+  add(game?.winner?.player);
+  if(Array.isArray(game?.events))for(const event of game.events)fromEvent(event);
+ }
+ add(state.winner?.player);
+ for(const event of state.events)fromEvent(event);
+ return [...names].filter(name=>!state.players.includes(name)).sort((a,b)=>a.localeCompare(b,"ja"));
+}
+function historyRepairHtml(){
+ const oldNames=historicUnknownPlayerNames();
+ if(!oldNames.length)return "";
+ const oldOptions=oldNames.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join("");
+ const newOptions=state.players.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join("");
+ return '<section class="history-repair"><strong>✎ 過去のプレイヤー名を直す</strong>'+
+  '<p>以前の名前が履歴に残っている場合、旧名と現在のプレイヤーを選んで統合できます。別人の記録を混ぜないよう確認してね。</p>'+
+  '<div class="history-repair-controls"><select id="historyOldPlayer" aria-label="履歴に残った名前">'+oldOptions+
+  '</select><span>→</span><select id="historyNewPlayer" aria-label="正しいプレイヤー">'+newOptions+
+  '</select><button type="button" class="minibtn accent" data-action="repair-history-name">記録名を修正</button></div></section>';
+}
+function repairHistoryName(){
+ const before=ids("historyOldPlayer")?.value,after=ids("historyNewPlayer")?.value;
+ if(!before||!after||before===after||!historicUnknownPlayerNames().includes(before)||!state.players.includes(after))return false;
+ if(!confirm("過去の「"+before+"」をすべて「"+after+"」の記録として統合しますか？\n別人の記録でないことを確認してください。"))return false;
+ snapshot();rewriteHistoryName("player",before,after);
+ save();render();showModal("history");
+ return true;
+}
 function historyHtml(){const rows=state.events.slice(-35).reverse();const recent=state.sessions.slice(-8).reverse();const groupList=state.meetings.slice().reverse();const legacy=state.sessions.filter(s=>!s.meetingId);return '<div class="modalhead"><h2>📖 対戦履歴</h2><button class="minibtn" data-action="close">閉じる</button></div>'+
 '<p style="color:#c0d2e6">大会ごとに記録を保存。タイトルを開くとその日の勝敗が見られます。</p>'+
 '<div class="top-actions" style="justify-content:flex-start"><button class="minibtn accent" data-action="export-json">⬇ JSON保存</button><button class="minibtn" data-action="export-csv">⬇ CSV保存</button></div>'+
-'<div class="history">'+groupList.map(meetingHtml).join("")+
+historyRepairHtml()+'<div class="history">'+groupList.map(meetingHtml).join("")+
 (legacy.length?'<details class="meeting-group"><summary>📦 以前の記録（大会未設定）<small>'+legacy.length+'試合</small></summary>'+
 legacy.map((r,i)=>'<div class="meeting-round">第'+(i+1)+'戦　'+esc(r.winner?.player||'対戦終了')+
 '　<small>B '+esc(r.scores?.B??0)+' — '+esc(r.scores?.X??0)+' X</small></div>').join("")+'</details>':"")+
@@ -648,7 +694,7 @@ function showModal(mode){ids("overlay").classList.add("show");ids("modal").inner
 function closeModal(){ids("overlay").classList.remove("show");ids("modal").innerHTML="";}
 function roster(kind){return kind==="player"?state.players:state.blades}
 function addRoster(kind,name){const list=roster(kind);name=clean(name);if(!name||list.includes(name)||list.length>=200)return false;snapshot();list.push(name);save();render();return true}
-function renameRoster(kind,i){const list=roster(kind),prior=list[i];if(prior==null)return;const incoming=prompt("新しい"+(kind==="player"?"プレイヤー":"ブレード")+"名",prior);if(incoming==null)return;const name=clean(incoming);if(!name||name===prior||list.includes(name))return;snapshot();list[i]=name;for(const s of ["B","X"]){if(state.slots[s][kind]===prior)state.slots[s][kind]=name}save();render();showModal("edit")}
+function renameRoster(kind,i){const list=roster(kind),prior=list[i];if(prior==null)return;const incoming=prompt("新しい"+(kind==="player"?"プレイヤー":"ブレード")+"名",prior);if(incoming==null)return;const name=clean(incoming);if(!name||name===prior||list.includes(name))return;snapshot();list[i]=name;for(const s of ["B","X"]){if(state.slots[s][kind]===prior)state.slots[s][kind]=name}rewriteHistoryName(kind,prior,name);save();render();showModal("edit")}
 function deleteRoster(kind,i){
  const list=roster(kind),name=list[i];
  if(name===undefined||list.length<=1)return;
@@ -676,6 +722,7 @@ else if(action==="cancel-meeting")closeMeeting();
 else if(action==="edit"||action==="history")showModal(action);
 else if(action==="close")closeModal();
 else if(action==="rename")renameRoster(kind,Number(b.dataset.index));
+else if(action==="repair-history-name")repairHistoryName();
 else if(action==="delete")deleteRoster(kind,Number(b.dataset.index));
 else if(action==="move")moveRoster(kind,Number(b.dataset.index),Number(b.dataset.dir));
 else if(action==="export-json")download("bey-lab-arena-backup.json",JSON.stringify(state,null,2),"application/json;charset=utf-8");
