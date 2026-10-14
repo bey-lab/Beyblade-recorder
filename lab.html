@@ -319,7 +319,7 @@ function rosterSync(notify){
  const a=arenaRoster();if(!a){if(notify)$("lastNotice").textContent="アリーナ名簿が見つかりません。";return false;}
  const before=data.players.length+data.blades.length;
  for(const k of ["players","blades"]){for(const n of a[k])if(clean(n)&&!data[k].includes(n)&&data[k].length<200)data[k].push(n)}
- const added=data.players.length+data.blades.length-before;save();render();
+ const added=data.players.length+data.blades.length-before;syncPartOrders();save();render();
  if(notify)$("lastNotice").textContent="✓ 名簿同期完了："+added+"件追加（研究記録はそのまま）";
  return true;
 }
@@ -330,26 +330,67 @@ const PRESETS={
 };
 const PICKER_NAMES={blade:"ブレード",ratchet:"ラチェット",bit:"ビット"};
 let pickerSide=null,pickerPart=null;
+// Stable quick-slot order: choices never jump to the first position upon selection.
+// Orders are user-editable, shared between B and X, and included in the JSON backup.
+const DEFAULT_ORDER={
+ ratchet:["3-60","9-60","5-60","1-60",...PRESETS.ratchet],
+ bit:["R","B","F","T",...PRESETS.bit]
+};
+const QUICK_COUNT={blade:3,ratchet:4,bit:4};
 function getPartHistory(part){
- const scores=new Map();
+ const found=new Set();
  for(const r of records())for(const side of ["B","X"]){
   const value=clean(r.slots[side][part],part==="blade"?70:22);
-  if(value)scores.set(value,(scores.get(value)||0)+1);
+  if(value)found.add(value);
  }
- return [...scores].sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+ return [...found];
+}
+function availablePartNames(part){
+ if(part==="blade")return [...new Set(data.blades.filter(Boolean))];
+ const list=[...DEFAULT_ORDER[part],...getPartHistory(part),
+  ...["B","X"].map(side=>data.slots[side][part])];
+ return [...new Set(list.map(x=>clean(x,22)).filter(Boolean))];
+}
+function syncPartOrders(){
+ const prior=data.partOrders&&typeof data.partOrders==="object"&&!Array.isArray(data.partOrders)?data.partOrders:{};
+ const next={};
+ for(const part of ["blade","ratchet","bit"]){
+  const known=availablePartNames(part),knownSet=new Set(known);
+  const saved=Array.isArray(prior[part])?prior[part]:[];
+  const validSaved=saved.filter(x=>typeof x==="string"&&x&&x.length<=(part==="blade"?70:22)&&knownSet.has(x));
+  next[part]=[...new Set([...validSaved,...known])].slice(0,500);
+ }
+ const different=JSON.stringify(prior)!==JSON.stringify(next);
+ data.partOrders=next;
+ return different;
 }
 function partOptions(part){
- if(part==="blade")return data.blades.slice();
- return [...new Set([...getPartHistory(part),...PRESETS[part],...["B","X"].map(s=>data.slots[s][part]).filter(Boolean)])];
+ if(!["blade","ratchet","bit"].includes(part))return [];
+ syncPartOrders();
+ return data.partOrders[part].slice();
 }
 function quickOptions(part,side){
- const active=data.slots[side][part];
- const pool=part==="blade"?data.blades.slice(0,6):partOptions(part);
- const preferred=part==="blade"?getPartHistory("blade"):getPartHistory(part);
- const defaults=part==="ratchet"?["3-60","9-60","5-60"]:part==="bit"?["R","B","F"]:[];
- const count=part==="blade"?3:4;
- const items=[active,...preferred,...defaults,...pool].filter(Boolean);
- return [...new Set(items)].slice(0,count);
+ return partOptions(part).slice(0,QUICK_COUNT[part]);
+}
+function moveOrderedPart(part,value,direction){
+ if(!["blade","ratchet","bit"].includes(part)||!Number.isInteger(direction)||Math.abs(direction)!==1)return false;
+ syncPartOrders();
+ const list=data.partOrders[part],i=list.indexOf(value),j=i+direction;
+ if(i<0||j<0||j>=list.length)return false;
+ [list[i],list[j]]=[list[j],list[i]];
+ if(!save()){[list[i],list[j]]=[list[j],list[i]];return false;}
+ render();
+ return true;
+}
+function pinOrderedPart(part,value){
+ if(!["blade","ratchet","bit"].includes(part))return false;
+ syncPartOrders();
+ const list=data.partOrders[part],i=list.indexOf(value),n=QUICK_COUNT[part];
+ if(i<0||i<n)return false;
+ list.splice(i,1);list.splice(Math.min(n-1,list.length),0,value);
+ if(!save()){list.splice(list.indexOf(value),1);list.splice(i,0,value);return false;}
+ render();
+ return true;
 }
 function renderPartQuick(side,part){
  const value=data.slots[side][part];
@@ -390,7 +431,8 @@ function changePart(side,part,value){
  if(!readyForBuildEdit())return false;
  const prev=data.slots[side][part];
  data.slots[side][part]=v;
- if(!save()){data.slots[side][part]=prev;return false}
+ syncPartOrders();
+ if(!save()){data.slots[side][part]=prev;syncPartOrders();return false}
  render();flashBuild(side,part);
  return true;
 }
@@ -430,6 +472,7 @@ function submitPicker(value){
  if(part==="blade"&&!data.blades.includes(v)){
   if(data.blades.length>=200){alert("ブレードの登録上限に達しています。");return false}
   data.blades.push(v);
+  syncPartOrders();
  }
  const ok=changePart(side,part,v);
  if(ok){closePicker();$("lastNotice").textContent="⚙ "+side+"-SIDE · "+combo(data.slots[side])+" に変更した！"}
@@ -728,6 +771,6 @@ document.addEventListener("change",e=>{
  else if(target.id==="seriesTitle"){const s=getSession();if(s){s.title=clean(target.value);save();render();}}
  else if(target.id==="importFile"){importJson(target.files?.[0]);}
 });
-render();
+syncPartOrders();save();render();
 })();
 </script></body></html>
