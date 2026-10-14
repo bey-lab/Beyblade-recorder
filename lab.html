@@ -312,11 +312,23 @@ function flashBuild(side){
  if(!el)return;
  el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
 }
+function readyForBuildEdit(){
+ const match=data.activeMatch;
+ if(!match?.events?.length)return true;
+ if(!match.winnerSide){
+  $("lastNotice").textContent="⚠ 1試合は1機固定です。4点先取するか「試合をやり直す」で変更できます。";
+  return false;
+ }
+ // A finished match is immediately archived when selecting the next build.
+ archiveActiveMatch();save();render();
+ return true;
+}
 function changePart(side,part,value){
  if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return false;
  const v=clean(value,part==="blade"?70:22);
  if(part==="blade"&&!data.blades.includes(v))return false;
  if(data.slots[side][part]===v)return true;
+ if(!readyForBuildEdit())return false;
  const prev=data.slots[side][part];
  data.slots[side][part]=v;
  if(!save()){data.slots[side][part]=prev;return false}
@@ -354,6 +366,7 @@ function closePicker(){
 function submitPicker(value){
  if(!pickerSide||!pickerPart)return false;
  const side=pickerSide,part=pickerPart,v=clean(value,part==="blade"?70:22);
+ if(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide){readyForBuildEdit();return false;}
  if(!v){$("lastNotice").textContent="パーツ名を入力してください。";return false}
  if(part==="blade"&&!data.blades.includes(v)){
   if(data.blades.length>=200){alert("ブレードの登録上限に達しています。");return false}
@@ -376,23 +389,26 @@ function renderSelectors(){
  }
 }
 function renderScore(){
- const session=getSession();
+ const session=getSession(),m=data.activeMatch;
+ $("winsB").textContent=m?.scores?.B||0;
+ $("winsX").textContent=m?.scores?.X||0;
+ $("duelRound").textContent="MATCH "+String((session?.matches?.length||0)+1).padStart(2,"0");
  const wins={B:0,X:0};
- for(const r of (session?.records||[]))if(r.winnerSide==="B"||r.winnerSide==="X")wins[r.winnerSide]++;
- $("winsB").textContent=wins.B;
- $("winsX").textContent=wins.X;
- $("duelRound").textContent="ROUND "+String((session?.records?.length||0)+1).padStart(2,"0");
+ for(const game of (session?.matches||[]))if(wins[game.winnerSide]!=null)wins[game.winnerSide]++;
+ if(m?.winnerSide)wins[m.winnerSide]++;
+ $("duelSeries").textContent="研究戦績 B "+wins.B+"勝 · X "+wins.X+"勝";
+ $("duelStatus").textContent=m?.winnerSide?
+  "🏆 "+m.slots[m.winnerSide].player+" 勝利！ 次の試合へ":
+  m?.events?.length?"第"+(m.events.length+1)+"フィニッシュ · 4点先取を目指せ！":
+  "新しい試合 · 4点先取で勝利！";
+ $("nextMatch").style.display=m?.winnerSide?"":"none";
+ $("duelScore").classList.toggle("champion",Boolean(m?.winnerSide));
 }
 function renderFinishes(){
- $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+'" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
-}
-function completedMatches(){
- const all=data.sessions.flatMap(s=>s.matches.map(m=>({...m,sessionId:s.id,date:s.date,title:s.title})));
- if(data.activeMatch?.winnerSide){
-  const s=getSession(),m=data.activeMatch;
-  all.push({...m,sessionId:s?.id||"",date:s?.date||day(),title:s?.title||""});
- }
- return all;
+ const locked=Boolean(data.activeMatch?.winnerSide);
+ $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+
+ '" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" '+(locked?'disabled aria-disabled="true"':'')+
+ ' aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
 }
 function records(){
  const all=[];
@@ -499,33 +515,72 @@ function history(){
  }).join("")||'<p class="empty">研究ログはまだありません。</p>';
 }
 function render(){
- renderSelectors();renderScore();renderFocus();summary();history();
- const s=getSession();$("seriesTitle").value=s?.title||"";
- $("seriesLine").textContent=(s?.date||day())+" · この研究 "+(s?.records.length||0)+"戦 / 総計 "+records().length+"戦";
+ renderSelectors();renderScore();renderFinishes();renderFocus();summary();history();
+ const session=getSession();
+ $("seriesTitle").value=session?.title||"";
+ $("seriesLine").textContent=(session?.date||day())+" · この研究 "+(session?.matches?.length||0)+"試合完了 / 総計 "+completedMatches().length+"試合・"+records().length+"フィニッシュ";
 }
 function commitResult(side,finish){
- const f=FIN.find(f=>f[0]===finish);if(!f)return;
- const s=ensureSession();
- const slots=clone(data.slots);
- const r={id:uid(),time:new Date().toISOString(),slots,winnerSide:side,finish:f[0],points:f[2]};
- s.records.push(r);
- if(!save()){s.records.pop();return;}
+ const f=FIN.find(f=>f[0]===finish);
+ if(!f||!["B","X"].includes(side)||data.activeMatch?.winnerSide)return false;
+ ensureSession();
+ const previous=clone(data.activeMatch);
+ if(!data.activeMatch){
+  data.activeMatch={id:uid(),started:new Date().toISOString(),slots:clone(data.slots),
+   scores:{B:0,X:0},events:[],winnerSide:null,finished:null};
+ }
+ const m=data.activeMatch;
+ m.scores[side]+=f[2];
+ m.events.push({id:uid(),time:new Date().toISOString(),side,finish:f[0],points:f[2]});
+ if(m.scores[side]>=4){m.winnerSide=side;m.finished=new Date().toISOString();}
+ if(!save()){data.activeMatch=previous;return false}
  render();
- $("lastNotice").textContent="⚡ "+slots[side].player+" · "+combo(slots[side])+"　"+f[1]+" +"+f[2]+"点！ 保存完了";
- const el=document.querySelector(".battle");el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
- const board=$("duelScore");board.classList.remove("pulse-b","pulse-x");void board.offsetWidth;board.classList.add(side==="B"?"pulse-b":"pulse-x");
+ $("lastNotice").textContent=m.winnerSide?
+  "🏆 "+m.slots[side].player+" · "+combo(m.slots[side])+"　"+m.scores.B+" — "+m.scores.X+"　勝利！":
+  "⚡ "+m.slots[side].player+" · "+combo(m.slots[side])+"　"+f[1]+" +"+f[2]+"点！";
+ const el=document.querySelector(".battle");
+ if(el){el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");}
+ const board=$("duelScore");
+ board.classList.remove("pulse-b","pulse-x");void board.offsetWidth;board.classList.add(side==="B"?"pulse-b":"pulse-x");
+ return true;
+}
+function nextMatch(){
+ if(!data.activeMatch?.winnerSide)return false;
+ archiveActiveMatch();save();render();
+ $("lastNotice").textContent="✓ 試合を保存した。次の4点先取バトル開始！ 機体変更もOK。";
+ return true;
 }
 function newSeries(){
- const s=getSession();if(s&&s.records.length===0){$("lastNotice").textContent="今の研究テーマはまだ0戦です。研究名を変更して使ってね。";return;}
- const fresh={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[]};
+ const session=getSession();
+ if(data.activeMatch?.events?.length&&!data.activeMatch.winnerSide&&
+   !confirm("進行中の試合（"+data.activeMatch.scores.B+"対"+data.activeMatch.scores.X+"）を破棄して、新しい研究テーマを始めますか？"))return;
+ if(data.activeMatch?.winnerSide)archiveActiveMatch();
+ else data.activeMatch=null;
+ if(session&&session.matches.length===0&&session.records.length===0){
+  save();render();$("lastNotice").textContent="今の研究はまだ0試合です。研究名を変更して使ってね。";return;
+ }
+ const fresh={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[],matches:[]};
  data.sessions.push(fresh);data.activeId=fresh.id;save();render();
- $("lastNotice").textContent="🔬 新しい研究を開始！ カスタムは引き継ぎました。";
+ $("lastNotice").textContent="🔬 新しい研究を開始！ 機体構成は引き継ぎました。";
 }
 function undoResult(){
- const s=getSession();if(!s||!s.records.length){$("lastNotice").textContent="今回の研究に取り消せる結果がありません。";return;}
- if(!confirm("直前の対戦結果1件を削除しますか？"))return;
- const removed=s.records.pop();if(!save()){s.records.push(removed);return;}
- render();$("lastNotice").textContent="↶ 直前の試合を取り消しました。";
+ const m=data.activeMatch;
+ if(!m?.events?.length){$("lastNotice").textContent="進行中の試合に取り消せるフィニッシュがありません。";return false;}
+ const backup=clone(m);
+ const removed=m.events.pop();
+ m.scores[removed.side]=Math.max(0,m.scores[removed.side]-removed.points);
+ m.winnerSide=null;m.finished=null;
+ if(!save()){data.activeMatch=backup;return false;}
+ render();$("lastNotice").textContent="↶ "+removed.side+"側の"+FIN.find(f=>f[0]===removed.finish)?.[1]+"を取り消しました。";
+ return true;
+}
+function resetMatch(){
+ const m=data.activeMatch;
+ if(!m?.events?.length){$("lastNotice").textContent="現在の試合は0—0です。";return;}
+ if(!confirm("今の試合の"+m.events.length+"フィニッシュ（"+m.scores.B+"対"+m.scores.X+"）を破棄して0—0からやり直しますか？\n研究テーマ内の過去の完了試合は消えません。"))return;
+ const before=m;data.activeMatch=null;
+ if(!save()){data.activeMatch=before;return;}
+ render();$("lastNotice").textContent="⟲ 今の試合を0—0に戻しました。";
 }
 function download(name,text,type){
  const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
@@ -558,6 +613,8 @@ document.addEventListener("click",e=>{
  else if(action==="quick-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
  else if(action==="select-part"){if(changePart(b.dataset.side,b.dataset.part,b.dataset.value))closePicker();}
  else if(action==="undo")undoResult();
+ else if(action==="next-match")nextMatch();
+ else if(action==="reset-match")resetMatch();
  else if(action==="new-series")newSeries();
  else if(action==="sync-roster")rosterSync(true);
  else if(action==="export-json")download("bey-lab-1on1-backup.json",JSON.stringify(data,null,2),"application/json;charset=utf-8");
@@ -575,6 +632,7 @@ document.addEventListener("change",e=>{
   const v=clean(target.value,field==="ratchet"||field==="bit"?22:70);
   if(field==="player"&&!data.players.includes(v)||field==="blade"&&!data.blades.includes(v))return;
   if(field==="player"){
+   if(!readyForBuildEdit()){render();return;}
    const prior=data.slots[side][field];data.slots[side][field]=v;
    if(!save())data.slots[side][field]=prior;
    render();
@@ -585,6 +643,6 @@ document.addEventListener("change",e=>{
  else if(target.id==="seriesTitle"){const s=getSession();if(s){s.title=clean(target.value);save();render();}}
  else if(target.id==="importFile"){importJson(target.files?.[0]);}
 });
-renderFinishes();render();
+render();
 })();
 </script></body></html>
