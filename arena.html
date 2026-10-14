@@ -74,6 +74,51 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 .editform input{min-width:0;width:100%;padding:10px 9px;color:white;background:#071326;border:1px solid #4d6786;border-radius:9px;font-size:14px}
 .history{max-height:48vh;overflow:auto}.historyrow{border-bottom:1px solid #ffffff18;padding:8px 0;font-size:12px}
 .historyrow small{color:#b2c6db}.confirmation{font-weight:850;color:#f0c667}
+/* iPad Pro / larger tablets: place each side's controls directly below its fighter.
+   Keep all roster choices visible without opening a menu; allow scrolling inside lists. */
+@media(min-width:900px) and (min-height:600px){
+ .wrap{max-width:1600px;padding-top:18px}
+ header{margin-bottom:15px}
+ .arena{grid-template-columns:minmax(0,1fr) minmax(235px,.72fr) minmax(0,1fr);gap:13px}
+ .fighter{border-radius:22px}
+ .fhead{padding:16px 19px 13px}
+ .side{font-size:clamp(27px,3vw,38px)}
+ .role{font-size:12px}
+ .fbody{padding:13px 17px 16px}
+ .eyebrow{font-size:12px;margin:5px 0 7px}
+ .selected{min-height:51px;padding:10px 13px;font-size:clamp(16px,1.65vw,23px)}
+ .listlabel{margin:12px 0 6px}
+ .listlabel span{font-size:12px}
+ .listlabel button{font-size:13px;min-height:38px;padding:6px 8px}
+ .picklist{max-height:180px;gap:8px;padding-bottom:6px;overscroll-behavior:contain}
+ .pick{min-height:45px;padding:10px 12px;font-size:clamp(12px,1.15vw,15px);border-radius:10px}
+ .center{padding:17px 13px;gap:13px}
+ .center small{font-size:11px}
+ .swap{min-height:44px;font-size:13px;padding:9px 10px}
+ .score{font-size:clamp(76px,8.5vw,132px)}
+ .scorecontrols{gap:8px}
+ .scorecontrols button{min-height:48px;font-size:15px}
+ .vs{font-size:12px}
+ .rounds strong{font-size:20px}
+ .rounds p{font-size:13px}
+ .counter{font-size:15px}
+ .actions{grid-template-columns:minmax(0,1fr) minmax(235px,.72fr) minmax(0,1fr);gap:13px;margin-top:13px}
+ .actionbox{padding:12px 13px}
+ .actionbox:last-child{grid-column:3}
+ .actheader{font-size:17px;margin-bottom:11px}
+ .actheader small{font-size:12px}
+ .actiongrid{gap:7px}
+ .finishbtn{min-height:71px;font-size:clamp(12px,1.2vw,17px);padding:9px 4px}
+ .finishbtn small{font-size:12px}
+ .bottom{margin-top:14px}
+ .bottom button{min-height:44px}
+ .modal{width:min(860px,96%);padding:20px}
+ .smallaction{min-width:44px;min-height:44px;font-size:18px}
+ .editrow{gap:7px}
+ .editrow span{font-size:15px}
+ .editform input{min-height:47px}
+}
+@media(hover:none){button{touch-action:manipulation}}
 @media(max-width:690px){.wrap{padding:8px}.arena{grid-template-columns:minmax(0,1fr) minmax(135px,.65fr) minmax(0,1fr);gap:5px}.fhead{padding:8px}.side{font-size:17px}.fbody{padding:7px}.selected{font-size:12px}.pick{font-size:10px;padding:5px 6px;min-height:28px}.center{padding:7px 5px;gap:4px}.score{font-size:clamp(40px,9vw,72px)}.rounds p{display:none}.actionbox{padding:7px}.actiongrid{gap:3px}.finishbtn{font-size:10px;min-height:47px}.brand strong{font-size:17px}.brandmark{width:30px;height:30px}.minibtn{padding:6px}.top-actions .status{display:none}.picklist{max-height:65px}}
 @media(orientation:portrait) and (max-width:690px){.rotate{display:block!important}.arena{grid-template-columns:minmax(0,1fr) minmax(130px,.6fr) minmax(0,1fr);min-width:690px}.actions{min-width:690px}.wrap{overflow-x:auto}.bottom{min-width:690px}}
 .rotate{display:none;padding:7px 10px;margin-bottom:7px;color:#ffe3a0;background:#51402566;border:1px solid #a78b51;border-radius:10px;font-size:12px}
