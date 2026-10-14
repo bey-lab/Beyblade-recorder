@@ -10,9 +10,9 @@
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
 <style>
 :root{color-scheme:dark;--bg:#060e1d;--panel:#111d31;--panel2:#162943;--edge:#334661;--text:#f2f7ff;--muted:#a5b7d1;--red:#ff695f;--blue:#60a8ff;--gold:#f5c55d}
-*{box-sizing:border-box}html{min-height:100%;background:var(--bg);-webkit-text-size-adjust:100%}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg);-webkit-text-size-adjust:100%;touch-action:manipulation}
 body{margin:0;background:radial-gradient(ellipse at 10% 35%,#56222e55,transparent 45%),radial-gradient(ellipse at 90% 35%,#183d715a,transparent 48%),linear-gradient(#0d1728,#050b17);color:var(--text);font:14px/1.35 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;min-height:100svh}
-button,input{font:inherit}button{cursor:pointer;color:inherit;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.97)}button:focus-visible,input:focus-visible{outline:3px solid white;outline-offset:2px}button:disabled{opacity:.45;cursor:default}
+button,input{font:inherit}button{cursor:pointer;color:inherit;-webkit-tap-highlight-color:transparent}button,a,.pick{touch-action:manipulation;-webkit-user-select:none;user-select:none}button:active{transform:scale(.97)}button:focus-visible,input:focus-visible{outline:3px solid white;outline-offset:2px}button:disabled{opacity:.45;cursor:default}
 a{color:#c8dafa} .wrap{max-width:1500px;margin:auto;padding:12px max(12px,env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
 header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
 .brand{display:flex;align-items:center;gap:11px}.brandmark{width:38px;height:38px;display:grid;place-items:center;border:2px solid var(--gold);border-radius:50%;color:var(--gold);font-size:25px;font-weight:900;box-shadow:0 0 18px #ffd54b28}
@@ -131,6 +131,32 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 .victory-undo{border:0;background:none;color:#d1dced;font-size:13px;font-weight:750;margin-top:12px;min-height:40px}
 .smallaction.delete{color:#ffc3c3;border-color:#87515a}
 @media(prefers-reduced-motion:no-preference){.victory-card{animation:victory-in .3s ease-out both}@keyframes victory-in{from{opacity:.4;transform:scale(.92)}to{opacity:1;transform:scale(1)}}}
+
+/* Tournament/day selection and grouped match archive */
+.meeting-strip{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 11px;border:1px solid #465a75;border-radius:12px;padding:8px 12px;background:linear-gradient(100deg,#2e293a,#162a44)}
+.meeting-label{font-size:14px;color:#ffe4a1;font-weight:880;overflow-wrap:anywhere;min-width:0}
+.meeting-label small{font-size:11px;color:#bbcade;display:inline-block;margin-left:9px;font-weight:600}
+.meeting-overlay{display:none;position:fixed;inset:0;z-index:90;justify-content:center;align-items:center;background:#030817f2;backdrop-filter:blur(8px);padding:16px}
+.meeting-overlay.show{display:flex}
+.meeting-card{width:min(510px,100%);max-height:95svh;overflow:auto;padding:clamp(20px,3.2vw,33px);background:radial-gradient(ellipse at top,#303d58,#101d31 72%);border:2px solid #a88b51;border-radius:23px;box-shadow:0 20px 80px #000a}
+.meeting-card .pretitle{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.16em}
+.meeting-card h2{font-size:clamp(23px,3.2vw,36px);margin:7px 0 6px}
+.meeting-card p{color:#c4d5eb;font-size:13px;line-height:1.6}
+.meeting-form label{display:block;font-weight:850;font-size:13px;margin:15px 0 6px}
+.meeting-form input{width:100%;min-height:50px;padding:11px 13px;border:1px solid #6984a4;border-radius:10px;background:#081426;color:#fff;font-size:16px;touch-action:manipulation}
+.meeting-form input::-webkit-calendar-picker-indicator{filter:invert(1)}
+.meeting-start{width:100%;min-height:60px;margin-top:22px;border:1px solid #ffe6ac;border-radius:12px;background:linear-gradient(120deg,#ffde82,#eeb451);color:#142031;font-size:20px;font-weight:950}
+.meeting-cancel{display:block;margin:10px auto 0;min-height:42px;border:0;background:none;color:#e1eafb;text-decoration:underline;font-size:13px}
+.meeting-group{border:1px solid #405878;background:#0b182b;border-radius:13px;margin:12px 0;padding:12px}
+.meeting-group summary{cursor:pointer;font-weight:880;font-size:15px;line-height:1.5}
+.meeting-group summary small{display:block;color:#b5c5db;font-size:12px;font-weight:650;margin-top:3px}
+.meeting-round{margin:9px 0;padding:9px 11px;background:#192941;border-radius:10px;border:1px solid #354d6c}
+.meeting-round strong{color:#ebf4ff}
+.meeting-round small{font-size:11px;color:#adc4df}
+.meeting-round details{padding:5px;margin-top:4px}
+.meeting-round details summary{font-size:11px;font-weight:750;color:#c3d4e9}
+.meeting-event{font-size:11px;color:#c7d5e8;padding:4px;border-bottom:1px solid #ffffff14}
+@media(min-width:900px){.meeting-label{font-size:17px}}
 @media(hover:none){button{touch-action:manipulation}}
 @media(max-width:690px){.wrap{padding:8px}.arena{grid-template-columns:minmax(0,1fr) minmax(135px,.65fr) minmax(0,1fr);gap:5px}.fhead{padding:8px}.side{font-size:17px}.fbody{padding:7px}.selected{font-size:12px}.pick{font-size:10px;padding:5px 6px;min-height:28px}.center{padding:7px 5px;gap:4px}.score{font-size:clamp(40px,9vw,72px)}.rounds p{display:none}.actionbox{padding:7px}.actiongrid{gap:3px}.finishbtn{font-size:10px;min-height:47px}.brand strong{font-size:17px}.brandmark{width:30px;height:30px}.minibtn{padding:6px}.top-actions .status{display:none}.picklist{max-height:65px}}
 @media(orientation:portrait) and (max-width:690px){.rotate{display:block!important}.arena{grid-template-columns:minmax(0,1fr) minmax(130px,.6fr) minmax(0,1fr);min-width:690px}.actions{min-width:690px}.wrap{overflow-x:auto}.bottom{min-width:690px}}
@@ -142,6 +168,10 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
  <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
  <div class="top-actions"><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn" href="./index.html">旧画面 ↗</a></div>
 </header>
+<div class="meeting-strip">
+ <div class="meeting-label" id="meetingLabel">📅 大会未設定</div>
+ <button class="minibtn accent" type="button" data-action="meeting">📅 大会を新しく作る</button>
+</div>
 <div class="rotate">📱 横向きでの利用をおすすめします（この画面は横スクロール可能）。</div>
 <div class="arena" id="arena">
  <section id="left" class="fighter" aria-label="左サイド"></section>
@@ -164,6 +194,21 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
  <button class="minibtn" data-action="new-game">＋ 新しい対戦</button>
 </div>
 <footer>© BEY LAB · 対戦ボード β版。得点・試合結果はこの端末に保存。既存の「分析」データとは別管理です。大事な記録は履歴からバックアップを。<br>ブレード名やプレイヤー名は自由に登録・変更可能。横画面でお楽しみください。</footer>
+</div>
+<div class="meeting-overlay" id="meetingOverlay" role="dialog" aria-modal="true" aria-labelledby="meetingHeading">
+ <section class="meeting-card">
+  <span class="pretitle">BEY LAB · BATTLE DAY</span>
+  <h2 id="meetingHeading">今日のバトルを始めよう</h2>
+  <p>発売されたベイの名前など、思い出せるタイトルを付けよう。<br>記録は大会ごとに分けて保存されるぞ。</p>
+  <form class="meeting-form" id="meetingForm">
+   <label for="meetingDate">開催日</label>
+   <input type="date" id="meetingDate" required>
+   <label for="meetingTitle">大会タイトル</label>
+   <input type="text" id="meetingTitle" placeholder="例：フェニックスフォースの日" maxlength="70" autocomplete="off" autocorrect="off" spellcheck="false" required>
+   <button class="meeting-start" type="submit">⚔ この大会を開始！</button>
+   <button class="meeting-cancel" id="meetingCancel" type="button" data-action="cancel-meeting">今の大会に戻る</button>
+  </form>
+ </section>
 </div>
 <div class="victory-overlay" id="victoryOverlay" role="dialog" aria-modal="true" aria-labelledby="victoryName">
  <section class="victory-card" id="victoryCard">
@@ -189,7 +234,7 @@ const clean=x=>typeof x==="string"?x.trim().slice(0,70):"";
 function initial(){
  let bladeList=defaults.slice();
  try{const old=JSON.parse(localStorage.getItem(OLD));if(old&&Array.isArray(old.beys)){for(const b of old.beys){const base=clean(b).replace(/\s+\d+-\d+\S*$/,"");if(base&&!bladeList.includes(base))bladeList.push(base);}}}catch(e){}
- return {players:["プレイヤー1","プレイヤー2","プレイヤー3"],blades:bladeList.slice(0,150),slots:{B:{player:"プレイヤー1",blade:"ドランソード"},X:{player:"プレイヤー2",blade:"ヘルズサイズ"}},scores:{B:0,X:0},flipped:false,events:[],sessions:[],winner:null};
+ return {players:["プレイヤー1","プレイヤー2","プレイヤー3"],blades:bladeList.slice(0,150),slots:{B:{player:"プレイヤー1",blade:"ドランソード"},X:{player:"プレイヤー2",blade:"ヘルズサイズ"}},scores:{B:0,X:0},flipped:false,events:[],sessions:[],winner:null,meetings:[],activeMeetingId:null};
 }
 let state=initial(),undo=[];
 try{let old=JSON.parse(localStorage.getItem(KEY));if(old&&Array.isArray(old.players)&&Array.isArray(old.blades)&&old.slots&&old.scores&&Array.isArray(old.events)&&Array.isArray(old.sessions)){state=old;}}catch(e){}
@@ -201,6 +246,10 @@ if(Array.isArray(state.players)
  for(const side of ["B","X"]){const slot=state.slots[side];if(slot){const oldIndex=["自分","けーくん","おっすん"].indexOf(slot.player);if(oldIndex>=0)slot.player=state.players[oldIndex];}}
  try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}
 }
+// Older builds saved individual battles as "sessions". Preserve them without assigning
+// an invented event date or retroactively mixing their results into a new tournament.
+if(!Array.isArray(state.meetings))state.meetings=[];
+if(typeof state.activeMeetingId!=="string")state.activeMeetingId=null;
 state.players=state.players.filter(x=>typeof x==="string"&&x.length<=70).slice(0,120);
 state.blades=state.blades.filter(x=>typeof x==="string"&&x.length<=70).slice(0,200);
 if(!state.players.length)state.players=["プレイヤー1"];if(!state.blades.length)state.blades=["ドランソード"];
@@ -234,32 +283,96 @@ function renderVictory(){
  ids("victoryCard").className="victory-card"+(w.side==="X"?" x":"");
  layer.classList.add("show");
 }
-function nextBattle(){
- snapshot();
- if(state.events.length||state.scores.B||state.scores.X){
-  state.sessions.push({finished:new Date().toISOString(),events:state.events.slice(),scores:{...state.scores},winner:state.winner?{...state.winner}:null});
-  if(state.sessions.length>200)state.sessions.shift();
- }
+
+function tournament(){return state.meetings.find(m=>m.id===state.activeMeetingId)||null}
+function localDate(){
+ const d=new Date();
+ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function matchId(){return (typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2)}
+function showMeeting(){
+ ids("meetingDate").value=localDate();
+ ids("meetingTitle").value="";
+ const canCancel=!!tournament();
+ ids("meetingCancel").style.display=canCancel?"block":"none";
+ ids("meetingHeading").textContent=canCancel?"新しい大会を開催":"今日のバトルを始めよう";
+ ids("meetingOverlay").classList.add("show");
+}
+function closeMeeting(){if(tournament())ids("meetingOverlay").classList.remove("show")}
+function archiveMatch(){
+ if(!(state.events.length||Number(state.scores.B)||Number(state.scores.X)))return;
+ const m=tournament();
+ state.sessions.push({
+  id:matchId(),finished:new Date().toISOString(),events:state.events.slice(),
+  scores:{...state.scores},winner:state.winner?{...state.winner}:null,
+  meetingId:m?m.id:null,meetingDate:m?m.date:null,meetingTitle:m?m.title:null
+ });
+ // Keep the original 200-battle retention limit; do not discard meeting labels.
+ if(state.sessions.length>200)state.sessions.shift();
+}
+function resetMatch(){
  state.events=[];state.scores={B:0,X:0};state.winner=null;
+}
+function startMeeting(date,title){
+ const goodDate=/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(new Date(date+"T12:00:00").getTime());
+ title=clean(title);
+ if(!goodDate||!title)return false;
+ if(tournament()&&(state.events.length||state.scores.B||state.scores.X)
+    &&!confirm("進行中の対戦を履歴に保存して、新しい大会を始めますか？"))return false;
+ snapshot();archiveMatch();resetMatch();
+ const m={id:matchId(),date,title,created:new Date().toISOString()};
+ state.meetings.push(m);state.activeMeetingId=m.id;
+ save();render();closeMeeting();
+ ids("resultNotice").textContent="「"+title+"」開幕！ 対戦を始めよう。";
+ return true;
+}
+function meetingHtml(g){
+ const matches=state.sessions.filter(s=>s.meetingId===g.id);
+ const live=state.activeMeetingId===g.id&&(state.events.length||state.scores.B||state.scores.X);
+ const eventLine=e=>'<div class="meeting-event">'+esc(e.player||"")+"："+esc((FIN.find(f=>f[0]===e.finish)||["","得点調整"])[1])+
+   " "+(Number(e.points)>0?"+":"")+esc(e.points)+"点 / "+esc(e.blade||"")+"</div>";
+ const oneMatch=(r,i)=>'<div class="meeting-round"><strong>第'+i+'戦　'+
+  (r.winner?"🏆 "+esc(r.winner.player||"")+" 勝利！":"試合終了")+
+  '</strong><div><small>B '+esc(r.scores.B)+' — '+esc(r.scores.X)+' X'+(r.winner?" / "+esc(r.winner.blade||""):"")+
+  '</small></div><details><summary>フィニッシュ内訳（'+r.events.filter(e=>e.type==="finish").length+'回）</summary>'+
+  r.events.map(eventLine).join("")+'</details></div>';
+ const active=state.activeMeetingId===g.id;
+ return '<details class="meeting-group" '+(active?'open':"")+'><summary>📅 '+esc(g.date)+"　"+esc(g.title)+
+  '<small>'+(matches.length+(live?1:0))+'試合'+(active?" · 現在の大会":"")+'</small></summary>'+
+  (matches.length?matches.map((r,i)=>oneMatch(r,i+1)).join(""):'')+
+  (live?oneMatch({winner:state.winner,scores:state.scores,events:state.events},matches.length+1):"")+
+  ((!matches.length&&!live)?'<p style="color:#bbcbe0">試合はまだありません。</p>':"")+"</details>";
+}
+function nextBattle(){
+ snapshot();archiveMatch();resetMatch();
  save();render();ids("resultNotice").textContent="次のバトル開始！ ブレードとプレイヤーを選ぼう。";
 }
-function render(){const [left,right]=sides();renderFighter("left",left);renderFighter("right",right);
+function render(){
+ const m=tournament();
+ ids("meetingLabel").innerHTML=m?'📅 '+esc(m.title)+' <small>'+esc(m.date)+'</small>':'📅 大会未設定';
+ const [left,right]=sides();renderFighter("left",left);renderFighter("right",right);
 ids("leftScore").textContent=state.scores[left];ids("rightScore").textContent=state.scores[right];
 ids("leftScore").className="score "+(left==="B"?"red":"blue");ids("rightScore").className="score "+(right==="B"?"red":"blue");
 ids("leftPlus").textContent=left+" ＋1";ids("rightPlus").textContent=right+" ＋1";
 ids("matchCount").textContent=state.events.filter(x=>x.type==="finish").length+" FINISHES";
 renderVictory();
 ids("finishActions").innerHTML=[left,right].map(side=>'<section class="actionbox'+(side==="X"?" x":"")+'"><div class="actheader">'+side+'-SIDE WIN <small>フィニッシュを選択</small></div><div class="actiongrid">'+FIN.map(f=>'<button class="finishbtn" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'">'+f[3]+' '+f[1]+'<small>＋'+f[2]+'点</small></button>').join('')+'</div></section>').join('');}
-function sideAction(side,type,points,finish){if(state.winner)return;snapshot();const slot=state.slots[side];state.scores[side]=Math.max(0,Number(state.scores[side]||0)+points);
+function sideAction(side,type,points,finish){if(state.winner||!tournament())return;snapshot();const slot=state.slots[side];state.scores[side]=Math.max(0,Number(state.scores[side]||0)+points);
 const other=side==="B"?"X":"B";
 state.events.push({type,side,points,finish:finish||"",time:new Date().toISOString(),player:slot.player,blade:slot.blade,againstPlayer:state.slots[other].player,againstBlade:state.slots[other].blade});
 if(state.events.length>5000)state.events=state.events.slice(-5000);if(state.scores[side]>=4&&!state.winner){state.winner={side,player:slot.player,blade:slot.blade,time:new Date().toISOString()};}save();render();
 const label=FIN.find(f=>f[0]===finish);ids("resultNotice").textContent=side+"-SIDE "+slot.player+" / "+slot.blade+" "+(label?label[1]+"勝ち +"+points+"点":"スコア変更 "+(points>0?"+":"")+points);}
 function download(name,text,type){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
-function historyHtml(){const rows=state.events.slice(-35).reverse();const recent=state.sessions.slice(-8).reverse();return '<div class="modalhead"><h2>📖 対戦履歴</h2><button class="minibtn" data-action="close">閉じる</button></div>'+
-'<p style="color:#c0d2e6">今回 '+state.events.filter(x=>x.type==="finish").length+'フィニッシュ / 終了したバトル '+state.sessions.length+'件</p>'+
+function historyHtml(){const rows=state.events.slice(-35).reverse();const recent=state.sessions.slice(-8).reverse();const groupList=state.meetings.slice().reverse();const legacy=state.sessions.filter(s=>!s.meetingId);return '<div class="modalhead"><h2>📖 対戦履歴</h2><button class="minibtn" data-action="close">閉じる</button></div>'+
+'<p style="color:#c0d2e6">大会ごとに記録を保存。タイトルを開くとその日の勝敗が見られます。</p>'+
 '<div class="top-actions" style="justify-content:flex-start"><button class="minibtn accent" data-action="export-json">⬇ JSON保存</button><button class="minibtn" data-action="export-csv">⬇ CSV保存</button></div>'+
-'<div class="history">'+(recent.length?'<h3>終了したバトル（直近8件）</h3>'+recent.map(g=>'<div class="historyrow"><strong>'+esc(g.winner?.player||'対戦終了')+' '+(g.winner?'勝利！':'')+'</strong>　<small>B '+esc(g.scores.B)+' — '+esc(g.scores.X)+' X</small><br><small>'+esc(g.winner?.blade||'')+'</small></div>').join(''):'')+'<h3>進行中の対戦</h3>'+(rows.length?rows.map(ev=>'<div class="historyrow"><strong>'+esc(ev.side)+'-SIDE '+esc(ev.player)+'</strong> '+(ev.type==="finish"?esc((FIN.find(f=>f[0]===ev.finish)||["","結果"])[1])+"勝ち":"スコア調整")+'　<span class="confirmation">'+(ev.points>0?"+":"")+esc(ev.points)+'点</span><br><small>'+esc(ev.blade)+' vs '+esc(ev.againstBlade)+'</small></div>').join(''):'<p>まだ試合記録はありません。</p>')+'</div><p style="color:#a6bcd4;font-size:11px">JSONはこのアリーナ専用のバックアップ。現行BEY LABの旧形式とは別データです。</p>';}
+'<div class="history">'+groupList.map(meetingHtml).join("")+
+(legacy.length?'<details class="meeting-group"><summary>📦 以前の記録（大会未設定）<small>'+legacy.length+'試合</small></summary>'+
+legacy.map((r,i)=>'<div class="meeting-round">第'+(i+1)+'戦　'+esc(r.winner?.player||'対戦終了')+
+'　<small>B '+esc(r.scores?.B??0)+' — '+esc(r.scores?.X??0)+' X</small></div>').join("")+'</details>':"")+
+(!tournament()&&(state.events.length||state.scores.B||state.scores.X)?'<p>大会設定前の進行中スコアがあります。新しい大会を作ると以前の記録として保存されます。</p>':"")+
+(!groupList.length&&!legacy.length?'<p class="historyrow">まだ大会の記録がありません。</p>':"")+
+'</div><p style="color:#a6bcd4;font-size:11px">JSONはこのアリーナ専用のバックアップ。現行BEY LABの旧形式とは別データです。</p>';}
 function editorHtml(){return '<div class="modalhead"><h2>⚙ 登録・並べ替え</h2><button class="minibtn" data-action="close">完了</button></div><p style="color:#adbed6;font-size:12px">名前変更・並び替え・削除が可能。削除しても過去の対戦記録は残ります。</p><div class="editgrid">'+["player","blade"].map(kind=>{const list=kind==="player"?state.players:state.blades;const title=kind==="player"?"プレイヤー":"ブレード";return '<section class="editgroup"><strong>'+title+'</strong>'+list.map((name,i)=>'<div class="editrow"><span>'+esc(name)+'</span><button class="smallaction" title="名前変更" data-action="rename" data-kind="'+kind+'" data-index="'+i+'">✎</button><button class="smallaction" title="上へ" data-action="move" data-kind="'+kind+'" data-index="'+i+'" data-dir="-1" '+(i===0?"disabled":"")+'>↑</button><button class="smallaction" title="下へ" data-action="move" data-kind="'+kind+'" data-index="'+i+'" data-dir="1" '+(i===list.length-1?"disabled":"")+'>↓</button><button class="smallaction delete" title="削除" aria-label="'+esc(name)+'を削除" data-action="delete" data-kind="'+kind+'" data-index="'+i+'" '+(list.length===1?"disabled":"")+'>✕</button></div>').join('')+'<form class="editform" data-form="'+kind+'"><input type="search" autocomplete="off" autocorrect="off" spellcheck="false" name="roster-'+kind+'" maxlength="70" placeholder="'+title+'名を追加" required><button class="minibtn accent" type="submit">＋</button></form></section>'}).join('')+'</div>';}
 function showModal(mode){ids("overlay").classList.add("show");ids("modal").innerHTML=mode==="edit"?editorHtml():historyHtml();}
 function closeModal(){ids("overlay").classList.remove("show");ids("modal").innerHTML="";}
@@ -275,7 +388,7 @@ function deleteRoster(kind,i){
  save();render();showModal("edit");
 }
 function moveRoster(kind,i,dir){const list=roster(kind),j=i+dir;if(i<0||j<0||i>=list.length||j>=list.length)return;snapshot();[list[i],list[j]]=[list[j],list[i]];save();render();showModal("edit")}
-function exportCsv(){const records=state.sessions.flatMap(s=>s.events.concat([])).concat(state.events);const header=["日時","サイド","勝者","ブレード","相手","相手のブレード","結果","得点"];const q=t=>'"'+String(t==null?"":t).replace(/"/g,'""')+'"';const body=records.filter(x=>x.type==="finish").map(x=>[x.time,x.side,x.player,x.blade,x.againstPlayer,x.againstBlade,(FIN.find(f=>f[0]===x.finish)||["",""])[1],x.points].map(q).join(","));download("bey-lab-arena.csv","\ufeff"+[header.map(q).join(","),...body].join("\r\n"),"text/csv;charset=utf-8")}
+function exportCsv(){const m=tournament();const records=state.sessions.flatMap(s=>s.events.map(e=>({...e,meetingDate:s.meetingDate||"",meetingTitle:s.meetingTitle||""}))).concat(state.events.map(e=>({...e,meetingDate:m?.date||"",meetingTitle:m?.title||""})));const header=["開催日","大会タイトル","日時","サイド","勝者","ブレード","相手","相手のブレード","結果","得点"];const q=t=>'"'+String(t==null?"":t).replace(/"/g,'""')+'"';const body=records.filter(x=>x.type==="finish").map(x=>[x.meetingDate,x.meetingTitle,x.time,x.side,x.player,x.blade,x.againstPlayer,x.againstBlade,(FIN.find(f=>f[0]===x.finish)||["",""])[1],x.points].map(q).join(","));download("bey-lab-arena.csv","\ufeff"+[header.map(q).join(","),...body].join("\r\n"),"text/csv;charset=utf-8")}
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
 if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();}
@@ -285,6 +398,8 @@ else if(action==="swap"){snapshot();state.flipped=!state.flipped;save();render()
 else if(action==="undo"){if(!undo.length){ids("resultNotice").textContent="取り消せる操作がありません";return;}state=JSON.parse(undo.pop());save();render();ids("resultNotice").textContent="直前の操作を取り消しました";}
 else if(action==="next-battle")nextBattle();
 else if(action==="new-game"){if(!state.winner&&!confirm("現在のスコアを終了し、新しい対戦を始めますか？\n途中の対戦も履歴に残ります。"))return;nextBattle();}
+else if(action==="meeting")showMeeting();
+else if(action==="cancel-meeting")closeMeeting();
 else if(action==="edit"||action==="history")showModal(action);
 else if(action==="close")closeModal();
 else if(action==="rename")renameRoster(kind,Number(b.dataset.index));
@@ -293,8 +408,9 @@ else if(action==="move")moveRoster(kind,Number(b.dataset.index),Number(b.dataset
 else if(action==="export-json")download("bey-lab-arena-backup.json",JSON.stringify(state,null,2),"application/json;charset=utf-8");
 else if(action==="export-csv")exportCsv();
 });
+ids("meetingForm").addEventListener("submit",e=>{e.preventDefault();startMeeting(ids("meetingDate").value,ids("meetingTitle").value)});
 ids("modal").addEventListener("submit",e=>{const form=e.target.closest("form[data-form]");if(!form)return;e.preventDefault();const input=form.querySelector("input");if(addRoster(form.dataset.form,input.value)){showModal("edit");}else{alert("登録済みか、名前が空欄です。別の名前を入力してください。")}});
 ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeModal()});
-render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
+render();if(!tournament())showMeeting();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
 </script></body></html>
