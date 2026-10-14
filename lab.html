@@ -355,7 +355,7 @@ const DEFAULT_ORDER={
  ratchet:["3-60","9-60","5-60","1-60",...PRESETS.ratchet],
  bit:["R","B","F","T",...PRESETS.bit]
 };
-const QUICK_COUNT={blade:3,ratchet:4,bit:4};
+const QUICK_COUNT={blade:3,ratchet:4,bit:null}; // null = show all bits in the quick area; never reorder on selection.
 function getPartHistory(part){
  const found=new Set();
  for(const r of records())for(const side of ["B","X"]){
@@ -388,8 +388,13 @@ function partOptions(part){
  syncPartOrders();
  return data.partOrders[part].slice();
 }
+function quickLimit(part,all){
+ // Keep blades/ratchets as compact shortcuts, but show every registered bit immediately.
+ return QUICK_COUNT[part]==null?all.length:QUICK_COUNT[part];
+}
 function quickOptions(part,side){
- return partOptions(part).slice(0,QUICK_COUNT[part]);
+ const ordered=partOptions(part);
+ return ordered.slice(0,quickLimit(part,ordered));
 }
 function moveOrderedPart(part,value,direction){
  if(!["blade","ratchet","bit"].includes(part)||!Number.isInteger(direction)||Math.abs(direction)!==1)return false;
@@ -404,7 +409,7 @@ function moveOrderedPart(part,value,direction){
 function pinOrderedPart(part,value){
  if(!["blade","ratchet","bit"].includes(part))return false;
  syncPartOrders();
- const list=data.partOrders[part],i=list.indexOf(value),n=QUICK_COUNT[part];
+ const list=data.partOrders[part],i=list.indexOf(value),n=quickLimit(part,list);
  if(i<0||i<n)return false;
  list.splice(i,1);list.splice(Math.min(n-1,list.length),0,value);
  if(!save()){list.splice(list.indexOf(value),1);list.splice(i,0,value);return false;}
@@ -460,13 +465,13 @@ function drawPicker(){
  const part=pickerPart,active=data.slots[pickerSide][part];
  const term=$("pickerSearch").value.trim().toLocaleLowerCase("ja");
  const all=partOptions(part),vals=all.filter(v=>v.toLocaleLowerCase("ja").includes(term));
- const n=QUICK_COUNT[part],grid=$("pickerGrid");
+ const n=quickLimit(part,all),grid=$("pickerGrid");
  const scroll=grid.scrollTop;
  grid.classList.toggle("sorting",pickerEditing);
  $("pickerSearch").style.display=pickerEditing?"none":"";
  $("pickerAdd").style.display=pickerEditing?"none":"";
  $("pickerOrderNote").innerHTML=pickerEditing?
-  '<strong>配置編集モード</strong> · ↑↓で並び替え。「クイックへ」で上部の即選択枠に配置できます。変更はB・X両側に反映され、保存されます。':
+  '<strong>配置編集モード</strong> · ↑↓で並び替え。ビットは全候補を即選択欄に表示。ブレード・ラチェットは「クイックへ」で先頭の枠に追加できます。配置はB・X両側で共有・保存されます。':
   '選んだパーツは移動しません。並びを変えるときだけ「⚙ 並び替え」を押してください。';
  $("orderToggle").textContent=pickerEditing?"✓ 編集完了":"⚙ 並び替え";
  $("orderToggle").classList.toggle("is-editing",pickerEditing);
