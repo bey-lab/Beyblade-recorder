@@ -308,8 +308,8 @@ function archiveMatch(){
   scores:{...state.scores},winner:state.winner?{...state.winner}:null,
   meetingId:m?m.id:null,meetingDate:m?m.date:null,meetingTitle:m?m.title:null
  });
- // Keep the original 200-battle retention limit; do not discard meeting labels.
- if(state.sessions.length>200)state.sessions.shift();
+ // Keep every completed battle: older tournament history should never be silently deleted.
+ // localStorage has a limited quota, so users should periodically export JSON backups.
 }
 function resetMatch(){
  state.events=[];state.scores={B:0,X:0};state.winner=null;
