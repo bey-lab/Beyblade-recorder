@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1424"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
+<title>BEY LAB | 1on1研究室</title>
+<style>
+:root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
+*{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--text);font:14px/1.48 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:radial-gradient(circle at 12% 5%,#622b3540,transparent 31%),radial-gradient(circle at 90% 14%,#23538b3d,transparent 34%),#08121f;min-height:100dvh}
+button,input,select{font:inherit}button{color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.97)}a{color:#d9e8ff;text-decoration:none}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.wrap{max-width:1370px;margin:auto;padding:16px max(13px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(13px,env(safe-area-inset-left))}
+@media(display-mode:standalone){.wrap{padding-top:max(46px,calc(env(safe-area-inset-top) + 12px))}}
+header{display:flex;align-items:center;gap:13px;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid #354966;padding-bottom:12px}
+.brand strong{display:block;font-size:26px;font-weight:950;letter-spacing:.09em;line-height:1.1}.brand small{color:var(--gold);letter-spacing:.19em;font-size:10px;font-weight:900}
+nav,.toolrow{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid #5b7390;border-radius:10px;background:#182b43;padding:9px 12px;min-height:40px;font-weight:800;font-size:12px}
+.btn.gold{border-color:#a78a54;color:#fbe1a2;background:#413329}.btn.primary{background:linear-gradient(110deg,#575039,#24364c);color:#fff4d8;border-color:#cfab65}
+h1,h2,h3,p{margin:0}h1{font-size:clamp(21px,3.2vw,37px);line-height:1.1;letter-spacing:.07em}h2{font-size:21px;margin-bottom:12px}h3{font-size:16px}
+.subtitle{font-size:12px;letter-spacing:.1em;color:#c7d9f1;margin:6px 0 0}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:19px 0}
+.kicker{font-size:10px;letter-spacing:.22em;font-weight:950;color:var(--gold)}
+.hint{color:#a8bbd2;font-size:12px;line-height:1.55}
+.versus{display:grid;grid-template-columns:minmax(0,1fr) 110px minmax(0,1fr);align-items:stretch;gap:12px}
+.fighter{--accent:var(--red);border:1px solid color-mix(in srgb,var(--accent) 60%,#475268);border-radius:17px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 13%,#15253b),#101d30 60%);padding:17px;min-width:0;box-shadow:0 8px 28px #0003}
+.fighter.x{--accent:var(--blue)}.sidehead{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff21;padding-bottom:11px;margin-bottom:10px}
+.sidehead strong{font-size:24px;font-weight:950;font-style:italic;color:var(--accent)}.sidehead small{color:var(--muted);font-size:10px;letter-spacing:.15em}
+.field{display:block;margin:8px 0}.field span{display:block;color:#b9cce4;font-size:11px;font-weight:800;margin:0 0 4px}.field select,.field input{display:block;min-height:44px;width:100%;background:#09182c;border:1px solid #56708e;border-radius:9px;color:#fff;padding:9px;font-size:14px;font-weight:800}
+.pieces{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.build{margin-top:13px;border:1px solid color-mix(in srgb,var(--accent) 43%,#435066);border-radius:10px;padding:12px;min-height:78px;background:#09182c8c}
+.build small{display:block;color:#adbbcd;letter-spacing:.14em;font-size:10px}.build strong{display:block;overflow-wrap:anywhere;font-size:clamp(15px,1.8vw,24px);line-height:1.25;margin-top:5px;color:#fff}
+.vs{display:grid;place-items:center;font-size:clamp(29px,4.5vw,57px);font-weight:1000;font-style:italic;color:var(--gold);text-shadow:0 0 24px #ddbb6d50}
+.battle{margin-top:16px;border-radius:17px;padding:16px;background:linear-gradient(#182c45,#101e33);border:1px solid #526781}
+.battlehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:12px}
+.battlehead b{font-size:18px}.finishgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.winnerline{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.winnerline strong{text-align:center;padding:8px;background:#26374e;border-radius:7px;color:#ebebed;font-size:13px}
+.finishbtn{--accent:#e7716c;position:relative;isolation:isolate;border:1px solid color-mix(in srgb,var(--accent) 70%,#344a62);border-radius:9px;background:linear-gradient(130deg,color-mix(in srgb,var(--accent) 33%,#1b2c41),#101b2c);min-height:58px;padding:8px 9px;overflow:hidden;font-weight:950;font-size:clamp(14px,1.7vw,19px);display:flex;align-items:center;justify-content:space-between;gap:6px;letter-spacing:.03em}
+.finishbtn.x{--accent:#69a9ff}.finishbtn:before{content:"";position:absolute;z-index:-1;inset:-1px auto -1px -100%;width:85%;background:linear-gradient(98deg,transparent,#fff0,#ffffff88,#fff0,transparent);transform:skewX(-24deg);transition:none;pointer-events:none}
+.finishbtn:active:before{animation:slash .35s ease-out 1}@keyframes slash{to{left:150%}}
+.finishbtn small{font-size:12px;white-space:nowrap;color:#e8ebf5}
+.after{margin-top:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px}
+.notice{font-size:14px;color:#f3d695;font-weight:850;min-height:20px}
+.toolrow{margin-top:13px}.twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:15px;margin-top:16px}
+.card{background:#111f32;border:1px solid #3c526f;border-radius:15px;padding:18px;min-width:0}
+.info{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.info small{color:#b7c8da;font-size:11px}
+.bigstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.metric{background:#192a40;border-radius:10px;padding:10px;min-width:0}.metric small{font-size:10px;color:#b2c5de;display:block}.metric strong{font-size:clamp(20px,2.9vw,32px);font-variant-numeric:tabular-nums}
+.barchart{margin-top:14px}.barline{margin:10px 0}.barlabels{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:4px}.track{background:#253950;height:10px;border-radius:10px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#bd765e,#f1c778);border-radius:10px}.fill.loss{background:linear-gradient(90deg,#41769f,#6da9f2)}
+table{border-collapse:collapse;width:100%;font-size:12px}th{text-align:left;color:#c5d5e9;font-weight:900;background:#24334a}th,td{padding:9px 7px;border-bottom:1px solid #31455c;overflow-wrap:anywhere}td:last-child,th:last-child{text-align:right}
+.scope{min-height:38px;background:#182d45;color:#fff;border:1px solid #59718d;border-radius:8px;padding:6px;max-width:100%;font-weight:750}
+.empty{padding:20px 7px;color:#acbfd7;font-size:13px}
+.series{border:1px solid #3a4e66;border-radius:11px;margin:9px 0;overflow:hidden}.series summary{cursor:pointer;background:#1b2c42;padding:13px;font-size:13px;font-weight:900;touch-action:manipulation}.series-inner{padding:8px}.record{display:flex;justify-content:space-between;gap:12px;padding:10px 3px;border-bottom:1px solid #263951;font-size:12px}.record:last-child{border:0}.record strong{color:#f3d48a}.record small{color:#a8bdd3;display:block;margin-top:2px}
+.backups{margin-top:16px;padding:15px;border:1px solid #465e7b;border-radius:13px;background:#0d1b2c}.backups p{margin:6px 0 12px}
+input[type=file]{display:none}
+.flash{animation:arrival .32s cubic-bezier(.2,.75,.35,1)}@keyframes arrival{0%{box-shadow:0 0 0 8px #fff4;filter:brightness(1.6)}100%{box-shadow:none;filter:brightness(1)}}
+@media(max-width:740px){.versus{grid-template-columns:minmax(0,1fr);gap:8px}.vs{min-height:37px;font-size:28px}.fighter{padding:12px}.twocol{grid-template-columns:1fr}.finishbtn{min-height:54px}.wrap{padding-top:max(13px,env(safe-area-inset-top))}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="wrap">
+<header><div class="brand"><strong>BEY LAB</strong><small>DEEP RESEARCH · 1ON1</small></div>
+<nav><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html">旧画面 ↗</a><span id="saveState" class="hint">端末内保存</span></nav></header>
+<div class="topbar">
+ <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE FINISH · ONE RESULT · INFINITE RESEARCH</p></div>
+ <div><label class="field" style="margin:0"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></div>
+</div>
+<div class="versus">
+ <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
+  <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
+  <label class="field"><span>ブレード</span><select id="bladeB" data-field="blade" data-side="B"></select></label>
+  <div class="pieces"><label class="field"><span>ラチェット</span><input id="ratchetB" data-field="ratchet" data-side="B" list="ratchets" placeholder="例：9-60" maxlength="22"></label>
+  <label class="field"><span>ビット</span><input id="bitB" data-field="bit" data-side="B" list="bits" placeholder="例：R" maxlength="22"></label></div>
+  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildB">—</strong></div>
+ </section>
+ <div class="vs">VS</div>
+ <section class="fighter x"><div class="sidehead"><strong>X-SIDE</strong><small>TEST UNIT / 02</small></div>
+  <label class="field"><span>プレイヤー</span><select id="playerX" data-field="player" data-side="X"></select></label>
+  <label class="field"><span>ブレード</span><select id="bladeX" data-field="blade" data-side="X"></select></label>
+  <div class="pieces"><label class="field"><span>ラチェット</span><input id="ratchetX" data-field="ratchet" data-side="X" list="ratchets" placeholder="例：5-60" maxlength="22"></label>
+  <label class="field"><span>ビット</span><input id="bitX" data-field="bit" data-side="X" list="bits" placeholder="例：B" maxlength="22"></label></div>
+  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildX">—</strong></div>
+ </section>
+</div>
+<datalist id="ratchets"><option value="1-60"><option value="3-60"><option value="5-60"><option value="9-60"><option value="1-70"><option value="3-70"><option value="5-70"><option value="9-70"><option value="1-80"><option value="3-80"><option value="5-80"></datalist>
+<datalist id="bits"><option value="R"><option value="F"><option value="B"><option value="T"><option value="H"><option value="C"><option value="A"><option value="GF"><option value="FB"><option value="LR"><option value="N"><option value="P"><option value="LF"></datalist>
+<section class="battle" aria-label="1on1の試合結果入力">
+ <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST FINISH WINS</div><b>勝った側のフィニッシュを1回タップ！</b></div><small class="hint">決着した時点で自動保存 · 同じ組み合わせで連戦OK</small></div>
+ <div class="winnerline"><strong style="color:#ffaca7">B 勝利</strong><strong style="color:#a4cdff">X 勝利</strong></div>
+ <div class="finishgrid" id="finishGrid"></div>
+ <div class="after"><div id="lastNotice" class="notice" aria-live="polite">構成を選んで、検証を始めよう。</div><button class="btn" data-action="undo">↶ 直前の結果を取り消す</button></div>
+</section>
+<div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
+<div class="twocol">
+<section class="card">
+ <div class="info"><h2>📈 性能カルテ</h2><select id="scope" class="scope" aria-label="分析対象の研究期間"><option value="all">全期間</option><option value="series">今回の研究のみ</option></select></div>
+ <label class="field"><span>分析したいカスタム</span><select id="focus" class="scope" style="width:100%"></select></label>
+ <div id="analysisBody"></div>
+</section>
+<section class="card">
+ <div class="info"><h2>⚔️ 対戦相性</h2><small>相手別の勝敗・得意不得意</small></div>
+ <div id="matchups"></div>
+ <h3 style="margin:20px 0 7px">同じブレードのカスタム比較</h3><div id="comparisons"></div>
+</section>
+</div>
+<section class="card" style="margin-top:16px">
+ <div class="info"><h2>📚 研究ログ</h2><small>フィニッシュと構成を完全保存</small></div>
+ <div id="history"></div>
+</section>
+<section class="backups"><h3>💾 データの保存・復元</h3><p class="hint">1on1研究室の記録は、勝ち抜きアリーナとは別に保存されます。JSONで研究テーマ・カスタム・全対戦をバックアップできます。復元時は現在の1on1記録と入れ替わるため、事前に保存してください。</p>
+<div class="toolrow"><button class="btn primary" data-action="export-json">⬇ 研究JSON保存</button><button class="btn" data-action="import-json">⬆ 研究JSON復元</button><button class="btn" data-action="export-csv">⬇ CSV保存</button></div>
+<input id="importFile" type="file" accept=".json,application/json"></section>
+<p class="hint" style="margin-top:17px">BEY LAB · DEEP RESEARCH β版 / 1フィニッシュで1対戦を記録。獲得ポイントはスピン1、オーバー2、バースト2、エクストリーム3。勝ち抜きモードの4点先取と混同しないでください。</p>
+</div>
+<script>
+(function(){
+"use strict";
+const KEY="bey-lab-1on1-v1", ARENA_KEY="bey-lab-arena-v1";
+const FIN=[["spin","スピン",1,"◉"],["over","オーバー",2,"↗"],["burst","バースト",2,"✦"],["extreme","エクストリーム",3,"⚡"]];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clean=(s,max=70)=>typeof s==="string"?s.trim().slice(0,max):"";
+const day=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const uid=()=>typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const baseRoster=()=>({players:["プレイヤー1","プレイヤー2","プレイヤー3"],blades:["ドランソード","ヘルズサイズ","ウィザードアロー","ナイトシールド"]});
+function arenaRoster(){try{const a=JSON.parse(localStorage.getItem(ARENA_KEY));if(a&&Array.isArray(a.players)&&Array.isArray(a.blades))return {players:a.players.filter(x=>typeof x==="string").slice(0,200),blades:a.blades.filter(x=>typeof x==="string").slice(0,200)}}catch(e){}return null}
+function initial(){const r=arenaRoster()||baseRoster();const players=r.players.length?r.players:baseRoster().players;const blades=r.blades.length?r.blades:baseRoster().blades;return {version:1,players:clone(players),blades:clone(blades),slots:{B:{player:players[0],blade:blades[0],ratchet:"",bit:""},X:{player:players[Math.min(1,players.length-1)],blade:blades[Math.min(1,blades.length-1)],ratchet:"",bit:""}},sessions:[],activeId:null}}
+function valid(s){
+ if(!s||typeof s!=="object"||s.version!==1||!Array.isArray(s.players)||!Array.isArray(s.blades)||!s.slots||!Array.isArray(s.sessions))return false;
+ if(!s.players.length||s.players.length>200||!s.blades.length||s.blades.length>200||s.sessions.length>10000)return false;
+ const names=a=>a.every(x=>typeof x==="string"&&x.length>0&&x.length<=70);
+ if(!names(s.players)||!names(s.blades))return false;
+ for(const side of ["B","X"]){const x=s.slots[side];if(!x||typeof x!=="object"||!s.players.includes(x.player)||!s.blades.includes(x.blade)||!["ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=22))return false;}
+ if(!(s.activeId===null||typeof s.activeId==="string"))return false;
+ if(!s.sessions.every(v=>v&&typeof v.id==="string"&&typeof v.date==="string"&&typeof v.title==="string"&&v.title.length<=70&&Array.isArray(v.records)&&v.records.length<=50000))return false;
+ if(!s.sessions.every(v=>v.records.every(r=>r&&typeof r.id==="string"&&["B","X"].includes(r.winnerSide)&&FIN.some(f=>f[0]===r.finish&&f[2]===r.points)&&r.slots&&["B","X"].every(side=>{const x=r.slots[side];return x&&["player","blade","ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=70)}))))return false;
+ return true;
+}
+let data=initial();
+try{const old=JSON.parse(localStorage.getItem(KEY));if(valid(old))data=old;}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));$("saveState").textContent="✓ 端末内保存済み";return true}catch(e){$("saveState").textContent="⚠ 保存失敗";alert("端末への保存に失敗しました。JSONバックアップを試してください。");return false;}}
+function getSession(){return data.sessions.find(x=>x.id===data.activeId)||null}
+function ensureSession(){
+ let s=getSession();if(s)return s;
+ s={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[]};data.sessions.push(s);data.activeId=s.id;return s;
+}
+ensureSession();save();
+const combo=x=>[x.blade,x.ratchet,x.bit].filter(Boolean).join(" ");
+const key=x=>JSON.stringify([x.blade,x.ratchet,x.bit]);
+const keyName=k=>{try{return JSON.parse(k).filter(Boolean).join(" ")}catch(e){return k}};
+function options(list,current){const all=list.includes(current)?list:[current,...list];return all.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("")}
+function rosterSync(notify){
+ const a=arenaRoster();if(!a){if(notify)$("lastNotice").textContent="アリーナ名簿が見つかりません。";return false;}
+ const before=data.players.length+data.blades.length;
+ for(const k of ["players","blades"]){for(const n of a[k])if(clean(n)&&!data[k].includes(n)&&data[k].length<200)data[k].push(n)}
+ const added=data.players.length+data.blades.length-before;save();render();
+ if(notify)$("lastNotice").textContent="✓ 名簿同期完了："+added+"件追加（研究記録はそのまま）";
+ return true;
+}
+function renderSelectors(){
+ for(const side of ["B","X"]){
+  const x=data.slots[side];
+  $("player"+side).innerHTML=options(data.players,x.player);
+  $("blade"+side).innerHTML=options(data.blades,x.blade);
+  $("player"+side).value=x.player;$("blade"+side).value=x.blade;
+  $("ratchet"+side).value=x.ratchet;$("bit"+side).value=x.bit;
+  $("build"+side).textContent=combo(x);
+ }
+}
+function renderFinishes(){
+ $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+'" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
+}
+function records(){return data.sessions.flatMap(s=>s.records.map(r=>({sessionId:s.id,date:s.date,title:s.title,...r})))}
+function selectedRecords(){return records().filter(r=>$("scope").value==="all"||r.sessionId===data.activeId)}
+function availableFocus(){
+ const keys=new Set();for(const r of selectedRecords())for(const side of ["B","X"])keys.add(key(r.slots[side]));
+ for(const side of ["B","X"])keys.add(key(data.slots[side]));
+ return [...keys].sort((a,b)=>keyName(a).localeCompare(keyName(b),"ja"));
+}
+function renderFocus(){
+ const el=$("focus"),previous=el.value;
+ const keys=availableFocus();
+ el.innerHTML=keys.map(k=>'<option value="'+esc(k)+'">'+esc(keyName(k))+'</option>').join("");
+ el.value=keys.includes(previous)?previous:key(data.slots.B);
+ if(!keys.includes(el.value))el.selectedIndex=0;
+}
+function statsFor(k,all){
+ let wins=0,losses=0,pointsFor=0,pointsAgainst=0;
+ const acquired={spin:0,over:0,burst:0,extreme:0},conceded={spin:0,over:0,burst:0,extreme:0},opponents=new Map();
+ for(const r of all){
+  for(const side of ["B","X"]){
+   const own=r.slots[side];if(key(own)!==k)continue;
+   const other=r.slots[side==="B"?"X":"B"],isWin=r.winnerSide===side;
+   if(isWin){wins++;pointsFor+=r.points;acquired[r.finish]++}else{losses++;pointsAgainst+=r.points;conceded[r.finish]++}
+   const o=key(other),entry=opponents.get(o)||{key:o,blade:other.blade,win:0,loss:0};
+   if(isWin)entry.win++;else entry.loss++;
+   opponents.set(o,entry);
+  }
+ }
+ return {wins,losses,total:wins+losses,pointsFor,pointsAgainst,acquired,conceded,opponents:[...opponents.values()].sort((a,b)=>(b.win+b.loss)-(a.win+a.loss))};
+}
+const pct=(a,b)=>b?(100*a/b).toFixed(1)+"%":"—";
+function bars(dataMap,total,loss){
+ return FIN.map(f=>'<div class="barline"><div class="barlabels"><span>'+f[1]+'</span><span>'+dataMap[f[0]]+'回 · '+pct(dataMap[f[0]],total)+'</span></div><div class="track"><div class="fill '+(loss?"loss":"")+'" style="width:'+(total?100*dataMap[f[0]]/total:0)+'%"></div></div></div>').join("");
+}
+function summary(){
+ const all=selectedRecords(),focus=$("focus").value;
+ const st=statsFor(focus,all);
+ $("analysisBody").innerHTML='<div class="bigstats"><div class="metric"><small>1on1試合勝率</small><strong>'+pct(st.wins,st.total)+'</strong></div><div class="metric"><small>試合勝敗</small><strong>'+st.wins+'-'+st.losses+'</strong></div><div class="metric"><small>獲得ポイント</small><strong>'+st.pointsFor+'</strong></div></div>'+
+ '<p class="hint" style="margin-top:9px">試合数 '+st.total+'戦 / 被ポイント '+st.pointsAgainst+'点'+(st.total<10?' · 少数データのため参考値':'')+'</p>'+
+ '<div class="barchart"><h3>⚔️ どう勝つ？　獲得フィニッシュ</h3>'+bars(st.acquired,st.wins,false)+'</div>'+
+ '<div class="barchart"><h3>🛡️ どう負ける？　被フィニッシュ</h3>'+bars(st.conceded,st.losses,true)+'</div>';
+ $("matchups").innerHTML=st.opponents.length?
+ '<table><thead><tr><th>相手カスタム</th><th>勝-敗</th><th>勝率</th></tr></thead><tbody>'+st.opponents.map(o=>'<tr><td>'+esc(keyName(o.key))+'</td><td>' +o.win+'-'+o.loss+'</td><td>'+pct(o.win,o.win+o.loss)+'</td></tr>').join("")+'</tbody></table>':
+ '<p class="empty">まだこのカスタムの対戦記録はありません。まずは1戦！</p>';
+ const blade=JSON.parse(focus)[0];
+ const matching=availableFocus().filter(k=>{try{return JSON.parse(k)[0]===blade}catch(e){return false}});
+ $("comparisons").innerHTML=matching.length?
+ '<table><thead><tr><th>カスタム</th><th>試合数</th><th>勝率</th></tr></thead><tbody>'+matching.map(k=>{const a=statsFor(k,all);return '<tr><td>'+esc(keyName(k))+'</td><td>'+a.total+'</td><td>'+pct(a.wins,a.total)+'</td></tr>'}).join("")+'</tbody></table>':
+ '<p class="empty">同じブレードの別カスタムを記録すると比較できます。</p>';
+}
+function history(){
+ $("history").innerHTML=data.sessions.slice().reverse().map((s,i)=>
+ '<details class="series" '+(s.id===data.activeId?'open':"")+'><summary>📅 '+esc(s.date)+' · '+esc(s.title||"無題の研究")+'　('+s.records.length+'戦)'+(s.id===data.activeId?' · 進行中':'')+'</summary><div class="series-inner">'+
+ (s.records.length?s.records.slice().reverse().map((r,j)=>{const winning=r.slots[r.winnerSide],losing=r.slots[r.winnerSide==="B"?"X":"B"];const f=FIN.find(f=>f[0]===r.finish);return '<div class="record"><div><strong>'+esc(winning.player)+' 勝利 · '+esc(combo(winning))+'</strong><small>対 '+esc(losing.player)+' · '+esc(combo(losing))+'</small></div><div>'+esc(f?.[1]||r.finish)+' +'+r.points+'点<small>'+esc(r.time?.slice(11,16)||"")+'</small></div></div>'}).join(""):'<p class="empty">この研究テーマには、まだ試合がありません。</p>')+
+ '</div></details>').join("")||'<p class="empty">研究ログはまだありません。</p>';
+}
+function render(){
+ renderSelectors();renderFocus();summary();history();
+ const s=getSession();$("seriesTitle").value=s?.title||"";
+ $("seriesLine").textContent=(s?.date||day())+" · この研究 "+(s?.records.length||0)+"戦 / 総計 "+records().length+"戦";
+}
+function commitResult(side,finish){
+ const f=FIN.find(f=>f[0]===finish);if(!f)return;
+ const s=ensureSession();
+ const slots=clone(data.slots);
+ const r={id:uid(),time:new Date().toISOString(),slots,winnerSide:side,finish:f[0],points:f[2]};
+ s.records.push(r);
+ if(!save()){s.records.pop();return;}
+ render();
+ $("lastNotice").textContent="⚡ "+slots[side].player+" · "+combo(slots[side])+"　"+f[1]+" +"+f[2]+"点！ 保存完了";
+ const el=document.querySelector(".battle");el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");
+}
+function newSeries(){
+ const s=getSession();if(s&&s.records.length===0){$("lastNotice").textContent="今の研究テーマはまだ0戦です。研究名を変更して使ってね。";return;}
+ const fresh={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[]};
+ data.sessions.push(fresh);data.activeId=fresh.id;save();render();
+ $("lastNotice").textContent="🔬 新しい研究を開始！ カスタムは引き継ぎました。";
+}
+function undoResult(){
+ const s=getSession();if(!s||!s.records.length){$("lastNotice").textContent="今回の研究に取り消せる結果がありません。";return;}
+ if(!confirm("直前の対戦結果1件を削除しますか？"))return;
+ const removed=s.records.pop();if(!save()){s.records.push(removed);return;}
+ render();$("lastNotice").textContent="↶ 直前の試合を取り消しました。";
+}
+function download(name,text,type){
+ const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+function exportCsv(){
+ const q=x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"';
+ const rows=[["研究日","研究名","日時","勝利者","勝利者ブレード","勝利者ラチェット","勝利者ビット","敗者","敗者ブレード","敗者ラチェット","敗者ビット","勝者サイド","フィニッシュ","得点"]];
+ for(const s of data.sessions)for(const r of s.records){const w=r.slots[r.winnerSide],l=r.slots[r.winnerSide==="B"?"X":"B"];rows.push([s.date,s.title,r.time,w.player,w.blade,w.ratchet,w.bit,l.player,l.blade,l.ratchet,l.bit,r.winnerSide,FIN.find(f=>f[0]===r.finish)?.[1]||r.finish,r.points]);}
+ download("bey-lab-1on1.csv","\ufeff"+rows.map(row=>row.map(q).join(",")).join("\r\n"),"text/csv;charset=utf-8");
+}
+async function importJson(file){
+ if(!file)return;if(file.size>20*1024*1024){alert("20MB以内のファイルを選んでください。");return;}
+ try{
+  const parsed=JSON.parse(await file.text());
+  if(!valid(parsed)){alert("これは1on1研究室の有効なバックアップではありません。今の記録はそのままです。");return;}
+  const oldN=records().length,newN=parsed.sessions.reduce((n,s)=>n+s.records.length,0);
+  if(!confirm("1on1研究室をJSONから復元します。\n現在："+oldN+"戦 → バックアップ："+newN+"戦\n\n研究テーマ・カスタム・履歴がすべて入れ替わります。\n現在のデータを残す場合は先にJSON保存してください。\n\n復元しますか？"))return;
+  localStorage.setItem(KEY,JSON.stringify(parsed));
+  data=parsed;ensureSession();render();$("lastNotice").textContent="✓ JSONから研究記録 "+newN+"戦を復元しました。";
+ }catch(e){alert("復元できません。JSONファイルまたは端末の空き容量を確認してください。");}
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ const action=b.dataset.action;
+ if(action==="finish")commitResult(b.dataset.side,b.dataset.finish);
+ else if(action==="undo")undoResult();
+ else if(action==="new-series")newSeries();
+ else if(action==="sync-roster")rosterSync(true);
+ else if(action==="export-json")download("bey-lab-1on1-backup.json",JSON.stringify(data,null,2),"application/json;charset=utf-8");
+ else if(action==="export-csv")exportCsv();
+ else if(action==="import-json"){$("importFile").value="";$("importFile").click();}
+});
+document.addEventListener("change",e=>{
+ const target=e.target;
+ if(target.dataset?.field){
+  const side=target.dataset.side,field=target.dataset.field;if(!["B","X"].includes(side)||!["player","blade","ratchet","bit"].includes(field))return;
+  const v=clean(target.value,field==="ratchet"||field==="bit"?22:70);
+  if(field==="player"&&!data.players.includes(v)||field==="blade"&&!data.blades.includes(v))return;
+  data.slots[side][field]=v;save();render();
+ }
+ else if(target.id==="scope"){renderFocus();summary();}
+ else if(target.id==="focus"){summary();}
+ else if(target.id==="seriesTitle"){const s=getSession();if(s){s.title=clean(target.value);save();render();}}
+ else if(target.id==="importFile"){importJson(target.files?.[0]);}
+});
+renderFinishes();render();
+})();
+</script></body></html>
