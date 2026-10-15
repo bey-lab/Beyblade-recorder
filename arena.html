@@ -343,7 +343,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes arenaMetalLock{0%{border-color:#fff;box-shadow:inset 0 0 0 2px #fff9,0 0 18px #fff8;filter:brightness(1.7)}32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 14px #dec58b70;filter:brightness(1.35)}100%{box-shadow:none;filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.fighter .arena-metal,.fighter .arena-metal::before,.fighter .arena-metal::after{animation:none!important}.fighter .arena-metal{border-color:#ffe6ac!important;box-shadow:inset 0 0 0 2px #ffe6ac88!important}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}</style><script>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -352,7 +352,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
  window.BEY_ENV=env;
  document.documentElement.dataset.beyEnv=env;
 })();
-</script></head><body>
+</script></head><body data-bey-mode="arena">
 <div class="wrap">
 <header>
  <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
@@ -825,4 +825,4 @@ ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeMo
 if(navigator.standalone||(typeof matchMedia==="function"&&matchMedia("(display-mode: standalone)").matches)){document.documentElement?.classList?.add("installed-mode");}
 ids("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";ids("environmentBadge").classList.toggle("official",window.BEY_ENV==="official");ensureMeeting();render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
-</script></body></html>
+</script><script src="./bey-universal.js"></script></body></html>
