@@ -1,0 +1,40 @@
+/* BEY LAB shared battle presentation v1.  Mode-specific rules remain local. */
+:root{--bey-red:#f27773;--bey-blue:#76b5ff;--bey-gold:#f1cb81;--bey-board:#15263d}
+.bey-universal-stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.72fr) minmax(0,1fr);gap:10px;align-items:stretch;margin:12px 0}
+.bey-universal-stage>*{min-width:0;margin:0}
+.bey-universal-stage .bey-side-b{grid-column:1;grid-row:1}
+.bey-universal-stage .bey-board{grid-column:2;grid-row:1}
+.bey-universal-stage .bey-side-x{grid-column:3;grid-row:1}
+.bey-universal-stage .bey-board{border:1px solid #57708e;border-radius:15px;background:linear-gradient(155deg,#1b304b,#111e32);padding:12px;box-shadow:0 10px 26px #0003}
+.bey-universal-stage .bey-board .score-controls{border:0;padding-top:5px}
+.bey-universal-stage .bey-board .finishgrid,.bey-universal-stage .bey-board .finish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.bey-universal-stage .bey-board .finishbtn,.bey-universal-stage .bey-board .finish button{min-height:70px;touch-action:manipulation}
+.bey-universal-stage .bey-board .scoreboard{margin:10px 0}
+.bey-universal-stage .bey-board .duel-scoreline{gap:4px}
+.bey-universal-stage .bey-board .duel-side strong{font-size:clamp(38px,5vw,72px)}
+.bey-universal-stage .bey-board .duel-middle strong{font-size:clamp(21px,3vw,34px)}
+.bey-universal-stage .bey-board .duel-caption{font-size:10px}
+.bey-universal-stage .bey-board .score-next-btn{min-height:48px}
+.bey-universal-stage .bey-board .score-head{margin-top:8px}
+.bey-universal-stage .bey-board .finish{display:contents}
+.bey-universal-stage .bey-board .finish-grid{grid-auto-flow:row}
+.bey-universal-stage .bey-board .finish button{font-size:clamp(11px,1.3vw,15px)}
+.bey-universal-stage .bey-board .finishbtn{font-size:clamp(11px,1.2vw,15px)}
+.bey-universal-stage .bey-board .finishbtn small{font-size:10px}
+.bey-universal-stage .bey-side-b,.bey-universal-stage .bey-side-x{height:100%}
+.bey-universal-stage .bey-board .score-actions{padding:4px}
+.bey-universal-stage .bey-board .score-controls-head{font-size:10px}
+.bey-universal-stage .bey-board .duel-score{width:100%}
+.bey-universal-stage .bey-board .duel-scoreline .duel-side{min-width:0}
+.bey-universal-stage .bey-board .score-quick-tools{justify-content:center}
+.bey-universal-stage .bey-board .score-quick-tools button{width:100%}
+.bey-universal-stage .bey-board .bey-board-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.bey-universal-stage .bey-board .bey-board-actions button{flex:1;min-width:0}
+.bey-universal-stage .bey-board .champ{font-size:18px}
+.bey-universal-stage .bey-side-b .slot .parts,.bey-universal-stage .bey-side-x .slot .parts{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bey-metal-hit{position:relative;isolation:isolate}
+.bey-metal-hit::after{content:"";pointer-events:none;position:absolute;z-index:10;inset:-2px;border-radius:inherit;background:linear-gradient(115deg,transparent 26%,#fff7d4 43%,#fff 49%,#ffd98e 55%,transparent 70%);background-size:260% 100%;animation:bey-metal-sweep .43s ease-out both;mix-blend-mode:screen}
+@keyframes bey-metal-sweep{from{background-position:100% 0;filter:brightness(1.7)}to{background-position:-100% 0;filter:brightness(1)}}
+@media(max-width:850px){.bey-universal-stage{grid-template-columns:minmax(0,1fr) minmax(210px,.85fr) minmax(0,1fr);gap:6px}.bey-universal-stage .bey-board{padding:7px}.bey-universal-stage .bey-board .finishbtn,.bey-universal-stage .bey-board .finish button{min-height:60px}}
+@media(max-width:650px){.bey-universal-stage{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bey-universal-stage .bey-board{grid-column:1/-1;grid-row:1}.bey-universal-stage .bey-side-b{grid-column:1;grid-row:2}.bey-universal-stage .bey-side-x{grid-column:2;grid-row:2}.bey-universal-stage .bey-board .finishbtn,.bey-universal-stage .bey-board .finish button{min-height:52px}.bey-universal-stage .bey-side-b .slot .parts,.bey-universal-stage .bey-side-x .slot .parts{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.bey-metal-hit::after{animation:none;display:none}}
