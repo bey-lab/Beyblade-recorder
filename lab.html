@@ -179,7 +179,7 @@ input[type=file]{display:none}
 @media(prefers-reduced-motion:reduce){.duel-scoreline.pulse-b .duel-side:not(.x) strong,.duel-scoreline.pulse-x .duel-side.x strong{animation:none!important}}
 @media(max-width:740px){.versus{grid-template-columns:minmax(0,1fr);gap:8px}.vs{min-height:37px;font-size:28px}.fighter{padding:12px}.twocol{grid-template-columns:1fr}.finishbtn{min-height:54px}.wrap{padding-top:max(13px,env(safe-area-inset-top))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}</style><script>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.score-controls{position:relative;margin-top:10px;border-top:1px solid #ffffff27;padding-top:10px}.score-controls-head{display:grid;grid-template-columns:1fr 1fr;text-align:center;gap:8px;font-size:11px;font-weight:950;color:#d7e5fa;margin-bottom:7px}.score-controls-head span:first-child{color:#ffaaa4}.score-controls-head span:last-child{color:#a6d4ff}.score-controls .finishgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 9px}.score-controls .finishbtn{min-height:48px;padding:8px 10px;font-size:clamp(12px,1.5vw,16px);display:flex;align-items:center;justify-content:space-between;gap:5px;touch-action:manipulation}.score-controls .finishbtn small{font-size:10px}.score-controls .finishbtn span{white-space:nowrap}.part-lock-note{font-size:11px;color:#ffd79a;margin-top:7px;font-weight:800}.quickchip{touch-action:manipulation;min-height:36px}@media(max-width:600px){.score-controls .finishbtn{padding:7px 5px;font-size:12px}.score-controls .finishbtn small{font-size:9px}}</style><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -204,6 +204,7 @@ input[type=file]{display:none}
     <div class="duel-side x"><span>X-SIDE POINTS</span><strong id="winsX">0</strong></div>
   </div>
 <div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
+<div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
 </section>
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
@@ -227,7 +228,7 @@ input[type=file]{display:none}
 <section class="battle" aria-label="1on1の4点先取スコア入力">
  <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST TO FOUR POINTS</div><b>勝った側のフィニッシュをタップ！ 4点先取で勝利</b></div><small class="hint">途中スコアは自動保存 · 決着後に1試合として戦績確定</small></div>
  <div class="winnerline"><strong style="color:#ffaca7">B 勝利</strong><strong style="color:#a4cdff">X 勝利</strong></div>
- <div class="finishgrid" id="finishGrid"></div>
+ <p class="hint">得点操作は画面上部のスコアボードに移動しました。</p>
  <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
 </section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
@@ -460,7 +461,7 @@ function changePart(side,part,value){
  if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return false;
  const v=clean(value,part==="blade"?70:22);
  if(part==="blade"&&!data.blades.includes(v))return false;
- if(data.slots[side][part]===v)return true;
+ if(data.slots[side][part]===v){if(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide)$("lastNotice").textContent="🔒 対戦中はカスタム固定。4点先取か試合リセット後に変更できます。";return true;}
  if(!readyForBuildEdit())return false;
  const prev=data.slots[side][part];
  data.slots[side][part]=v;
@@ -555,6 +556,7 @@ function renderSelectors(){
    if(btn)btn.classList.toggle("has-selection",Boolean(x[part]));
   }
   for(const part of ["blade","ratchet","bit"])renderPartQuick(side,part);
+  for(const btn of document.querySelectorAll('[data-action="quick-part"][data-side="'+side+'"]'))btn.setAttribute("aria-label",btn.textContent+"を選択"+(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide?"（対戦中は変更不可）":""));
   $("build"+side).textContent=combo(x);
  }
 }
