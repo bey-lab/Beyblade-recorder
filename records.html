@@ -20,7 +20,7 @@ function recent(el,items){$(el).innerHTML=items.length?items.slice(0,8).map(item
 function draw(){
  const env=$("env").value,arena=read("bey-lab-arena-v1-"+env)||{},lab=read("bey-lab-1on1-v1-"+env)||{};
  $("envBadge").textContent=env==="official"?"🏆 本番記録":"🧪 テスト記録";$("envBadge").classList.toggle("official",env==="official");
- const arenaMatches=arr(arena.sessions).filter(m=>m?.winner?.player),labMatches=arr(lab.sessions).flatMap(s=>arr(s?.matches).filter(m=>m?.winnerSide&&m.slots).map(m=>({...m,sessionDate:s.date,sessionTitle:s.title})));
+ const arenaMatches=arr(arena.sessions).filter(m=>m?.winner?.player),labMatches=arr(lab.sessions).flatMap(s=>arr(s?.matches).filter(m=>m?.winnerSide&&m.slots).map(m=>({...m,sessionDate:s.date,sessionTitle:s.title})));if(arena.winner?.player)arenaMatches.push({winner:arena.winner,events:arr(arena.events),meetingTitle:arr(arena.meetings).find(g=>g.id===arena.activeMeetingId)?.title||"",meetingDate:arr(arena.meetings).find(g=>g.id===arena.activeMeetingId)?.date||""});
  if(lab.activeMatch?.winnerSide&&lab.activeMatch.slots)labMatches.push({...lab.activeMatch,sessionDate:arr(lab.sessions).find(s=>s.id===lab.activeId)?.date||"",sessionTitle:"進行中の研究"});
  const aEvents=arr(arena.sessions).flatMap(m=>arr(m?.events)).concat(arr(arena.events)),lEvents=arr(lab.sessions).flatMap(s=>arr(s?.matches).flatMap(m=>arr(m?.events))).concat(arr(lab.activeMatch?.events));
  const metrics=[["勝ち抜き完了試合",arenaMatches.length],["1on1完了試合",labMatches.length],["勝ち抜きフィニッシュ",aEvents.filter(e=>fin[e?.finish]).length],["1on1フィニッシュ",lEvents.filter(e=>fin[e?.finish]).length]];
