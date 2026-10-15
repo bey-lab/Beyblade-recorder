@@ -64,13 +64,13 @@ body.legacy #home{display:none!important}
 @media(max-width:580px){#home{padding-left:14px;padding-right:14px}.home-header{margin-bottom:25px}.home-brand{font-size:30px}.home-emblem{width:44px;height:44px;font-size:24px}.home-status{font-size:10px;padding:8px}.mode-grid{gap:9px}.mode-card{padding:15px;border-radius:15px;min-height:175px}.mode-king{min-height:195px}.mode-card h2{font-size:22px}.mode-card .glyph{right:14px;top:16px;font-size:34px}.mode-card .en{font-size:9px}.mode-card .go{font-size:10px;padding:5px 8px}.home-bottom{grid-template-columns:1fr}.home-link{min-height:88px}.home-link strong{font-size:18px}}
 @media(prefers-reduced-motion:reduce){.mode-card{transition:none}}
 
-</style>
+.home-env{display:flex;align-items:center;flex-wrap:wrap;gap:9px;border:1px solid #5a708e;border-radius:13px;background:#16243b;padding:8px 10px}.home-env-label{font-size:9px;font-weight:900;letter-spacing:.09em;color:#b9c9dd}.home-env-options{display:flex;gap:5px}.home-env-button{font:inherit;font-size:12px;font-weight:900;border-radius:8px;padding:10px 13px;border:1px solid #506782;background:#23324a;color:#cad8e8;cursor:pointer}.home-env-button[aria-pressed="true"]{background:#e6bb6c;color:#1b2331;border-color:#ffe6a2;box-shadow:0 0 12px #e9bd714b}.home-env-button:focus-visible{outline:3px solid #fff;outline-offset:2px}@media(max-width:580px){.home-header{align-items:flex-start;flex-wrap:wrap}.home-env{width:100%;justify-content:space-between}}</style>
 </head>
 <body>
 <section id="home" aria-label="BEY LAB ホーム">
  <header class="home-header">
   <div class="home-mark"><div class="home-emblem" aria-hidden="true">✦</div><div><div class="home-brand">BEY LAB</div><div class="home-kicker">BATTLE & RESEARCH SYSTEM</div></div></div>
-  <div class="home-status">⚙ 記録環境の分離は準備中</div>
+  <div class="home-env" aria-label="記録環境の選択"><span class="home-env-label">RECORD ENVIRONMENT</span><div class="home-env-options"><button id="envTest" type="button" class="home-env-button" aria-pressed="true">🧪 テスト</button><button id="envOfficial" type="button" class="home-env-button" aria-pressed="false">🏆 本番</button></div></div>
  </header>
  <div class="home-heading"><h1>どのバトルで遊ぶ？</h1><span>SELECT YOUR BATTLE</span></div>
  <nav class="mode-grid" aria-label="バトルモード">
@@ -82,9 +82,18 @@ body.legacy #home{display:none!important}
   <a class="home-link" href="./lab.html#analysis"><span class="symbol" aria-hidden="true">▥</span><span><strong>記録を見る →</strong><small>1on1の試合履歴・カスタム分析・研究データ</small></span></a>
   <a class="home-link" href="./index.html?legacy=1"><span class="symbol" aria-hidden="true">⌁</span><span><strong>従来の記録室 →</strong><small>旧形式の対戦記録・分析・バックアップ</small></span></a>
  </div>
- <p class="home-notice"><strong>データ管理について：</strong>本番とテストの保存領域はまだ分かれていません。既存の記録はそのまま保存しています。安全な移行と削除機能は次の段階で実装します。</p>
+ <p class="home-notice"><strong>保存環境を分離しました。</strong>本番とテストは別々に記録されます。以前の記録は「従来の記録室」および旧保存領域に残してあり、新しい本番・テストには自動移行しません。<strong>移行・削除機能は次の段階です。</strong> 環境を切り替えた後、バトル画面を開いてください。</p>
 </section>
 <script>if(new URLSearchParams(location.search).get("legacy")==="1")document.body.classList.add("legacy");</script>
+<script>
+(function(){
+ const key="bey-lab-environment-v1",test=document.getElementById("envTest"),official=document.getElementById("envOfficial");
+ let env="test";try{if(localStorage.getItem(key)==="official")env="official"}catch(e){}
+ function draw(){test.setAttribute("aria-pressed",String(env==="test"));official.setAttribute("aria-pressed",String(env==="official"))}
+ function choose(next){try{localStorage.setItem(key,next);env=next;draw()}catch(e){alert("保存環境の切り替えに失敗しました。ブラウザの保存設定をご確認ください。")}}
+ test.addEventListener("click",()=>choose("test"));official.addEventListener("click",()=>choose("official"));draw();
+})();
+</script>
 
 <main class="app">
   <header class="top"><div class="branding"><div class="mark">⟳</div><div><div class="brandName">BEY LAB</div><div class="sub">BATTLE RECORD · X</div></div></div><div class="pill" id="saveStatus">端末内に保存</div></header>
