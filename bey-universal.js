@@ -4,10 +4,10 @@
  "use strict";
   function makeHeader(){
   const mode=document.body.dataset.beyMode;
-  if(!["arena","lab","league","home","records"].includes(mode)||document.querySelector(".bey-shared-header"))return;
+  if(!["arena","lab","league","home","records","data"].includes(mode)||document.querySelector(".bey-shared-header"))return;
   if(mode==="home"&&document.body.classList.contains("legacy"))return;
   const old=mode==="home"?document.querySelector("#home > header"):document.querySelector("header");
-  if(!old)return;
+  if(!old&&mode!=="data")return;
   const header=document.createElement("div");header.className="bey-shared-header";
   const brand=document.createElement("a");brand.className="bey-shared-brand";brand.href="./index.html?home=1";
   brand.innerHTML='<span class="bey-brand-orbit">⟳</span><span><strong>BEY LAB</strong><small>BATTLE RESEARCH SYSTEM</small></span>';
@@ -25,15 +25,27 @@
   if(arenaHistory){arenaHistory.classList.add("bey-nav-button");nav.appendChild(arenaHistory)}
   else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./records.html";a.textContent="📖 記録・履歴";nav.appendChild(a)}
   const home=document.createElement("a");home.className="bey-nav-button bey-home-button";home.href="./index.html?home=1";home.textContent="⌂ ホームへ戻る";nav.appendChild(home);
-  const env=old.querySelector(".env-indicator")||document.getElementById("environment");
-  if(env){env.classList.add("bey-shared-env");nav.prepend(env)}
+  const env=old?.querySelector(".env-indicator")||document.getElementById("environment");
+  if(env){
+   env.classList.add("bey-shared-env");nav.prepend(env);
+   if(mode==="lab"){
+    const official=window.BEY_ENV==="official";
+    env.textContent=official?"🏆 本番データ":"🧪 テストデータ";
+    env.classList.toggle("official",official);
+   }
+  }
+  if(mode==="data"){
+   const badge=document.createElement("span");badge.className="bey-shared-env";
+   const official=localStorage.getItem("bey-lab-environment-v1")==="official";
+   badge.textContent=official?"🏆 現在：本番":"🧪 現在：テスト";nav.prepend(badge);
+  }
   if(mode==="home"){
    const homeEnv=old.querySelector(".home-env");
    if(homeEnv){homeEnv.classList.add("bey-home-env-shared");nav.prepend(homeEnv)}
   }
   header.append(brand,nav);
-  old.parentNode.insertBefore(header,old);
-  old.classList.add("bey-original-header-hidden");
+  if(old){old.parentNode.insertBefore(header,old);old.classList.add("bey-original-header-hidden")}
+  else{const wrap=document.querySelector("main")||document.body;wrap.insertBefore(header,wrap.firstChild)}
  }
  function arrange(){
   makeHeader();
