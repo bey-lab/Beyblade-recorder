@@ -343,11 +343,20 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes arenaMetalLock{0%{border-color:#fff;box-shadow:inset 0 0 0 2px #fff9,0 0 18px #fff8;filter:brightness(1.7)}32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 14px #dec58b70;filter:brightness(1.35)}100%{box-shadow:none;filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.fighter .arena-metal,.fighter .arena-metal::before,.fighter .arena-metal::after{animation:none!important}.fighter .arena-metal{border-color:#ffe6ac!important;box-shadow:inset 0 0 0 2px #ffe6ac88!important}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style></head><body>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}</style><script>
+/* Shared mode preference. Legacy storage is never modified by this switch. */
+(function(){
+ const setting="bey-lab-environment-v1";
+ let env="test";
+ try{if(localStorage.getItem(setting)==="official")env="official"}catch(e){}
+ window.BEY_ENV=env;
+ document.documentElement.dataset.beyEnv=env;
+})();
+</script></head><body>
 <div class="wrap">
 <header>
  <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
- <div class="top-actions"><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn accent" href="./lab.html">🔬 1on1研究</a><a class="minibtn accent" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a></div>
+ <div class="top-actions"><span class="env-indicator" id="environmentBadge"></span><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn accent" href="./lab.html">🔬 1on1研究</a><a class="minibtn accent" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a></div>
 </header>
 <div class="meeting-strip">
  <div class="meeting-label" id="meetingLabel">📅 大会未設定</div>
@@ -427,7 +436,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 <script>
 (function(){
 "use strict";
-const KEY="bey-lab-arena-v1", OLD="bey-lab-recorder-v1";
+const KEY="bey-lab-arena-v1-"+window.BEY_ENV, OLD="bey-lab-recorder-v1";
 const FIN=[["spin","スピン",1,"◉"],["over","オーバー",2,"↗"],["burst","バースト",2,"✦"],["extreme","エクストリーム",3,"⚡"]];
 const defaults=["ドランソード","ヘルズサイズ","ウィザードアロー","ナイトシールド"];
 const ids=x=>document.getElementById(x);
@@ -814,6 +823,6 @@ ids("meetingForm").addEventListener("submit",e=>{e.preventDefault();const date=i
 ids("modal").addEventListener("submit",e=>{const form=e.target.closest("form[data-form]");if(!form)return;e.preventDefault();const input=form.querySelector("input");if(addRoster(form.dataset.form,input.value)){showModal("edit");}else{alert("登録済みか、名前が空欄です。別の名前を入力してください。")}});
 ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeModal()});
 if(navigator.standalone||(typeof matchMedia==="function"&&matchMedia("(display-mode: standalone)").matches)){document.documentElement?.classList?.add("installed-mode");}
-ensureMeeting();render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
+ids("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";ids("environmentBadge").classList.toggle("official",window.BEY_ENV==="official");ensureMeeting();render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
 </script></body></html>
