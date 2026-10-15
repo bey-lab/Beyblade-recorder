@@ -2,7 +2,36 @@
    Moves existing DOM nodes: event listeners, IDs and data remain unchanged. */
 (function(){
  "use strict";
+  function makeHeader(){
+  const mode=document.body.dataset.beyMode;
+  if(!["arena","lab","league"].includes(mode)||document.querySelector(".bey-shared-header"))return;
+  const old=document.querySelector("header");
+  if(!old)return;
+  const header=document.createElement("div");header.className="bey-shared-header";
+  const brand=document.createElement("a");brand.className="bey-shared-brand";brand.href="./index.html?home=1";
+  brand.innerHTML='<span class="bey-brand-orbit">⟳</span><span><strong>BEY LAB</strong><small>BATTLE RESEARCH SYSTEM</small></span>';
+  const nav=document.createElement("nav");nav.className="bey-shared-nav";nav.setAttribute("aria-label","共通メニュー");
+  const modes=[["arena","👑 勝ち抜き","./arena.html"],["lab","🔬 1on1研究","./lab.html"],["league","🏆 3on3リーグ","./league.html"]];
+  for(const [id,label,href] of modes){
+   const a=document.createElement("a");a.className="bey-nav-button"+(mode===id?" active":"");a.href=href;a.textContent=label;
+   if(mode===id)a.setAttribute("aria-current","page");
+   nav.appendChild(a);
+  }
+  const arenaEdit=mode==="arena"?old.querySelector('[data-action="edit"]'):null;
+  const arenaHistory=mode==="arena"?old.querySelector('[data-action="history"]'):null;
+  if(arenaEdit){arenaEdit.classList.add("bey-nav-button");nav.appendChild(arenaEdit)}
+  else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./data.html";a.textContent="⚙ 登録・データ管理";nav.appendChild(a)}
+  if(arenaHistory){arenaHistory.classList.add("bey-nav-button");nav.appendChild(arenaHistory)}
+  else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./records.html";a.textContent="📖 記録・履歴";nav.appendChild(a)}
+  const home=document.createElement("a");home.className="bey-nav-button bey-home-button";home.href="./index.html?home=1";home.textContent="⌂ ホームへ戻る";nav.appendChild(home);
+  const env=old.querySelector(".env-indicator")||document.getElementById("environment");
+  if(env){env.classList.add("bey-shared-env");nav.prepend(env)}
+  header.append(brand,nav);
+  old.parentNode.insertBefore(header,old);
+  old.classList.add("bey-original-header-hidden");
+ }
  function arrange(){
+  makeHeader();
   const mode=document.body.dataset.beyMode;
   if(mode==="lab"){
    const board=document.querySelector(".duel-score"),versus=document.querySelector(".versus");
