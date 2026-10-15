@@ -331,6 +331,17 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes beyFrame{0%{box-shadow:inset 0 0 0 2px #fff,0 0 26px 8px var(--slash-color)}45%{box-shadow:inset 0 0 0 2px var(--slash-color),0 0 20px 4px var(--slash-color)}100%{box-shadow:inset 0 0 0 0 transparent,0 0 0 transparent}}
 @keyframes beyPulse{10%{opacity:.5}45%{opacity:.14}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.bey-slash,.bey-slash::before,.bey-slash::after{animation-duration:.01ms!important}.bey-slash{box-shadow:inset 0 0 0 2px var(--slash-color)}}
+/* Proven 1on1-style metal sweep, applied to arena selection. */
+.fighter .selected,.fighter .pick{position:relative;isolation:isolate;overflow:hidden;transform:translateZ(0)}
+.fighter .selected::before,.fighter .pick::before{content:"";pointer-events:none;position:absolute;z-index:5;opacity:0;top:-65%;left:-42%;width:38%;height:230%;background:linear-gradient(90deg,transparent 0%,#d3e5f705 12%,#d3e5f738 32%,#f9fdfff0 47%,#ffe8b5fd 51%,#ecf6ff73 57%,#ffd38317 75%,transparent 100%);transform:skewX(-25deg) translateX(0)}
+.fighter .selected::after,.fighter .pick::after{content:"";pointer-events:none;position:absolute;z-index:6;opacity:0;top:-70%;left:-35%;width:2px;height:240%;transform:rotate(24deg);background:linear-gradient(to bottom,transparent 4%,#eff8ff 23%,#fff 43%,#ffe1a5 52%,#fdfaff 68%,transparent 95%);box-shadow:0 0 8px 1px #f5f5ec55}
+.fighter .selected.arena-metal,.fighter .pick.arena-metal{animation:arenaMetalLock .65s cubic-bezier(.16,.72,.28,1) both}
+.fighter .selected.arena-metal::before,.fighter .pick.arena-metal::before{animation:arenaMetalSweep .6s cubic-bezier(.12,.66,.26,1) both}
+.fighter .selected.arena-metal::after,.fighter .pick.arena-metal::after{animation:arenaBladeCut .55s cubic-bezier(.12,.66,.26,1) both}
+@keyframes arenaMetalSweep{0%{opacity:0;transform:skewX(-25deg) translateX(-18%)}13%{opacity:1}75%{opacity:1}100%{opacity:0;transform:skewX(-25deg) translateX(600%)}}
+@keyframes arenaBladeCut{0%{left:-35%;opacity:0}12%{opacity:1}73%{opacity:.95}100%{left:130%;opacity:0}}
+@keyframes arenaMetalLock{0%{border-color:#fff;box-shadow:inset 0 0 0 2px #fff9,0 0 18px #fff8;filter:brightness(1.7)}32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 14px #dec58b70;filter:brightness(1.35)}100%{box-shadow:none;filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.fighter .arena-metal,.fighter .arena-metal::before,.fighter .arena-metal::after{animation:none!important}.fighter .arena-metal{border-color:#ffe6ac!important;box-shadow:inset 0 0 0 2px #ffe6ac88!important}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -775,7 +786,7 @@ function playSelectionSlash(side,kind){
 }
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
-if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);playSelectionSlash(side,kind);}
+if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){for(const el of [fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")]){if(!el)continue;el.classList.remove("arena-metal");void el.offsetWidth;el.classList.add("arena-metal");}}}
 else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
 else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
 else if(action==="swap"){closeAllBladePickers();snapshot();state.flipped=!state.flipped;save();render();}
