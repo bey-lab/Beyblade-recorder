@@ -343,7 +343,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes arenaMetalLock{0%{border-color:#fff;box-shadow:inset 0 0 0 2px #fff9,0 0 18px #fff8;filter:brightness(1.7)}32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 14px #dec58b70;filter:brightness(1.35)}100%{box-shadow:none;filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.fighter .arena-metal,.fighter .arena-metal::before,.fighter .arena-metal::after{animation:none!important}.fighter .arena-metal{border-color:#ffe6ac!important;box-shadow:inset 0 0 0 2px #ffe6ac88!important}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}</style><link rel="stylesheet" href="./bey-universal.css"><script>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.arena-optional-parts{margin-top:13px;padding-top:10px;border-top:1px solid #536680}.arena-parts-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.arena-part{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:850}.arena-part small{font-size:10px;color:#a5bbd4}.arena-part select{min-width:0;width:100%;padding:9px 5px;background:#1c304a;color:#fff;border:1px solid #6984a7;border-radius:8px;min-height:42px}.listlabel a.blade-more{font-size:11px;color:#ffdfa2;text-decoration:none;margin-right:4px}@media(max-width:650px){.arena-parts-row{grid-template-columns:1fr}}</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -352,7 +352,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
  window.BEY_ENV=env;
  document.documentElement.dataset.beyEnv=env;
 })();
-</script></head><body data-bey-mode="arena">
+</script><script src="./bey-hands.js"></script></head><body data-bey-mode="arena">
 <div class="wrap">
 <header>
  <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
@@ -478,9 +478,24 @@ function snapshot(){undo.push(JSON.stringify(state));if(undo.length>30)undo.shif
 function sides(){return state.flipped?["X","B"]:["B","X"]}
 function playerButton(name,side){const on=state.slots[side].player===name;return '<button class="pick'+(on?' on':'')+'" type="button" data-action="choose" data-kind="player" data-side="'+side+'" data-value="'+esc(name)+'">'+esc(name)+'</button>'}
 function bladeButton(name,side){const on=state.slots[side].blade===name;return '<button class="pick'+(on?' on':'')+'" type="button" data-action="choose" data-kind="blade" data-side="'+side+'" data-value="'+esc(name)+'">'+esc(name)+'</button>'}
+function arenaParts(side,slot){
+ const hand=window.BEY_HANDS;
+ const renderPart=(part,label)=>{
+  const pool=[...(hand?.get(slot.player,part)||[]),...(hand?.pool(part)||[])];
+  const names=[...new Set(pool)].filter(Boolean);
+  const selected=slot[part]||"";
+  const options=['<option value="">未設定（選択しない）</option>',...names.map(n=>'<option value="'+esc(n)+'" '+(selected===n?'selected':'')+'>'+esc(n)+'</option>')];
+  if(selected&&!names.includes(selected))options.push('<option selected value="'+esc(selected)+'">'+esc(selected)+'</option>');
+  return '<label class="arena-part"><span>'+label+' <small>任意</small></span><select data-arena-part="'+part+'" data-side="'+side+'">'+options.join("")+'</select></label>';
+ };
+ return '<div class="arena-optional-parts"><div class="eyebrow">カスタム · 未設定でもOK</div><div class="arena-parts-row">'+renderPart("ratchet","ラチェット")+renderPart("bit","ビット")+'</div></div>';
+}
 function renderFighter(id,side){
  const el=ids(id),slot=state.slots[side];
  const oldP=el.querySelector(".picklist.players"),oldB=el.querySelector(".picklist.blades");
+ const hand=window.BEY_HANDS?.get(slot.player,"blade")||[];
+ const shown=hand.length?[...hand.filter(x=>state.blades.includes(x)),...state.blades.filter(x=>!hand.includes(x))]:state.blades;
+ const favorites=hand.filter(x=>state.blades.includes(x));
  const playerScroll=oldP?.scrollTop||0,bladeScroll=oldB?.scrollTop||0;
  el.className="fighter"+(side==="X"?" x":"");
  el.innerHTML='<div class="fhead"><div><div class="side">'+side+'-SIDE</div><div class="subhead">BLADE FIGHTER</div></div><span class="role">'+(side==="B"?"🔥 RED":"❄ BLUE")+'</span></div><div class="fbody">'+
@@ -488,8 +503,8 @@ function renderFighter(id,side){
   '<div class="listlabel"><span>プレイヤーを選択</span><button type="button" data-action="edit">＋ 登録・編集</button></div>'+
   '<div class="picklist players">'+state.players.map(v=>playerButton(v,side)).join("")+'</div>'+
   '<div class="eyebrow">ブレード名</div><div class="selected"><span class="gem">◉</span>'+esc(slot.blade)+'</div>'+
-  '<div class="listlabel"><span>ブレードを選択 · '+state.blades.length+'機</span><div><button class="blade-more" type="button" data-action="all-blades" data-side="'+side+'">▦ 全機体</button><button type="button" data-action="edit">＋ 編集</button></div></div>'+
-  '<div class="picklist blades">'+state.blades.map(v=>bladeButton(v,side)).join("")+'</div></div>';
+  '<div class="listlabel"><span>ブレードを選択 · '+(favorites.length?favorites.length+'機の手札':'全'+state.blades.length+'機')+'</span><div><a class="blade-more" href="./hands.html">🃏 手札管理</a><button class="blade-more" type="button" data-action="all-blades" data-side="'+side+'">▦ 全機体</button><button type="button" data-action="edit">＋ 編集</button></div></div>'+
+  '<div class="picklist blades">'+(favorites.length?favorites:state.blades).map(v=>bladeButton(v,side)).join("")+'</div>'+arenaParts(side,slot)+'</div>';
  const newP=el.querySelector(".picklist.players"),newB=el.querySelector(".picklist.blades");
  if(newP)newP.scrollTop=playerScroll;
  if(newB)newB.scrollTop=bladeScroll;
@@ -500,7 +515,8 @@ function drawBladeGrid(position,filter=""){
  const side=bladePickerSides[position];
  if(!side)return;
  const term=filter.trim().toLocaleLowerCase("ja");
- const list=state.blades.filter(x=>x.toLocaleLowerCase("ja").includes(term));
+ const hand=window.BEY_HANDS?.get(state.slots[side].player,"blade")||[];
+ const list=state.blades.filter(x=>x.toLocaleLowerCase("ja").includes(term)).sort((a,b)=>Number(hand.includes(b))-Number(hand.includes(a)));
  ids("bladeGrid"+capPosition(position)).innerHTML=list.map(x=>bladeButton(x,side)).join("")||
    '<p style="color:#b9cde4">該当するブレードはありません。</p>';
 }
@@ -793,9 +809,17 @@ function playSelectionSlash(side,kind){
   setTimeout(()=>slash.remove(),1500);
  }
 }
+document.addEventListener("change",e=>{
+ const t=e.target;if(!t.matches("[data-arena-part]"))return;
+ const part=t.dataset.arenaPart,side=t.dataset.side;
+ if(!["ratchet","bit"].includes(part)||!["B","X"].includes(side))return;
+ snapshot();state.slots[side][part]=clean(t.value);save();render();
+ const fighter=ids(sides()[0]===side?"left":"right");
+ window.BEY_UI?.flash(fighter?.querySelector('[data-arena-part="'+part+'"]'));
+});
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
-if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){for(const el of [fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")]){if(!el)continue;el.classList.remove("arena-metal");void el.offsetWidth;el.classList.add("arena-metal");}const selected=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(selected){const animation=getComputedStyle(selected).animationName;const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;ids("resultNotice").textContent="⚡ 演出診断："+(animation&&animation!=="none"?"アニメーション有効":"アニメーション停止")+(reduced?" · iPhoneの視差効果を減らす設定が有効":"")+" · "+side+"側 "+(kind==="blade"?"ブレード":"プレイヤー")+"選択";}}}
+if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;if(kind==="player"){state.slots[side].ratchet="";state.slots[side].bit="";}save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){for(const el of [fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")]){if(!el)continue;el.classList.remove("arena-metal");void el.offsetWidth;el.classList.add("arena-metal");}const selected=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(selected){const animation=getComputedStyle(selected).animationName;const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;ids("resultNotice").textContent="⚡ 演出診断："+(animation&&animation!=="none"?"アニメーション有効":"アニメーション停止")+(reduced?" · iPhoneの視差効果を減らす設定が有効":"")+" · "+side+"側 "+(kind==="blade"?"ブレード":"プレイヤー")+"選択";}}}
 else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
 else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
 else if(action==="swap"){closeAllBladePickers();snapshot();state.flipped=!state.flipped;save();render();}
