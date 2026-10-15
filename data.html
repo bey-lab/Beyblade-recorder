@@ -3,7 +3,7 @@
 <div class="top"><div><strong>BEY LAB</strong><div class="hint">DATA CONTROL ROOM</div></div><a href="./index.html">⌂ ホームへ戻る</a></div><h1>💾 記録管理室</h1><p class="hint">本番・テスト・以前の記録を管理します。記録はこの端末のブラウザ内に保存され、別端末には自動同期されません。</p>
 <div class="card"><h2>保存先を選ぶ</h2><div class="row"><label for="mode">モード</label><select id="mode"><option value="arena">👑 勝ち抜き</option><option value="lab">⚗ 1on1研究</option></select><label for="env">環境</label><select id="env"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></div><p id="overview" class="hint"></p><button id="backup" class="primary">⬇ 選択中の環境をJSON保存</button></div>
 <div class="card"><h2>📦 以前の記録を引き継ぐ</h2><p id="legacyInfo" class="hint"></p><p class="warning">以前のデータは移行後も元の場所に残ります。現在の環境に記録がある場合、引き継ぎによって上書きされるため、両方のJSONバックアップを先に保存してください。</p><div class="row"><button id="legacyBackup">⬇ 旧データをJSON保存</button><button id="migrate" class="primary">↪ この環境に旧データをコピー</button></div></div>
-<div class="card"><h2>🗂 試合を個別に削除</h2><p class="hint">選んだ環境の保存済み試合のみ表示します。削除の直前にJSONバックアップを自動保存します。</p><div id="matches"></div></div>
+<div class="card"><h2>🗂 試合を個別に削除</h2><p class="hint">選んだ環境の保存済み試合のみ表示します。削除の直前にJSONバックアップのダウンロードを開始します。<strong>ファイルが保存されたことを確認してから削除を確定してください。</strong></p><div id="matches"></div></div>
 <div class="card"><h2>📅 大会・研究テーマを削除</h2><p class="hint">勝ち抜きは大会単位、1on1は研究セッション単位。所属する保存済み試合もまとめて削除します。</p><div id="groups"></div></div>
 <div class="card"><h2>⚠ 一括削除</h2><p class="warning">選択中の環境の戦績・プレイヤー・機体設定をすべて消去します。別の環境や旧データには触れません。削除前にバックアップを保存します。</p><button id="wipe" class="danger">選択中の環境を全消去</button></div>
 <div id="status" role="status" aria-live="polite"></div></main>
@@ -36,8 +36,9 @@ function edit(kind,value){const {mode,env}=current(),k=key(mode,env),d=read(k);i
  if(kind==="match"){if(mode==="arena"){const i=Number(value);if(!Number.isInteger(i)||!d.sessions[i])return;title="保存済み試合を1件削除";}else{const [si,mi]=value.split(":").map(Number);if(!d.sessions[si]?.matches?.[mi])return;title="1on1の保存済み試合を1件削除";}}
  else if(kind==="group"){const i=Number(value);if(!Number.isInteger(i)||(mode==="arena"?!d.meetings?.[i]:!d.sessions[i]))return;title=mode==="arena"?"大会と所属する保存済み試合を削除":"研究テーマと所属する記録を削除";}
  else if(kind==="wipe")title=names[mode]+"の"+(env==="test"?"テスト":"本番")+"環境を全消去";
- if(!confirm(title+"しますか？\n削除前にJSONバックアップを保存します。"))return;
+ if(!confirm(title+"しますか？\n次にバックアップJSONのダウンロードを開始します。"))return;
  backup(k+"-before-delete",d);
+ if(!confirm("バックアップJSONのダウンロードを開始しました。ファイルが保存されたことを確認できましたか？\n確認できていない場合はキャンセルしてください。"))return;
  if(kind==="match"){if(mode==="arena")d.sessions.splice(Number(value),1);else{const [si,mi]=value.split(":").map(Number);d.sessions[si].matches.splice(mi,1);}}
  else if(kind==="group"){const i=Number(value);if(mode==="arena"){const [g]=d.meetings.splice(i,1);d.sessions=d.sessions.filter(m=>m.meetingId!==g.id);if(d.activeMeetingId===g.id){d.activeMeetingId=null;d.events=[];d.scores={B:0,X:0};d.winner=null;}}else{const [g]=d.sessions.splice(i,1);if(d.activeId===g.id){d.activeId=null;d.activeMatch=null;}}}
  else if(kind==="wipe"){try{localStorage.removeItem(k);say("選択した環境を全消去しました。バックアップを保存しました。");list();return}catch(e){say("削除に失敗しました。");return}}
@@ -49,6 +50,7 @@ $("legacyBackup").addEventListener("click",()=>{const {mode}=current(),d=read(ol
 $("migrate").addEventListener("click",()=>{const {mode,env}=current(),source=read(old[mode]),targetKey=key(mode,env),target=read(targetKey);if(!good(mode,source))return;
  if(!confirm("以前の"+names[mode]+"の記録・プレイヤー・機体を、"+(env==="test"?"テスト":"本番")+"環境にコピーします。\n元の記録は残ります。現在の環境にデータがあれば上書きします。\n続けますか？"))return;
  backup(old[mode]+"-before-copy",source);if(good(mode,target))backup(targetKey+"-before-copy",target);
+ if(!confirm("旧データと現在の環境のバックアップを保存できたことを確認しましたか？\n確認できた場合のみコピーします。"))return;
  if(save(targetKey,source))say("旧データをコピーしました。バトル画面を再読み込みすると反映されます。");list();
 });
 $("matches").addEventListener("click",e=>{const b=e.target.closest("[data-delete-match]");if(b)edit("match",b.dataset.deleteMatch)});
