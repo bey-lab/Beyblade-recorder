@@ -502,7 +502,7 @@ function renderFighter(id,side){
   '<div class="listlabel"><span>プレイヤーを選択</span><button type="button" data-action="edit">＋ 登録・編集</button></div>'+
   '<div class="picklist players">'+state.players.map(v=>playerButton(v,side)).join("")+'</div>'+
   '<div class="eyebrow">ブレード名</div><div class="selected"><span class="gem">◉</span>'+esc(slot.blade)+'</div>'+
-  '<div class="listlabel"><span>ブレードを選択 · '+(favorites.length?favorites.length+'機の手札':'全'+state.blades.length+'機')+'</span><div><a class="blade-more" href="./hands.html">🃏 手札管理</a><button class="blade-more" type="button" data-action="all-blades" data-side="'+side+'">▦ 全機体</button><button type="button" data-action="edit">＋ 編集</button></div></div>'+
+  '<div class="listlabel"><span>ブレードを選択 · '+(favorites.length?favorites.length+'機の手札':'全'+state.blades.length+'機')+'</span><div><a class="blade-more" href="./hands.html?player='+encodeURIComponent(slot.player)+'">🃏 手札管理</a><button class="blade-more" type="button" data-action="all-blades" data-side="'+side+'">▦ 全機体</button><button type="button" data-action="edit">＋ 編集</button></div></div>'+
   '<div class="picklist blades">'+(favorites.length?favorites:state.blades).map(v=>bladeButton(v,side)).join("")+'</div>'+arenaParts(side,slot)+'</div>';
  const newP=el.querySelector(".picklist.players"),newB=el.querySelector(".picklist.blades");
  if(newP)newP.scrollTop=playerScroll;
