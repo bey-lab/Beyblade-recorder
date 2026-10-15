@@ -75,7 +75,30 @@ if(!state.leagues.some(x=>x.id===state.activeLeague))state.activeLeague=state.le
 const current=()=>state.leagues.find(x=>x.id===state.activeLeague);
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){alert("保存できませんでした。ブラウザの空き容量をご確認ください。");return false}}
 function ensureDraft(){if(!state.draft||!state.draft.decks)state.draft=blank()}
-ensureDraft();state.draft.confirmed??={B:false,X:false};state.draft.revealed??={B:[],X:[]};state.draft.started??=!!state.draft.locked;save();
+ensureDraft();
+(function migrateDraft(){
+ const d=state.draft,base=blank();
+ if(!d.players||typeof d.players!=="object")d.players=base.players;
+ if(!d.decks||typeof d.decks!=="object")d.decks=base.decks;
+ if(!d.active||typeof d.active!=="object")d.active={B:0,X:0};
+ if(!d.scores||typeof d.scores!=="object")d.scores={B:0,X:0};
+ if(!Array.isArray(d.events))d.events=[];
+ if(!d.confirmed||typeof d.confirmed!=="object")d.confirmed={B:false,X:false};
+ if(!d.revealed||typeof d.revealed!=="object")d.revealed={B:[],X:[]};
+ for(const side of ["B","X"]){
+  if(typeof d.players[side]!=="string")d.players[side]="";
+  if(!Array.isArray(d.decks[side]))d.decks[side]=[];
+  d.decks[side]=[0,1,2].map(i=>{const p=d.decks[side][i]||{};return {blade:String(p.blade||""),ratchet:String(p.ratchet||""),bit:String(p.bit||"")}});
+  if(!Number.isInteger(d.active[side])||d.active[side]<0||d.active[side]>2)d.active[side]=0;
+  if(typeof d.scores[side]!=="number")d.scores[side]=0;
+  if(!Array.isArray(d.revealed[side]))d.revealed[side]=[];
+  d.confirmed[side]=!!d.confirmed[side];
+ }
+ d.started??=!!d.locked;
+ d.winner??=null;
+ if(d.winner&&!d.snapshot)d.snapshot={players:clone(d.players),decks:clone(d.decks)};
+})();
+save();
 const roster=(()=>{try{const a=JSON.parse(localStorage.getItem("bey-lab-arena-v1-"+env));if(a&&Array.isArray(a.players)&&Array.isArray(a.blades))return {players:a.players.filter(x=>typeof x==="string"),blades:a.blades.filter(x=>typeof x==="string")}}catch(e){}return {players:[],blades:[]}})();
 const partOptions={ratchet:["1-50","1-60","2-60","3-60","4-60","5-60","7-60","9-60","1-70","3-70","5-70","9-70","1-80","3-80","5-80","9-80"],bit:["F","R","B","T","H","C","A","GF","FB","LR","N","P","LF","U","D","S","O","E","Q","HT","HN","L","M","K","G","W","DB"]};
 function optionList(items,current,empty){const unique=[...new Set([current,...items].filter(Boolean))];return '<option value="">'+empty+'</option>'+unique.map(v=>'<option value="'+esc(v)+'" '+(v===current?'selected':'')+'>'+esc(v)+'</option>').join("")}
