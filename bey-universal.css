@@ -43,3 +43,28 @@
 .bey-universal-stage .bey-league-sides>.side:first-child{grid-column:1;grid-row:1}
 .bey-universal-stage .bey-league-sides>.side:last-child{grid-column:3;grid-row:1}
 @media(max-width:650px){.bey-universal-stage .bey-league-sides>.side:first-child{grid-column:1;grid-row:2}.bey-universal-stage .bey-league-sides>.side:last-child{grid-column:2;grid-row:2}}
+
+/* Universal BEY LAB header. */
+.bey-shared-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px;padding:8px 0 12px;border-bottom:1px solid #405674;flex-wrap:wrap}
+.bey-shared-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#f4f6ff;white-space:nowrap}
+.bey-shared-brand strong{display:block;font-size:clamp(19px,2.2vw,27px);font-weight:950;letter-spacing:.11em;line-height:1.1}
+.bey-shared-brand small{display:block;color:#e8c37b;font-size:9px;letter-spacing:.18em;font-weight:850;margin-top:4px}
+.bey-brand-orbit{display:grid;place-items:center;width:34px;height:34px;border:1px solid #d5ad61;border-radius:50%;color:#e4bf76;box-shadow:0 0 12px #e4bf7633;font-size:22px}
+.bey-shared-nav{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.bey-shared-nav .bey-nav-button{appearance:none;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:1px solid #526681;border-radius:8px;padding:8px 10px;min-height:38px;background:#1b2b43;color:#e3eaf5;font:800 12px system-ui,-apple-system,sans-serif;white-space:nowrap;cursor:pointer;touch-action:manipulation}
+.bey-shared-nav .bey-nav-button.active{background:#4a3b2d;color:#ffdf99;border-color:#d2a75d;box-shadow:inset 0 0 12px #f8c66b22}
+.bey-shared-nav .bey-home-button{border-color:#b39a66;color:#ffe2a7}
+.bey-shared-nav .bey-nav-button:active{transform:scale(.97)}
+.bey-shared-env{font-size:11px;font-weight:850;color:#f2d08c;white-space:nowrap}
+.bey-original-header-hidden{display:none!important}
+@media(max-width:700px){.bey-shared-header{align-items:flex-start}.bey-shared-nav{justify-content:flex-start}.bey-shared-nav .bey-nav-button{font-size:11px;min-height:40px;padding:7px 8px}}
+/* Shared horizontal score: 1on1 is the visual reference. */
+.bey-universal-stage .bey-board .scoreboard{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:5px;margin:5px 0 12px;min-height:95px;text-align:center}
+.bey-universal-stage .bey-board .scoreboard .score{font-size:clamp(45px,5vw,75px);line-height:1}
+.bey-universal-stage .bey-board .scoreboard .versus{font-size:clamp(22px,3vw,33px);color:#f0c981}
+.bey-universal-stage .bey-board .duel-scoreline{grid-template-columns:minmax(0,1fr) minmax(65px,.65fr) minmax(0,1fr)}
+.bey-universal-stage .bey-board .duel-side strong{font-size:clamp(44px,5vw,76px)}
+/* Arena uses the same horizontal B–VS–X score motif, without changing scoring logic. */
+body[data-bey-mode="arena"] .center .scoreline{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:5px;text-align:center}
+body[data-bey-mode="arena"] .center .scoreline .score{font-size:clamp(46px,5vw,78px);text-align:center}
+body[data-bey-mode="arena"] .center .scoreline .dash{font-size:clamp(22px,3vw,34px);font-weight:950;color:#f0c981}
