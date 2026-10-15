@@ -5,9 +5,9 @@
 <div class="controls"><label for="env">保存環境</label><select id="env"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select><span id="envBadge" class="pill">🧪 テスト記録</span></div>
 <div class="metrics" id="metrics"></div>
 <div class="grid"><section class="card"><h2>👑 勝ち抜き・勝利ランキング</h2><div id="players"></div></section><section class="card"><h2>⚔️ 勝ち抜き・フィニッシュ傾向</h2><div id="arenaFinishes"></div></section><section class="card"><h2>⚗️ 1on1・カスタム勝率</h2><div id="combos"></div></section><section class="card"><h2>🛡️ 1on1・フィニッシュ傾向</h2><div id="labFinishes"></div></section></div>
-<div class="grid"><section class="card"><h2>📅 最近の勝ち抜き試合</h2><div id="arenaRecent"></div></section><section class="card"><h2>📋 最近の1on1試合</h2><div id="labRecent"></div></section></div>
+<div class="grid"><section class="card"><h2>🏆 3on3リーグ順位</h2><div id="leagueRanks"></div></section><section class="card"><h2>⚡ 3on3得点ブレード</h2><div id="leagueBlades"></div></section></div><div class="grid"><section class="card"><h2>📅 最近の勝ち抜き試合</h2><div id="arenaRecent"></div></section><section class="card"><h2>📋 最近の1on1試合</h2><div id="labRecent"></div></section></div>
 <p class="foot">※ 勝ち抜きは勝者プレイヤーに勝利数を付けます。勝ち抜き中のブレード変更を考慮し、ブレード単位の「試合勝率」は計算しません。1on1の勝率は完了した4点先取試合のみを使用。旧版の単発フィニッシュ記録は試合勝率に含めません。進行中の試合は完了試合数に含めません。</p>
-<div class="actions"><a href="./arena.html">👑 勝ち抜きへ</a><a href="./lab.html#analysis">⚗️ 1on1詳細分析へ</a><a href="./data.html">💾 データ管理室へ</a></div>
+<div class="actions"><a href="./arena.html">👑 勝ち抜きへ</a><a href="./lab.html#analysis">⚗️ 1on1詳細分析へ</a><a href="./league.html">🏆 3on3リーグへ</a><a href="./data.html">💾 データ管理室へ</a></div>
 </main><script>
 (function(){"use strict";
 const $=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),fin={spin:"スピン",over:"オーバー",burst:"バースト",extreme:"エクストリーム"};
@@ -18,7 +18,7 @@ const name=s=>[s?.blade,s?.ratchet,s?.bit].filter(Boolean).join(" ")||"機体不
 function rank(el,items,fmt){$(el).innerHTML=items.length?items.map((item,i)=>'<div class="rank"><span class="pos">'+(i+1)+'</span><div class="detail"><strong>'+esc(item.label)+'</strong><small>'+esc(fmt(item))+'</small><div class="bar"><i style="width:'+Math.max(0,Math.min(100,item.bar||0))+'%"></i></div></div></div>').join(""):'<div class="empty">まだ記録がありません。</div>'}
 function recent(el,items){$(el).innerHTML=items.length?items.slice(0,8).map(item=>'<div class="rank"><div class="detail"><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></div></div>').join(""):'<div class="empty">完了した試合はありません。</div>'}
 function draw(){
- const env=$("env").value,arena=read("bey-lab-arena-v1-"+env)||{},lab=read("bey-lab-1on1-v1-"+env)||{};
+ const env=$("env").value,arena=read("bey-lab-arena-v1-"+env)||{},lab=read("bey-lab-1on1-v1-"+env)||{},league=read("bey-lab-3on3-v1-"+env)||{};
  $("envBadge").textContent=env==="official"?"🏆 本番記録":"🧪 テスト記録";$("envBadge").classList.toggle("official",env==="official");
  const arenaMatches=arr(arena.sessions).filter(m=>m?.winner?.player),labMatches=arr(lab.sessions).flatMap(s=>arr(s?.matches).filter(m=>m?.winnerSide&&m.slots).map(m=>({...m,sessionDate:s.date,sessionTitle:s.title})));if(arena.winner?.player)arenaMatches.push({winner:arena.winner,events:arr(arena.events),meetingTitle:arr(arena.meetings).find(g=>g.id===arena.activeMeetingId)?.title||"",meetingDate:arr(arena.meetings).find(g=>g.id===arena.activeMeetingId)?.date||""});
  if(lab.activeMatch?.winnerSide&&lab.activeMatch.slots)labMatches.push({...lab.activeMatch,sessionDate:arr(lab.sessions).find(s=>s.id===lab.activeId)?.date||"",sessionTitle:"進行中の研究"});
@@ -32,6 +32,11 @@ function draw(){
  rank("labFinishes",finishRanks(lEvents),x=>x.n+"回");
  const combos=new Map();for(const m of labMatches){for(const side of ["B","X"]){const slot=m.slots[side];if(!slot)continue;const key=JSON.stringify([slot.blade,slot.ratchet,slot.bit]);const o=combos.get(key)||{label:name(slot),wins:0,total:0};o.total++;if(side===m.winnerSide)o.wins++;combos.set(key,o)}}
  const comboRanks=[...combos.values()].map(x=>({...x,bar:x.wins/x.total*100})).sort((a,b)=>b.bar-a.bar||b.total-a.total||a.label.localeCompare(b.label,"ja"));rank("combos",comboRanks,x=>pct(x.wins,x.total)+" · "+x.wins+"勝 / "+x.total+"試合"+(x.total<10?" · 参考値":""));
+ const leagueMatches=arr(league.leagues).flatMap(g=>arr(g.matches).map(m=>({...m,leagueTitle:g.title})));
+ const leaguePlayers=new Map(),leagueBlades=new Map();
+ for(const m of leagueMatches){if(!m.winnerSide||!m.players)continue;for(const side of ["B","X"]){const n=m.players[side],v=leaguePlayers.get(n)||{label:n,w:0,l:0};if(m.winnerSide===side)v.w++;else v.l++;leaguePlayers.set(n,v)}for(const e of arr(m.events)){const n=e.blade||"不明",v=leagueBlades.get(n)||{label:n,points:0,count:0};v.points+=Number(e.points)||0;v.count++;leagueBlades.set(n,v)}}
+ const lr=[...leaguePlayers.values()].sort((a,b)=>b.w-a.w||a.label.localeCompare(b.label,"ja")).slice(0,10);rank("leagueRanks",lr.map(x=>({...x,bar:x.w/Math.max(1,...lr.map(y=>y.w))*100})),x=>x.w+"勝 "+x.l+"敗（全リーグ合算）");
+ const lb=[...leagueBlades.values()].sort((a,b)=>b.points-a.points||a.label.localeCompare(b.label,"ja")).slice(0,10);rank("leagueBlades",lb.map(x=>({...x,bar:x.points/Math.max(1,...lb.map(y=>y.points))*100})),x=>x.points+"点 · "+x.count+"フィニッシュ");
  recent("arenaRecent",arenaMatches.slice().reverse().map(m=>({title:"🏆 "+m.winner.player+" 勝利",sub:(m.meetingTitle||m.meetingDate||m.finished||"")+" · "+arr(m.events).length+"フィニッシュ"})));
  recent("labRecent",labMatches.slice().reverse().map(m=>({title:"🏆 "+(m.slots[m.winnerSide]?.player||"勝者")+" · "+name(m.slots[m.winnerSide]),sub:(m.sessionTitle||m.sessionDate||"")+" · "+name(m.slots.B)+" VS "+name(m.slots.X)})));
 }
