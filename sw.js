@@ -1,5 +1,5 @@
-const CACHE='bey-lab-pwa-v32';
-const ASSETS=['./','./index.html','./arena.html','./lab.html','./data.html','./records.html','./league.html','./bey-universal.css','./bey-universal.js','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
+const CACHE='bey-lab-pwa-v33';
+const ASSETS=['./','./index.html','./arena.html','./lab.html','./data.html','./records.html','./league.html','./bey-universal.css','./bey-universal.js','./bey-hands.js','./hands.html','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
