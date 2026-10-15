@@ -494,8 +494,7 @@ function renderFighter(id,side){
  const el=ids(id),slot=state.slots[side];
  const oldP=el.querySelector(".picklist.players"),oldB=el.querySelector(".picklist.blades");
  const hand=window.BEY_HANDS?.get(slot.player,"blade")||[];
- const shown=hand.length?[...hand.filter(x=>state.blades.includes(x)),...state.blades.filter(x=>!hand.includes(x))]:state.blades;
- const favorites=hand.filter(x=>state.blades.includes(x));
+ const favorites=hand;
  const playerScroll=oldP?.scrollTop||0,bladeScroll=oldB?.scrollTop||0;
  el.className="fighter"+(side==="X"?" x":"");
  el.innerHTML='<div class="fhead"><div><div class="side">'+side+'-SIDE</div><div class="subhead">BLADE FIGHTER</div></div><span class="role">'+(side==="B"?"🔥 RED":"❄ BLUE")+'</span></div><div class="fbody">'+
@@ -516,7 +515,7 @@ function drawBladeGrid(position,filter=""){
  if(!side)return;
  const term=filter.trim().toLocaleLowerCase("ja");
  const hand=window.BEY_HANDS?.get(state.slots[side].player,"blade")||[];
- const list=state.blades.filter(x=>x.toLocaleLowerCase("ja").includes(term)).sort((a,b)=>Number(hand.includes(b))-Number(hand.includes(a)));
+ const list=[...new Set([...hand,...state.blades])].filter(x=>x.toLocaleLowerCase("ja").includes(term)).sort((a,b)=>Number(hand.includes(b))-Number(hand.includes(a)));
  ids("bladeGrid"+capPosition(position)).innerHTML=list.map(x=>bladeButton(x,side)).join("")||
    '<p style="color:#b9cde4">該当するブレードはありません。</p>';
 }
@@ -819,7 +818,7 @@ document.addEventListener("change",e=>{
 });
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
-if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;if(kind==="player"){state.slots[side].ratchet="";state.slots[side].bit="";}save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){for(const el of [fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")]){if(!el)continue;el.classList.remove("arena-metal");void el.offsetWidth;el.classList.add("arena-metal");}const selected=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(selected){const animation=getComputedStyle(selected).animationName;const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;ids("resultNotice").textContent="⚡ 演出診断："+(animation&&animation!=="none"?"アニメーション有効":"アニメーション停止")+(reduced?" · iPhoneの視差効果を減らす設定が有効":"")+" · "+side+"側 "+(kind==="blade"?"ブレード":"プレイヤー")+"選択";}}}
+if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;if(kind==="player"){state.slots[side].ratchet="";state.slots[side].bit="";}if(kind==="blade"&&!state.blades.includes(b.dataset.value))state.blades.push(b.dataset.value);save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){for(const el of [fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")]){if(!el)continue;el.classList.remove("arena-metal");void el.offsetWidth;el.classList.add("arena-metal");}const selected=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(selected){const animation=getComputedStyle(selected).animationName;const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;ids("resultNotice").textContent="⚡ 演出診断："+(animation&&animation!=="none"?"アニメーション有効":"アニメーション停止")+(reduced?" · iPhoneの視差効果を減らす設定が有効":"")+" · "+side+"側 "+(kind==="blade"?"ブレード":"プレイヤー")+"選択";}}}
 else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
 else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
 else if(action==="swap"){closeAllBladePickers();snapshot();state.flipped=!state.flipped;save();render();}
