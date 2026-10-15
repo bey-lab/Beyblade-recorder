@@ -4,8 +4,9 @@
  "use strict";
   function makeHeader(){
   const mode=document.body.dataset.beyMode;
-  if(!["arena","lab","league"].includes(mode)||document.querySelector(".bey-shared-header"))return;
-  const old=document.querySelector("header");
+  if(!["arena","lab","league","home","records"].includes(mode)||document.querySelector(".bey-shared-header"))return;
+  if(mode==="home"&&document.body.classList.contains("legacy"))return;
+  const old=mode==="home"?document.querySelector("#home > header"):document.querySelector("header");
   if(!old)return;
   const header=document.createElement("div");header.className="bey-shared-header";
   const brand=document.createElement("a");brand.className="bey-shared-brand";brand.href="./index.html?home=1";
@@ -26,6 +27,10 @@
   const home=document.createElement("a");home.className="bey-nav-button bey-home-button";home.href="./index.html?home=1";home.textContent="⌂ ホームへ戻る";nav.appendChild(home);
   const env=old.querySelector(".env-indicator")||document.getElementById("environment");
   if(env){env.classList.add("bey-shared-env");nav.prepend(env)}
+  if(mode==="home"){
+   const homeEnv=old.querySelector(".home-env");
+   if(homeEnv){homeEnv.classList.add("bey-home-env-shared");nav.prepend(homeEnv)}
+  }
   header.append(brand,nav);
   old.parentNode.insertBefore(header,old);
   old.classList.add("bey-original-header-hidden");
