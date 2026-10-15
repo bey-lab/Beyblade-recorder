@@ -179,10 +179,19 @@ input[type=file]{display:none}
 @media(prefers-reduced-motion:reduce){.duel-scoreline.pulse-b .duel-side:not(.x) strong,.duel-scoreline.pulse-x .duel-side.x strong{animation:none!important}}
 @media(max-width:740px){.versus{grid-template-columns:minmax(0,1fr);gap:8px}.vs{min-height:37px;font-size:28px}.fighter{padding:12px}.twocol{grid-template-columns:1fr}.finishbtn{min-height:54px}.wrap{padding-top:max(13px,env(safe-area-inset-top))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style></head><body>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}</style><script>
+/* Shared mode preference. Legacy storage is never modified by this switch. */
+(function(){
+ const setting="bey-lab-environment-v1";
+ let env="test";
+ try{if(localStorage.getItem(setting)==="official")env="official"}catch(e){}
+ window.BEY_ENV=env;
+ document.documentElement.dataset.beyEnv=env;
+})();
+</script></head><body>
 <div class="wrap">
 <header><div class="brand"><strong>BEY LAB</strong><small>DEEP RESEARCH · 1ON1</small></div>
-<nav><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a><span id="saveState" class="hint">端末内保存</span></nav></header>
+<nav><span class="env-indicator" id="environmentBadge"></span><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a><span id="saveState" class="hint">端末内保存</span></nav></header>
 <div class="topbar">
  <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE BLADE · FIRST TO 4 POINTS · DEEP RESEARCH</p></div>
  <div><label class="field" style="margin:0"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></div>
@@ -256,7 +265,7 @@ input[type=file]{display:none}
 <script>
 (function(){
 "use strict";
-const KEY="bey-lab-1on1-v1", ARENA_KEY="bey-lab-arena-v1";
+const KEY="bey-lab-1on1-v1-"+window.BEY_ENV, ARENA_KEY="bey-lab-arena-v1-"+window.BEY_ENV;
 const FIN=[["spin","スピン",1,"◉"],["over","オーバー",2,"↗"],["burst","バースト",2,"✦"],["extreme","エクストリーム",3,"⚡"]];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -338,7 +347,7 @@ function rosterSync(notify){
  const a=arenaRoster();if(!a){if(notify)$("lastNotice").textContent="アリーナ名簿が見つかりません。";return false;}
  const before=data.players.length+data.blades.length;
  for(const k of ["players","blades"]){for(const n of a[k])if(clean(n)&&!data[k].includes(n)&&data[k].length<200)data[k].push(n)}
- const added=data.players.length+data.blades.length-before;syncPartOrders();save();render();
+ const added=data.players.length+data.blades.length-before;$("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";$("environmentBadge").classList.toggle("official",window.BEY_ENV==="official");syncPartOrders();save();render();
  if(notify)$("lastNotice").textContent="✓ 名簿同期完了："+added+"件追加（研究記録はそのまま）";
  return true;
 }
