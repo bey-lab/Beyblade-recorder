@@ -1,4 +1,4 @@
-const CACHE='bey-lab-pwa-v25';
+const CACHE='bey-lab-pwa-v26';
 const ASSETS=['./','./index.html','./arena.html','./lab.html','./data.html','./records.html','./league.html','./manifest.webmanifest','./icon-180.png','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install', event => {
