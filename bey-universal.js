@@ -4,7 +4,7 @@
  "use strict";
   function makeHeader(){
   const mode=document.body.dataset.beyMode;
-  if(!["arena","lab","league","home","records","data"].includes(mode)||document.querySelector(".bey-shared-header"))return;
+  if(!["arena","lab","league","home","records","data","hands"].includes(mode)||document.querySelector(".bey-shared-header"))return;
   if(mode==="home"&&document.body.classList.contains("legacy"))return;
   const old=mode==="home"?document.querySelector("#home > header"):document.querySelector("header");
   if(!old&&mode!=="data")return;
@@ -22,6 +22,7 @@
   const arenaHistory=mode==="arena"?old.querySelector('[data-action="history"]'):null;
   if(arenaEdit){arenaEdit.classList.add("bey-nav-button");nav.appendChild(arenaEdit)}
   else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./data.html";a.textContent="⚙ 登録・データ管理";nav.appendChild(a)}
+  const hands=document.createElement("a");hands.className="bey-nav-button"+(mode==="hands"?" active":"");hands.href="./hands.html";hands.textContent="🃏 手札管理";nav.appendChild(hands);
   if(arenaHistory){arenaHistory.classList.add("bey-nav-button");nav.appendChild(arenaHistory)}
   else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./records.html";a.textContent="📖 記録・履歴";nav.appendChild(a)}
   const home=document.createElement("a");home.className="bey-nav-button bey-home-button";home.href="./index.html?home=1";home.textContent="⌂ ホームへ戻る";nav.appendChild(home);
