@@ -349,7 +349,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes finishFlashPop{0%{opacity:1;box-shadow:0 0 0 2px #fff,0 0 20px 5px var(--finish-color),inset 0 0 15px var(--finish-color)}65%{opacity:1}100%{opacity:0;box-shadow:0 0 0 0 transparent}}
 @keyframes finishFlashSweep{to{transform:translateX(90%) skewX(-18deg)}}
 @media(prefers-reduced-motion:reduce){.finish-flash-overlay,.finish-flash-overlay::after{animation:none!important}.finish-flash-overlay{opacity:1;box-shadow:0 0 0 2px #fff,0 0 14px var(--finish-color)}}
-</style><link rel="stylesheet" href="./bey-universal.css"><script>
+.preset-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.preset-bar button{min-height:52px;background:#293e59;color:#ffe1a0;border:1px solid #b69a62;border-radius:8px;font-weight:900}</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -509,7 +509,7 @@ function renderFighter(id,side){
   '<div class="picklist players">'+state.players.map(v=>playerButton(v,side)).join("")+'</div>'+
   '<div class="eyebrow">ブレード名</div><div class="selected"><span class="gem">◉</span>'+esc(slot.blade)+'</div>'+
   '<div class="listlabel"><span>ブレードを選択 · '+(favorites.length?favorites.length+'機の手札':'全'+state.blades.length+'機')+'</span><div><a class="blade-more" href="./hands.html?player='+encodeURIComponent(slot.player)+'">🃏 手札管理</a><button class="blade-more" type="button" data-action="all-blades" data-side="'+side+'">▦ 全機体</button><button type="button" data-action="edit">＋ 編集</button></div></div>'+
-  '<div class="picklist blades">'+(favorites.length?favorites:state.blades).map(v=>bladeButton(v,side)).join("")+'</div>'+arenaParts(side,slot)+'</div>';
+  '<div class="picklist blades">'+(favorites.length?favorites:state.blades).map(v=>bladeButton(v,side)).join("")+'</div>'+arenaParts(side,slot)+'<div class="preset-bar"><button type="button" data-action="preset-load" data-side="'+side+'">⚡ 一式呼出</button><button type="button" data-action="preset-save" data-side="'+side+'">＋ 一式保存</button></div></div>';
  const newP=el.querySelector(".picklist.players"),newB=el.querySelector(".picklist.blades");
  if(newP)newP.scrollTop=playerScroll;
  if(newB)newB.scrollTop=bladeScroll;
@@ -833,6 +833,8 @@ document.addEventListener("change",e=>{
 });
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
+if(action==="preset-save"){const slot=state.slots[side];if(window.BEY_HANDS?.presetsSave(slot.player,slot))alert("共通カスタム保存庫に登録！");else alert("プレイヤーとブレードを選択してください。");return}
+if(action==="preset-load"){const slot=state.slots[side],list=window.BEY_HANDS?.presetsGet(slot.player)||[];if(!list.length){alert("このプレイヤーには保存済みの一式がありません。");return}const choice=prompt("呼び出す番号を入力してください:\n"+list.map((p,i)=>(i+1)+". "+[p.blade,p.ratchet,p.bit].join(" · ")).join("\n"));const i=Number(choice)-1;if(!Number.isInteger(i)||!list[i])return;snapshot();Object.assign(slot,list[i]);if(!state.blades.includes(slot.blade))state.blades.push(slot.blade);save();render();return}
 if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;if(kind==="player"){state.slots[side].ratchet="";state.slots[side].bit="";const hand=window.BEY_HANDS?.get(b.dataset.value,"blade")||[];if(hand.length)state.slots[side].blade=hand[0];else if(!state.blades.includes(state.slots[side].blade))state.slots[side].blade=state.blades[0]||"";}if(kind==="blade"&&!state.blades.includes(b.dataset.value))state.blades.push(b.dataset.value);save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){for(const el of [fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")]){if(!el)continue;el.classList.remove("arena-metal");void el.offsetWidth;el.classList.add("arena-metal");}const selected=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(selected){const animation=getComputedStyle(selected).animationName;const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;ids("resultNotice").textContent="⚡ 演出診断："+(animation&&animation!=="none"?"アニメーション有効":"アニメーション停止")+(reduced?" · iPhoneの視差効果を減らす設定が有効":"")+" · "+side+"側 "+(kind==="blade"?"ブレード":"プレイヤー")+"選択";}}}
 else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
 else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
