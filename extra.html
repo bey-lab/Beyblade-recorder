@@ -13,8 +13,22 @@
 {id:"b2",side:"b",level:"normal",text:"いつもより弱めのシュートで戦え"},
 {id:"b3",side:"b",level:"hard",text:"対戦前に相手の勝ち筋をひとつ予想せよ"},
 {id:"b4",side:"b",level:"hard",text:"最初の1戦は普段使わないランチャーの持ち方で挑め"},
-{id:"b5",side:"b",level:"chaos",text:"必殺技の名前を宣言してからシュートせよ"}];
-const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let items;try{items=JSON.parse(localStorage.getItem(KEY));if(!Array.isArray(items))items=null}catch(e){items=null}items=items||defaults.map(x=>({...x}));let last={x:"",b:""};
+{id:"b5",side:"b",level:"chaos",text:"必殺技の名前を宣言してからシュートせよ"},
+{id:"x6",side:"x",level:"normal",text:"ブレードのタイプと異なるタイプのビットを組み合わせろ"},
+{id:"x7",side:"x",level:"normal",text:"普段使わないビットを主役にカスタムを組め"},
+{id:"x8",side:"x",level:"hard",text:"いつもの主力機からラチェットとビットを両方変更せよ"},
+{id:"x9",side:"x",level:"hard",text:"同じ高さのラチェットから、最も意外な組み合わせを選べ"},
+{id:"x10",side:"x",level:"chaos",text:"パーツをそれぞれランダムに1つずつ選び、その組み合わせで戦え"},
+{id:"b6",side:"b",level:"normal",text:"シュート前に今回の勝ち方を宣言せよ"},
+{id:"b7",side:"b",level:"normal",text:"1戦だけ、いつもと違うシュート位置を試せ"},
+{id:"b8",side:"b",level:"hard",text:"次の1戦はエクストリームラインを狙わずに戦え"},
+{id:"b9",side:"b",level:"hard",text:"相手の機体を見てから、狙う勝ち方をひとつ決めよ"},
+{id:"b10",side:"b",level:"chaos",text:"シュート前に自分のベイへ熱血アニメ風の決めゼリフを贈れ"}];
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let items;try{items=JSON.parse(localStorage.getItem(KEY));if(!Array.isArray(items))items=null}catch(e){items=null}items=items||defaults.map(x=>({...x}));
+// Merge only newly introduced built-in prompts into existing locally saved lists.
+const added=defaults.filter(x=>/^[xb](?:6|7|8|9|10)$/.test(x.id)&&!items.some(y=>y.id===x.id));
+if(added.length){items.push(...added.map(x=>({...x})));try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+let last={x:"",b:""};
 function save(){try{localStorage.setItem(KEY,JSON.stringify(items));return true}catch(e){$("status").textContent="保存できませんでした。空き容量を確認してください。";return false}}
 function draw(side){const level=$("level").value;let pool=items.filter(x=>x.side===side&&(level==="all"||x.level===level));if(!pool.length){$(side+"Prompt").textContent="この難易度のお題はまだありません";$(side+"Level").textContent="";return}const different=pool.filter(x=>x.id!==last[side]);if(different.length)pool=different;const chosen=pool[Math.floor(Math.random()*pool.length)];last[side]=chosen.id;$(side+"Prompt").textContent=chosen.text;$(side+"Level").textContent="· "+chosen.level.toUpperCase()}
 function render(){const side=$("category").value;const selected=items.filter(x=>x.side===side);$("count").textContent="("+selected.length+"件)";$("entries").innerHTML=selected.map(x=>'<div class="entry"><span><span class="muted">'+x.level.toUpperCase()+'</span> '+esc(x.text)+'</span><div class="row"><button class="small" data-edit="'+esc(x.id)+'">編集</button><button class="small" data-delete="'+esc(x.id)+'">削除</button></div></div>').join("")||'<p class="muted">まだありません</p>'}
