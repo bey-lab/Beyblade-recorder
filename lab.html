@@ -574,7 +574,7 @@ function renderSelectors(){
   for(const btn of document.querySelectorAll('[data-action="quick-part"][data-side="'+side+'"]'))btn.setAttribute("aria-label",btn.textContent+"を選択"+(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide?"（対戦中は変更不可）":""));
   $("build"+side).textContent=combo(x);
   const handLink=$("player"+side).parentElement.querySelector(".bey-hand-link");
-  if(!handLink){const a=document.createElement("a");a.className="bey-hand-link";a.href="./hands.html";a.textContent="🃏 手札管理";$("player"+side).insertAdjacentElement("afterend",a)}
+  if(!handLink){const a=document.createElement("a");a.className="bey-hand-link";a.href="./hands.html?player="+encodeURIComponent(x.player);a.textContent="🃏 手札管理";$("player"+side).insertAdjacentElement("afterend",a)}else handLink.href="./hands.html?player="+encodeURIComponent(x.player);
  }
 }
 function renderScore(){
