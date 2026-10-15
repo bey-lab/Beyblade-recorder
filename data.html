@@ -37,10 +37,10 @@ function edit(kind,value){const {mode,env}=current(),k=key(mode,env),d=read(k);i
  else if(kind==="group"){const i=Number(value);if(!Number.isInteger(i)||(mode==="arena"?!d.meetings?.[i]:!d.sessions[i]))return;title=mode==="arena"?"大会と所属する保存済み試合を削除":"研究テーマと所属する記録を削除";}
  else if(kind==="wipe")title=names[mode]+"の"+(env==="test"?"テスト":"本番")+"環境を全消去";
  const withBackup=$("backupBeforeDelete").checked;
- if(!confirm(title+"しますか？"+(withBackup?"\\nバックアップJSONをダウンロードします。":"\\nバックアップなしで削除します。元には戻せません。")))return;
+ if(!confirm(title+"しますか？"+(withBackup?"\nバックアップJSONをダウンロードします。":"\nバックアップなしで削除します。元には戻せません。")))return;
  if(withBackup){
   backup(k+"-before-delete",d);
-  if(!confirm("バックアップJSONのダウンロードを開始しました。ファイルが保存されたことを確認できましたか？\\n確認できていない場合はキャンセルしてください。"))return;
+  if(!confirm("バックアップJSONのダウンロードを開始しました。ファイルが保存されたことを確認できましたか？\n確認できていない場合はキャンセルしてください。"))return;
  }
  if(kind==="match"){if(mode==="arena")d.sessions.splice(Number(value),1);else{const [si,mi]=value.split(":").map(Number);d.sessions[si].matches.splice(mi,1);}}
  else if(kind==="group"){const i=Number(value);if(mode==="arena"){const [g]=d.meetings.splice(i,1);d.sessions=d.sessions.filter(m=>m.meetingId!==g.id);if(d.activeMeetingId===g.id){d.activeMeetingId=null;d.events=[];d.scores={B:0,X:0};d.winner=null;}}else{const [g]=d.sessions.splice(i,1);if(d.activeId===g.id){d.activeId=null;d.activeMatch=null;}}}
