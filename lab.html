@@ -179,7 +179,7 @@ input[type=file]{display:none}
 @media(prefers-reduced-motion:reduce){.duel-scoreline.pulse-b .duel-side:not(.x) strong,.duel-scoreline.pulse-x .duel-side.x strong{animation:none!important}}
 @media(max-width:740px){.versus{grid-template-columns:minmax(0,1fr);gap:8px}.vs{min-height:37px;font-size:28px}.fighter{padding:12px}.twocol{grid-template-columns:1fr}.finishbtn{min-height:54px}.wrap{padding-top:max(13px,env(safe-area-inset-top))}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.score-controls{position:relative;margin-top:10px;border-top:1px solid #ffffff27;padding-top:10px}.score-controls-head{display:grid;grid-template-columns:1fr 1fr;text-align:center;gap:8px;font-size:11px;font-weight:950;color:#d7e5fa;margin-bottom:7px}.score-controls-head span:first-child{color:#ffaaa4}.score-controls-head span:last-child{color:#a6d4ff}.score-controls .finishgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 9px}.score-controls .finishbtn{min-height:48px;padding:8px 10px;font-size:clamp(12px,1.5vw,16px);display:flex;align-items:center;justify-content:space-between;gap:5px;touch-action:manipulation}.score-controls .finishbtn small{font-size:10px}.score-controls .finishbtn span{white-space:nowrap}.part-lock-note{font-size:11px;color:#ffd79a;margin-top:7px;font-weight:800}.quickchip{touch-action:manipulation;min-height:36px}@media(max-width:600px){.score-controls .finishbtn{padding:7px 5px;font-size:12px}.score-controls .finishbtn small{font-size:9px}}</style><script>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.score-controls{position:relative;margin-top:10px;border-top:1px solid #ffffff27;padding-top:10px}.score-controls-head{display:grid;grid-template-columns:1fr 1fr;text-align:center;gap:8px;font-size:11px;font-weight:950;color:#d7e5fa;margin-bottom:7px}.score-controls-head span:first-child{color:#ffaaa4}.score-controls-head span:last-child{color:#a6d4ff}.score-controls .finishgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 9px}.score-controls .finishbtn{min-height:48px;padding:8px 10px;font-size:clamp(12px,1.5vw,16px);display:flex;align-items:center;justify-content:space-between;gap:5px;touch-action:manipulation}.score-controls .finishbtn small{font-size:10px}.score-controls .finishbtn span{white-space:nowrap}.part-lock-note{font-size:11px;color:#ffd79a;margin-top:7px;font-weight:800}.quickchip{touch-action:manipulation;min-height:36px}@media(max-width:600px){.score-controls .finishbtn{padding:7px 5px;font-size:12px}.score-controls .finishbtn small{font-size:9px}}.match-lock-banner{position:relative;margin:9px 0;padding:8px 11px;border:1px solid #5a8c78;border-radius:9px;background:#15392e;color:#c5f2d9;font-size:12px;font-weight:900}.match-lock-banner.locked{border-color:#e0b36e;background:#493324;color:#ffe0a7}.victory-banner:not([hidden]){position:relative;display:block;margin:12px 0 5px;padding:17px 12px;border:2px solid #f2c77d;border-radius:13px;text-align:center;background:linear-gradient(110deg,#74462e,#4a343e,#294263);color:#fff3c8;font-size:clamp(18px,3vw,30px);font-weight:1000;box-shadow:0 0 24px #edc37545;animation:victoryArrive .5s cubic-bezier(.2,.8,.2,1)}.victory-banner.victory-x{background:linear-gradient(110deg,#234d79,#315b8e,#62523a);border-color:#a3d4ff}.victory-banner.victory-b{background:linear-gradient(110deg,#76383d,#a45546,#584a33)}@keyframes victoryArrive{from{opacity:.4;transform:scale(.96);filter:brightness(1.8)}to{opacity:1;transform:scale(1);filter:brightness(1)}}</style><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -203,8 +203,8 @@ input[type=file]{display:none}
     <div class="duel-middle"><strong>VS</strong><span id="duelRound">MATCH 01</span><small>FIRST TO 4 PTS</small></div>
     <div class="duel-side x"><span>X-SIDE POINTS</span><strong id="winsX">0</strong></div>
   </div>
-<div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
-<div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
+<div id="matchLockBanner" class="match-lock-banner" aria-live="polite">🔓 カスタム変更可能 · 得点が入ると試合終了まで固定</div><div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
+<div id="victoryBanner" class="victory-banner" role="status" aria-live="polite" hidden></div><div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
 </section>
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
@@ -573,6 +573,17 @@ function renderScore(){
   "🏆 "+m.slots[m.winnerSide].player+" 勝利！ 次の試合へ":
   m?.events?.length?"第"+(m.events.length+1)+"フィニッシュ · 4点先取を目指せ！":
   "新しい試合 · 4点先取で勝利！";
+ const locked=Boolean(m?.events?.length&&!m?.winnerSide);
+ const lock=$("matchLockBanner");
+ lock.textContent=locked?"🔒 試合中 · ブレード／ラチェット／ビットは固定（試合リセットで解除）":m?.winnerSide?"🔓 決着済み · 次の試合でカスタム変更可能":"🔓 カスタム変更可能 · 得点が入ると試合終了まで固定";
+ lock.classList.toggle("locked",locked);
+ const victory=$("victoryBanner");
+ victory.hidden=!m?.winnerSide;
+ if(m?.winnerSide){
+  const side=m.winnerSide;
+  victory.className="victory-banner "+(side==="X"?"victory-x":"victory-b");
+  victory.textContent="🏆 "+side+"-SIDE WIN！ "+(m.slots?.[side]?.player||side)+" 勝利！　"+m.scores.B+" — "+m.scores.X;
+ }
  $("nextMatch").style.display=m?.winnerSide?"":"none";
  $("duelScore").classList.toggle("champion",Boolean(m?.winnerSide));
 }
