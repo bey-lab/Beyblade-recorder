@@ -312,15 +312,15 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 .history-repair-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .history-repair select{flex:1;min-width:135px;padding:10px 8px;background:#09182c;color:#f0f6ff;border:1px solid #6b82a1;border-radius:8px;font-size:14px;min-height:44px}
 .history-repair button{min-height:44px}
-/* Side-colored flash when a player or blade is selected. */
-.fighter{--flash:#ff7e70}.fighter.x{--flash:#7ccfff}
-.fighter .selected{position:relative;overflow:hidden}
-.fighter .selected.selection-flash{animation:selectionGlow .56s ease-out}
-.fighter .selected.selection-flash:after{content:"";position:absolute;inset:-10% -45%;pointer-events:none;background:linear-gradient(108deg,transparent 31%,#ffffff1c 42%,#ffffffdd 49%,var(--flash) 53%,transparent 65%);transform:translateX(-115%) skewX(-17deg);animation:selectionSlash .48s ease-out forwards}
-.fighter .pick.selection-flash{animation:selectionGlow .56s ease-out}
-@keyframes selectionGlow{0%{border-color:#fff;box-shadow:0 0 0 2px #ffffff9c,0 0 18px 4px var(--flash),inset 0 0 15px var(--flash)}55%{border-color:var(--flash);box-shadow:0 0 18px 2px var(--flash)}100%{box-shadow:none}}
-@keyframes selectionSlash{to{transform:translateX(115%) skewX(-17deg)}}
-@media(prefers-reduced-motion:reduce){.fighter .selected.selection-flash,.fighter .selected.selection-flash:after,.fighter .pick.selection-flash{animation:none!important}}
+/* Vivid selection feedback, deliberately long enough to see on iPhone. */
+.fighter{--flash:#ff807a}.fighter.x{--flash:#66c8ff}
+.fighter .selected{position:relative;overflow:hidden;isolation:isolate}
+.fighter .selected.selection-flash{animation:selectionGlow 1.05s ease-out both}
+.fighter .selected.selection-flash:after{content:"";position:absolute;inset:-30% -65%;z-index:2;pointer-events:none;background:linear-gradient(105deg,transparent 30%,#ffffff55 43%,#fff 49%,var(--flash) 54%,transparent 67%);transform:translateX(-120%) skewX(-17deg);animation:selectionSlash .72s ease-out forwards}
+.fighter .pick.selection-flash{animation:selectionGlow 1.05s ease-out both}
+@keyframes selectionGlow{0%{background:var(--flash);border-color:#fff;box-shadow:0 0 0 3px #fff,0 0 24px 8px var(--flash),inset 0 0 25px var(--flash)}40%{background:color-mix(in srgb,var(--flash) 38%,#061020);border-color:var(--flash);box-shadow:0 0 22px 5px var(--flash),inset 0 0 18px var(--flash)}100%{background:#06102099;box-shadow:none}}
+@keyframes selectionSlash{to{transform:translateX(120%) skewX(-17deg)}}
+@media(prefers-reduced-motion:reduce){.fighter .selected.selection-flash,.fighter .selected.selection-flash:after,.fighter .pick.selection-flash{animation:none!important}.fighter .selected.selection-flash{border:2px solid var(--flash);background:color-mix(in srgb,var(--flash) 28%,#061020)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -750,7 +750,7 @@ async function restoreArenaFile(file){
 function exportCsv(){const m=tournament();const records=state.sessions.flatMap(s=>s.events.map(e=>({...e,meetingDate:s.meetingDate||"",meetingTitle:s.meetingTitle||""}))).concat(state.events.map(e=>({...e,meetingDate:m?.date||"",meetingTitle:m?.title||""})));const header=["開催日","大会タイトル","日時","サイド","勝者","ブレード","相手","相手のブレード","結果","得点"];const q=t=>'"'+String(t==null?"":t).replace(/"/g,'""')+'"';const body=records.filter(x=>x.type==="finish").map(x=>[x.meetingDate,x.meetingTitle,x.time,x.side,x.player,x.blade,x.againstPlayer,x.againstBlade,(FIN.find(f=>f[0]===x.finish)||["",""])[1],x.points].map(q).join(","));download("bey-lab-arena.csv","\ufeff"+[header.map(q).join(","),...body].join("\r\n"),"text/csv;charset=utf-8")}
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
-if(action==="choose"){const changed=state.slots[side][kind]!==b.dataset.value;snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);if(changed){const fighter=Array.from(document.querySelectorAll(".fighter")).find(el=>el.querySelector('[data-action="choose"][data-side="'+side+'"]'));if(fighter){const target=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(target){target.classList.add("selection-flash");}const active=fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on");if(active)active.classList.add("selection-flash");}}}
+if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){const target=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(target)target.classList.add("selection-flash");const active=fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on");if(active)active.classList.add("selection-flash");}}
 else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
 else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
 else if(action==="swap"){closeAllBladePickers();snapshot();state.flipped=!state.flipped;save();render();}
