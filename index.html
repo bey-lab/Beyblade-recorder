@@ -23,9 +23,69 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;-webkit-tap-high
 .sectionHeading{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}.sectionHeading h2{font-size:18px;margin:0}.event{padding:12px 0;border-bottom:1px solid #2d3e55;display:flex;gap:9px;align-items:flex-start}.event:last-child{border:0}.event .flag{border-radius:8px;font-size:12px;padding:4px 8px;font-weight:800;flex-shrink:0}.flag.good{background:#194b3f;color:#a7f6d4}.flag.bad{background:#4f3040;color:#ffc4ce}.eventbody{flex:1;min-width:0}.eventbody .strong{font-weight:760;word-break:break-word}.eventbody .meta{color:var(--muted);font-size:12px;margin-top:2px;overflow-wrap:anywhere}.eventbody .memo{margin-top:5px;color:#d7e5f8;font-size:12px;white-space:pre-wrap}.textBtn{border:0;background:transparent;color:#a9c6e9;padding:7px;font-size:12px}.empty{padding:23px 10px;color:var(--muted);text-align:center;font-size:13px}.barBlock{margin:14px 0}.barLabels{display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px}.bar{height:10px;border-radius:20px;background:#293c55;overflow:hidden}.barFill{height:100%;background:var(--green);border-radius:20px}.analysisCard{background:#101b2d;border:1px solid #334761;border-radius:14px;padding:13px;margin:9px 0}.analysisCard h3{font-size:14px;margin:0 0 4px;overflow-wrap:anywhere}.analysisCard .score{font-size:17px;color:var(--yellow);font-weight:850}.analysisCard .subline{font-size:12px;color:var(--muted)}.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{padding:3px 8px;border:1px solid #455a70;border-radius:20px;font-size:11px;color:#bdd2ee}.settingBtns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.settingBtns button{min-height:49px}.footer{font-size:12px;color:#a7bad0;line-height:1.6}.toast{position:fixed;bottom:calc(83px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(15px);background:#edcc74;color:#1d2634;box-shadow:0 7px 30px #0007;border-radius:11px;padding:11px 14px;font-size:13px;font-weight:850;z-index:30;width:max-content;max-width:90vw;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.hero{display:flex;justify-content:space-between;align-items:center;gap:8px}.hero .title{font-size:19px;font-weight:880}.hr{border:0;border-top:1px solid #354761;margin:13px 0}.date{font-variant-numeric:tabular-nums}.quiet{color:var(--muted)}.session{display:grid;grid-template-columns:1fr auto;gap:9px;align-items:end}.session .field{margin:0}.reminder{border-left:3px solid var(--yellow);padding-left:9px;font-size:12px;color:#d9e2ee;margin-top:12px}
 @media(min-width:620px){.app{padding-left:25px;padding-right:25px}.finish{min-height:102px}.tabs{max-width:680px;left:50%;transform:translateX(-50%);border-left:1px solid #394d68;border-right:1px solid #394d68;border-radius:15px 15px 0 0}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* BEY LAB home: the old recorder stays available at ?legacy=1. */
+body:not(.legacy) .app,body:not(.legacy) .tabs,body:not(.legacy) .toast{display:none!important}
+body.legacy #home{display:none!important}
+#home{max-width:1160px;min-height:100svh;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 22px calc(32px + env(safe-area-inset-bottom));color:#f6f8ff}
+.home-header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:32px}
+.home-mark{display:flex;align-items:center;gap:14px}
+.home-emblem{height:54px;width:54px;border:2px solid #e9c477;border-radius:15px;display:grid;place-items:center;color:#f9d994;font-size:29px;background:#283043;box-shadow:inset 0 0 20px #d9ac4619}
+.home-brand{font-size:clamp(30px,4.5vw,54px);line-height:1;font-weight:1000;letter-spacing:.08em}
+.home-kicker{font-size:10px;letter-spacing:.18em;color:#dfbf80;font-weight:850;margin-top:7px}
+.home-status{border:1px solid #53647d;border-radius:10px;padding:9px 12px;background:#15263d;font-size:12px;color:#d7e5f8;font-weight:800}
+.home-heading{display:flex;justify-content:space-between;align-items:end;gap:8px;margin-bottom:14px}
+.home-heading h1{font-size:clamp(21px,3vw,33px);line-height:1.15;letter-spacing:.02em;margin:0;font-weight:950}
+.home-heading span{font-size:11px;color:#aabbd0;font-weight:850;letter-spacing:.13em}
+.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.mode-card{position:relative;overflow:hidden;text-decoration:none;color:#fff;border-radius:19px;border:2px solid #71839b;min-height:208px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;isolation:isolate;box-shadow:0 14px 32px #0004;transition:transform .12s,border-color .12s}
+.mode-card:before{content:"";position:absolute;right:-44px;top:-58px;width:245px;height:245px;border:34px solid #ffffff15;border-radius:50%;z-index:-1;transform:rotate(-18deg)}
+.mode-card:after{content:"";position:absolute;inset:0;background:linear-gradient(130deg,#ffffff15,transparent 50%);pointer-events:none}
+.mode-card:active{transform:scale(.985)}
+.mode-card:focus-visible{outline:3px solid #fff1ba;outline-offset:4px}
+.mode-king{grid-column:1/-1;min-height:230px;background:linear-gradient(125deg,#8f2736,#491d32 72%,#241a31);border-color:#fa8583}
+.mode-lab{background:linear-gradient(135deg,#1e6b9c,#14334e 70%,#0e2338);border-color:#75b6ec}
+.mode-league{background:linear-gradient(135deg,#99732b,#58401d 65%,#272a31);border-color:#dfbc6a}
+.mode-card h2{font-size:clamp(24px,3.7vw,40px);line-height:1.15;margin:8px 0;font-weight:1000}
+.mode-card p{font-size:clamp(12px,1.7vw,16px);color:#fff;opacity:.88;margin:0}
+.mode-card .en{font-size:11px;letter-spacing:.15em;font-weight:950;opacity:.84}
+.mode-card .glyph{font-size:clamp(37px,6vw,70px);position:absolute;right:28px;top:25px;opacity:.65;line-height:1}
+.mode-card .go{font-size:12px;font-weight:900;letter-spacing:.08em;align-self:flex-end;border-radius:8px;border:1px solid #ffffff69;padding:7px 13px;background:#ffffff19}
+.mode-card[aria-disabled="true"]{opacity:.73;cursor:not-allowed;filter:saturate(.65)}
+.mode-card[aria-disabled="true"] .go{background:#0003}
+.home-bottom{display:grid;grid-template-columns:1.45fr 1fr;gap:13px;margin-top:17px}
+.home-link{min-height:110px;text-decoration:none;color:#f2f7ff;border:1px solid #5a708e;border-radius:16px;background:linear-gradient(125deg,#233a55,#13243a);display:flex;align-items:center;gap:17px;padding:19px 22px}
+.home-link .symbol{font-size:35px;color:#e9c477}
+.home-link strong{display:block;font-size:20px;font-weight:950}
+.home-link small{display:block;font-size:12px;color:#bfd0e4;margin-top:5px}
+.home-notice{margin-top:17px;border-left:3px solid #dbb66c;padding:10px 15px;background:#202638;border-radius:0 11px 11px 0;color:#d2dfed;font-size:12px;line-height:1.7}
+.home-notice strong{color:#f6d898}
+@media(min-width:900px){.mode-grid{grid-template-columns:1.35fr 1fr 1fr}.mode-king{grid-column:auto;min-height:310px}.mode-card{min-height:310px}.home-bottom{margin-top:19px}}
+@media(max-width:580px){#home{padding-left:14px;padding-right:14px}.home-header{margin-bottom:25px}.home-brand{font-size:30px}.home-emblem{width:44px;height:44px;font-size:24px}.home-status{font-size:10px;padding:8px}.mode-grid{gap:9px}.mode-card{padding:15px;border-radius:15px;min-height:175px}.mode-king{min-height:195px}.mode-card h2{font-size:22px}.mode-card .glyph{right:14px;top:16px;font-size:34px}.mode-card .en{font-size:9px}.mode-card .go{font-size:10px;padding:5px 8px}.home-bottom{grid-template-columns:1fr}.home-link{min-height:88px}.home-link strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.mode-card{transition:none}}
+
 </style>
 </head>
 <body>
+<section id="home" aria-label="BEY LAB ホーム">
+ <header class="home-header">
+  <div class="home-mark"><div class="home-emblem" aria-hidden="true">✦</div><div><div class="home-brand">BEY LAB</div><div class="home-kicker">BATTLE & RESEARCH SYSTEM</div></div></div>
+  <div class="home-status">⚙ 記録環境の分離は準備中</div>
+ </header>
+ <div class="home-heading"><h1>どのバトルで遊ぶ？</h1><span>SELECT YOUR BATTLE</span></div>
+ <nav class="mode-grid" aria-label="バトルモード">
+  <a class="mode-card mode-king" href="./arena.html"><span class="glyph" aria-hidden="true">♛</span><div><div class="en">KING OF THE STADIUM</div><h2>勝ち抜きバトル</h2><p>王座をかけて戦え！ 4点先取・連勝記録</p></div><span class="go">BATTLE START ↗</span></a>
+  <a class="mode-card mode-lab" href="./lab.html"><span class="glyph" aria-hidden="true">⚗</span><div><div class="en">DEEP RESEARCH · 1ON1</div><h2>1on1研究</h2><p>1機対1機。カスタムの強さを検証！</p></div><span class="go">ENTER THE LAB ↗</span></a>
+  <div class="mode-card mode-league" aria-disabled="true"><span class="glyph" aria-hidden="true">♜</span><div><div class="en">CHAMPIONSHIP · 3ON3</div><h2>3on3リーグ</h2><p>3機を編成して、リーグの頂点へ。</p></div><span class="go">COMING SOON</span></div>
+ </nav>
+ <div class="home-bottom">
+  <a class="home-link" href="./lab.html#research"><span class="symbol" aria-hidden="true">▥</span><span><strong>記録を見る →</strong><small>1on1の試合履歴・カスタム分析・研究データ</small></span></a>
+  <a class="home-link" href="./index.html?legacy=1"><span class="symbol" aria-hidden="true">⌁</span><span><strong>従来の記録室 →</strong><small>旧形式の対戦記録・分析・バックアップ</small></span></a>
+ </div>
+ <p class="home-notice"><strong>データ管理について：</strong>本番とテストの保存領域はまだ分かれていません。既存の記録はそのまま保存しています。安全な移行と削除機能は次の段階で実装します。</p>
+</section>
+<script>if(new URLSearchParams(location.search).get("legacy")==="1")document.body.classList.add("legacy");</script>
+
 <main class="app">
   <header class="top"><div class="branding"><div class="mark">⟳</div><div><div class="brandName">BEY LAB</div><div class="sub">BATTLE RECORD · X</div></div></div><div class="pill" id="saveStatus">端末内に保存</div></header>
   <a href="./lab.html" style="display:block;padding:14px 16px;margin:0 0 13px;background:linear-gradient(110deg,#182c41,#243827);color:#fff;border:1px solid #b89f68;border-radius:15px;font-weight:900;text-align:center;text-decoration:none">🔬 1on1 研究室 β版　→<small style="display:block;font-weight:600;color:#d4e2f3;margin-top:3px">ブレード・ラチェット・ビットを検証。勝率・相性・研究ログを確認</small></a>
