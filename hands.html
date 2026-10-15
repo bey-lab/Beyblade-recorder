@@ -28,5 +28,5 @@ document.addEventListener("click",e=>{
  else {if(values.includes(value))return;BEY_HANDS.set(current,part,[...values,value]);$("notice").textContent=value+"を"+current+"の手札に追加しました";}
  draw();
 });
-drawPlayers("");
+drawPlayers(new URLSearchParams(location.search).get("player")||"");
 </script><script src="./bey-universal.js"></script></body></html>
