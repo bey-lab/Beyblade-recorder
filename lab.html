@@ -402,6 +402,18 @@ function quickLimit(part,all){
  // Keep blades/ratchets as compact shortcuts, but show every registered bit immediately.
  return QUICK_COUNT[part]==null?all.length:QUICK_COUNT[part];
 }
+function syncHandsIntoRoster(){
+ const hands=window.BEY_HANDS;if(!hands)return false;
+ let changed=false;
+ for(const player of hands.players()){
+  if(!data.players.includes(player)&&data.players.length<200){data.players.push(player);changed=true;}
+ }
+ for(const player of data.players)for(const blade of hands.get(player,"blade")){
+  if(!data.blades.includes(blade)&&data.blades.length<200){data.blades.push(blade);changed=true;}
+ }
+ if(changed){syncPartOrders();save();}
+ return changed;
+}
 function quickOptions(part,side){
  const ordered=partOptions(part);
  const hand=window.BEY_HANDS?.get(data.slots[side].player,part)||[];
@@ -711,7 +723,7 @@ function history(){
  }).join("")||'<p class="empty">研究ログはまだありません。</p>';
 }
 function render(){
- renderSelectors();renderScore();renderFinishes();renderFocus();summary();history();
+ syncHandsIntoRoster();renderSelectors();renderScore();renderFinishes();renderFocus();summary();history();
  const session=getSession();
  $("seriesTitle").value=session?.title||"";
  $("seriesLine").textContent=(session?.date||day())+" · この研究 "+(session?.matches?.length||0)+"試合完了 / 総計 "+completedMatches().length+"試合・"+records().length+"フィニッシュ";
@@ -851,7 +863,10 @@ document.addEventListener("change",e=>{
   if(field==="player"){
    if(!readyForBuildEdit()){render();return;}
    const prior=data.slots[side][field];data.slots[side][field]=v;
-   if(!save())data.slots[side][field]=prior;
+   const handBlades=window.BEY_HANDS?.get(v,"blade")||[];
+   if(handBlades.length&&data.blades.includes(handBlades[0]))data.slots[side].blade=handBlades[0];
+   data.slots[side].ratchet="";data.slots[side].bit="";
+   if(!save()){data.slots[side][field]=prior;render();return;}
    render();
   }else changePart(side,field,v);
  }
