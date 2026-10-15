@@ -343,7 +343,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes arenaMetalLock{0%{border-color:#fff;box-shadow:inset 0 0 0 2px #fff9,0 0 18px #fff8;filter:brightness(1.7)}32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 14px #dec58b70;filter:brightness(1.35)}100%{box-shadow:none;filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.fighter .arena-metal,.fighter .arena-metal::before,.fighter .arena-metal::after{animation:none!important}.fighter .arena-metal{border-color:#ffe6ac!important;box-shadow:inset 0 0 0 2px #ffe6ac88!important}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.arena-optional-parts{margin-top:13px;padding-top:10px;border-top:1px solid #536680}.arena-parts-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.arena-part{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:850}.arena-part small{font-size:10px;color:#a5bbd4}.arena-part select{min-width:0;width:100%;padding:9px 5px;background:#1c304a;color:#fff;border:1px solid #6984a7;border-radius:8px;min-height:42px}.listlabel a.blade-more{font-size:11px;color:#ffdfa2;text-decoration:none;margin-right:4px}@media(max-width:650px){.arena-parts-row{grid-template-columns:1fr}}</style><link rel="stylesheet" href="./bey-universal.css"><script>
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.arena-optional-parts{margin-top:13px;padding-top:10px;border-top:1px solid #536680}.arena-parts-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.arena-part{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:850}.arena-part small{font-size:10px;color:#a5bbd4}.arena-part select{min-width:0;width:100%;padding:9px 5px;background:#1c304a;color:#fff;border:1px solid #6984a7;border-radius:8px;min-height:42px}.listlabel a.blade-more{font-size:11px;color:#ffdfa2;text-decoration:none;margin-right:4px}@media(max-width:650px){.arena-parts-row{grid-template-columns:1fr}}.finish-feedback{position:fixed;inset:0;z-index:9998;pointer-events:none;display:grid;place-items:center;animation:finishFade .36s ease-out both}.finish-feedback .finish-burst{width:min(60vw,280px);aspect-ratio:1;border-radius:50%;border:4px solid var(--finish-color);box-shadow:0 0 25px var(--finish-color),inset 0 0 35px var(--finish-color);display:grid;place-items:center;animation:finishPop .36s ease-out both}.finish-feedback .finish-text{font-weight:1000;font-size:clamp(19px,5vw,37px);text-align:center;color:#fff;text-shadow:0 2px 6px #000,0 0 15px var(--finish-color)}.finish-feedback[data-finish="over"] .finish-burst{border-radius:12px;width:min(75vw,390px);height:100px;transform:skew(-12deg);animation:finishSlide .34s ease-out both}.finish-feedback[data-finish="burst"] .finish-burst{border-style:dashed;animation:finishPop .3s steps(5,end) both}.finish-feedback[data-finish="extreme"] .finish-burst{clip-path:polygon(50% 0,65% 37%,100% 28%,68% 60%,83% 100%,49% 70%,14% 100%,30% 59%,0 31%,38% 38%);border-radius:0;background:color-mix(in srgb,var(--finish-color) 42%,transparent)}@keyframes finishFade{0%{opacity:0}18%{opacity:1}65%{opacity:1}100%{opacity:0}}@keyframes finishPop{from{transform:scale(.45);opacity:.2}to{transform:scale(1.25);opacity:1}}@keyframes finishSlide{from{transform:translateX(-80px) skew(-12deg);opacity:0}to{transform:translateX(0) skew(-12deg);opacity:1}}@media(prefers-reduced-motion:reduce){.finish-feedback,.finish-feedback .finish-burst{animation:none!important}.finish-feedback{opacity:.85}}</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -682,11 +682,22 @@ ids("matchCount").textContent=state.events.filter(x=>x.type==="finish").length+"
 renderScoreButtons();
 renderVictory();
 }
+function finishFeedback(side,finish,label){
+ if(!["spin","over","burst","extreme"].includes(finish))return;
+ document.querySelector(".finish-feedback")?.remove();
+ const root=document.createElement("div");root.className="finish-feedback";root.dataset.finish=finish;
+ root.style.setProperty("--finish-color",side==="B"?"#ff7770":"#76bdff");
+ const ring=document.createElement("div");ring.className="finish-burst";
+ const text=document.createElement("div");text.className="finish-text";text.textContent=(side==="B"?"🔴 ":"🔵 ")+label;
+ ring.append(text);root.append(ring);document.body.append(root);
+ root.addEventListener("animationend",e=>{if(e.target===root)root.remove()});
+ setTimeout(()=>root.remove(),550);
+}
 function sideAction(side,type,points,finish){if(state.winner||!tournament())return;snapshot();const slot=state.slots[side];state.scores[side]=Math.max(0,Number(state.scores[side]||0)+points);
 const other=side==="B"?"X":"B";
 state.events.push({type,side,points,finish:finish||"",time:new Date().toISOString(),player:slot.player,blade:slot.blade,againstPlayer:state.slots[other].player,againstBlade:state.slots[other].blade});
 if(state.events.length>5000)state.events=state.events.slice(-5000);if(state.scores[side]>=4&&!state.winner){closeAllBladePickers();state.winner={side,player:slot.player,blade:slot.blade,time:new Date().toISOString()};}save();render();
-const label=FIN.find(f=>f[0]===finish);ids("resultNotice").textContent=side+"-SIDE "+slot.player+" / "+slot.blade+" "+(label?label[1]+"勝ち +"+points+"点":"スコア変更 "+(points>0?"+":"")+points);}
+const label=FIN.find(f=>f[0]===finish);if(type==="finish"&&label)finishFeedback(side,finish,label[1]);ids("resultNotice").textContent=side+"-SIDE "+slot.player+" / "+slot.blade+" "+(label?label[1]+"勝ち +"+points+"点":"スコア変更 "+(points>0?"+":"")+points);}
 function download(name,text,type){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
 function rewriteHistoryName(kind,oldName,newName){
  const field=kind==="player"?"player":"blade";
