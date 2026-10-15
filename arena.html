@@ -321,6 +321,16 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes selectionGlow{0%{background:var(--flash);border-color:#fff;box-shadow:0 0 0 3px #fff,0 0 24px 8px var(--flash),inset 0 0 25px var(--flash)}40%{background:color-mix(in srgb,var(--flash) 38%,#061020);border-color:var(--flash);box-shadow:0 0 22px 5px var(--flash),inset 0 0 18px var(--flash)}100%{background:#06102099;box-shadow:none}}
 @keyframes selectionSlash{to{transform:translateX(120%) skewX(-17deg)}}
 @media(prefers-reduced-motion:reduce){.fighter .selected.selection-flash,.fighter .selected.selection-flash:after,.fighter .pick.selection-flash{animation:none!important}.fighter .selected.selection-flash{border:2px solid var(--flash);background:color-mix(in srgb,var(--flash) 28%,#061020)}}
+/* Distinct diagonal metal slash, attached to the selected name and quick button. */
+.fighter .selected,.fighter .pick{position:relative}
+.fighter .selected{overflow:hidden}
+.bey-slash{position:absolute;inset:0;z-index:4;overflow:hidden;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 2px var(--slash-color),0 0 22px var(--slash-color);animation:beyFrame .9s ease-out forwards}
+.bey-slash::before{content:"";position:absolute;top:-80%;bottom:-80%;left:-45%;width:46%;background:linear-gradient(90deg,transparent 0%,var(--slash-color) 23%,#fff 48%,#fff 55%,var(--slash-color) 78%,transparent 100%);filter:drop-shadow(0 0 12px #fff);transform:translateX(-120%) skewX(-25deg);animation:beyBladeSweep .8s cubic-bezier(.14,.6,.28,1) forwards}
+.bey-slash::after{content:"";position:absolute;inset:0;background:var(--slash-color);opacity:0;animation:beyPulse .75s ease-out forwards}
+@keyframes beyBladeSweep{0%{transform:translateX(-120%) skewX(-25deg)}100%{transform:translateX(470%) skewX(-25deg)}}
+@keyframes beyFrame{0%{box-shadow:inset 0 0 0 2px #fff,0 0 26px 8px var(--slash-color)}45%{box-shadow:inset 0 0 0 2px var(--slash-color),0 0 20px 4px var(--slash-color)}100%{box-shadow:inset 0 0 0 0 transparent,0 0 0 transparent}}
+@keyframes beyPulse{10%{opacity:.5}45%{opacity:.14}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.bey-slash,.bey-slash::before,.bey-slash::after{animation-duration:.01ms!important}.bey-slash{box-shadow:inset 0 0 0 2px var(--slash-color)}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 <div class="wrap">
@@ -748,9 +758,24 @@ async function restoreArenaFile(file){
  }catch(e){alert("復元できませんでした。ファイル形式または端末の空き容量を確認してください。\n現在の記録は変更していません。");return false;}
 }
 function exportCsv(){const m=tournament();const records=state.sessions.flatMap(s=>s.events.map(e=>({...e,meetingDate:s.meetingDate||"",meetingTitle:s.meetingTitle||""}))).concat(state.events.map(e=>({...e,meetingDate:m?.date||"",meetingTitle:m?.title||""})));const header=["開催日","大会タイトル","日時","サイド","勝者","ブレード","相手","相手のブレード","結果","得点"];const q=t=>'"'+String(t==null?"":t).replace(/"/g,'""')+'"';const body=records.filter(x=>x.type==="finish").map(x=>[x.meetingDate,x.meetingTitle,x.time,x.side,x.player,x.blade,x.againstPlayer,x.againstBlade,(FIN.find(f=>f[0]===x.finish)||["",""])[1],x.points].map(q).join(","));download("bey-lab-arena.csv","\ufeff"+[header.map(q).join(","),...body].join("\r\n"),"text/csv;charset=utf-8")}
+function playSelectionSlash(side,kind){
+ const fighter=ids(sides()[0]===side?"left":"right");
+ if(!fighter)return;
+ const color=side==="B"?"#ff665e":"#59bbff";
+ const targets=[fighter.querySelectorAll(".selected")[kind==="player"?0:1],fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on")];
+ for(const target of targets){if(!target)continue;
+  target.querySelectorAll(".bey-slash").forEach(node=>node.remove());
+  const slash=document.createElement("span");slash.className="bey-slash";slash.setAttribute("aria-hidden","true");slash.style.setProperty("--slash-color",color);
+  target.appendChild(slash);
+  // Explicitly start after layout so iOS WebKit reliably paints the first frame.
+  void slash.offsetWidth;
+  slash.addEventListener("animationend",e=>{if(e.target===slash)slash.remove()},{once:true});
+  setTimeout(()=>slash.remove(),1500);
+ }
+}
 document.addEventListener("click",e=>{
 const b=e.target.closest("[data-action]");if(!b)return;const action=b.dataset.action,side=b.dataset.side,kind=b.dataset.kind;
-if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);const fighter=ids(sides()[0]===side?"left":"right");if(fighter){const target=fighter.querySelectorAll(".selected")[kind==="player"?0:1];if(target)target.classList.add("selection-flash");const active=fighter.querySelector(".picklist."+(kind==="player"?"players":"blades")+" .pick.on");if(active)active.classList.add("selection-flash");}}
+if(action==="choose"){snapshot();state.slots[side][kind]=b.dataset.value;save();render();if(kind==="blade")closeBladePickerForSide(side);playSelectionSlash(side,kind);}
 else if(action==="finish"){const f=FIN.find(x=>x[0]===b.dataset.finish);if(f)sideAction(side,"finish",f[2],f[0]);}
 else if(action==="plus-left"||action==="plus-right"||action==="minus-left"||action==="minus-right"){const isLeft=action.endsWith("left");const target=sides()[isLeft?0:1];const point=action.startsWith("plus")?1:-1;if(point<0&&!state.scores[target])return;sideAction(target,"adjust",point);}
 else if(action==="swap"){closeAllBladePickers();snapshot();state.flipped=!state.flipped;save();render();}
