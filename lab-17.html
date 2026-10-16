@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
-<title>BEY LAB | 1on1-17 保存庫引っ越し V6</title>
+<title>BEY LAB | 1on1-17 折りたたみ V7</title>
 <style>
 :root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
 *{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -197,6 +197,7 @@ input[type=file]{display:none}
  .score-controls .finishbtn{min-height:54px}
 }
 .m17-transfer{border:1px solid #4b7592;border-radius:12px;padding:10px 14px;margin:10px 0;background:#102a3b}.m17-transfer strong{display:block}.m17-transfer p{font-size:12px;color:#b8d2e4;margin:5px 0}.m17-transfer button{margin:4px;padding:9px 12px;border:1px solid #668ba9;border-radius:8px;background:#193b56}
+.m17-compact{display:flex;align-items:center;justify-content:space-between;gap:12px}.m17-compact>div{min-width:0}.m17-compact strong{overflow-wrap:anywhere;margin:3px 0}.m17-compact .m17-toggle{flex-shrink:0;min-height:46px;background:#245477;border-color:#75b4d7;font-weight:800}.m17-expanded{margin-top:12px;border-top:1px solid #66516f;padding-top:10px}.m17-empty{font-size:12px;color:#b6c6da}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
@@ -628,16 +629,21 @@ function m17SyncRoster(){
  }
  if(changed){syncPartOrders();save()}
 }
+const m17Expanded={B:false,X:false};
 function m17RenderSide(side){
  const host=$("prototype"+side);if(!host)return;
- const slot=data.slots[side],p=m17Player(slot.player);
- if(!p){host.innerHTML='<strong>🧪 V11 保存庫との接続</strong><small>このプレイヤーには基礎実験ページのデータがありません。</small>';return}
+ const slot=data.slots[side],p=m17Player(slot.player),expanded=m17Expanded[side];
+ const selected=[slot.blade,slot.ratchet,slot.bit].filter(Boolean).join(" · ")||"機体未設定";
+ const presets=Array.isArray(p?.presets)?p.presets:[];
+ const toggle='<button type="button" class="m17-toggle" data-action="m17-toggle" data-side="'+side+'" aria-expanded="'+expanded+'">'+(expanded?'▲ 保存庫を閉じる':'▦ 機体を変更')+'</button>';
+ const head='<div class="m17-compact"><div><small>現在のカスタム</small><strong>'+esc(selected)+'</strong><small>保存済み完成ベイ '+presets.length+'機</small></div>'+toggle+'</div>';
+ if(!expanded){host.innerHTML=head;return}
+ if(!p){host.innerHTML=head+'<p class="m17-empty">このプレイヤーにはV11保存庫のデータがありません。</p>';return}
  const sections=["blade","ratchet","bit"].map(part=>{
   const values=Array.isArray(p.hand?.[part])?p.hand[part]:[];
   return '<small>'+({blade:"ブレード",ratchet:"ラチェット",bit:"ビット"}[part])+' / 登録済み '+values.length+'</small><div class="m17-row">'+values.map(v=>'<button type="button" class="'+(slot[part]===v?"m17-on":"")+'" data-action="m17-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join("")+'</div>'
  }).join("");
- const presets=Array.isArray(p.presets)?p.presets:[];
- host.innerHTML='<strong>🧪 V11 パーツ・完成ベイ</strong>'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div>';
+ host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div></div>';
 }
 function m17LoadPreset(side,index){
  const p=m17Player(data.slots[side].player),item=p?.presets?.[index];if(!item)return;
@@ -646,6 +652,7 @@ function m17LoadPreset(side,index){
  const before={...data.slots[side]};
  for(const part of ["blade","ratchet","bit"])data.slots[side][part]=item[part]||"";
  if(!save()){data.slots[side]=before;return}
+ m17Expanded[side]=false;
  render();
 }
 
@@ -927,7 +934,8 @@ async function importJson(file){
 document.addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");if(!b)return;
  const action=b.dataset.action;
- if(action==="m17-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
+ if(action==="m17-toggle"){const side=b.dataset.side;if(["B","X"].includes(side)){m17Expanded[side]=!m17Expanded[side];m17RenderSide(side)}}
+ else if(action==="m17-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
  else if(action==="m17-preset")m17LoadPreset(b.dataset.side,Number(b.dataset.index));
  else if(action==="preset-save"){const slot=data.slots[b.dataset.side];if(window.BEY_HANDS?.presetsSave(slot.player,slot))alert("共通保存庫に登録したぞ！");else alert("プレイヤーとブレードを選択してください。")}
  else if(action==="preset-load"){const side=b.dataset.side,slot=data.slots[side],list=window.BEY_HANDS?.presetsGet(slot.player)||[];if(!list.length){alert("このプレイヤーには保存済みの一式がありません。");return}const choice=prompt("呼び出す番号を入力してください:\n"+list.map((p,i)=>(i+1)+". "+[p.blade,p.ratchet,p.bit].join(" · ")).join("\n"));const i=Number(choice)-1;if(!Number.isInteger(i)||!list[i])return;Object.assign(slot,list[i]);save();render()}
