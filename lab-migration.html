@@ -145,6 +145,7 @@ input[type=file]{display:none}
 .finishbtn{min-height:53px}.after{margin-top:9px}
 .scroll-cue{display:flex;justify-content:center;align-items:center;gap:8px;margin:9px 0 3px;color:#a7bdd9;font-size:11px;letter-spacing:.1em;font-weight:850}
 .scroll-cue a{color:#d1bb86;text-decoration:none}
+.player-quick{display:flex;flex-wrap:wrap;gap:7px;margin:8px 0}.player-quick button{min-height:44px;padding:9px 12px;border:1px solid #6a87a9;border-radius:9px;background:#203650;color:white;font-weight:800}.player-quick button.on{background:#70582e;border-color:#f4cb79;color:#fff1ce}.fighter.x .player-quick button.on{background:#315f8d;border-color:#a2d1ff}
 .picker-overlay{display:none;position:fixed;inset:0;z-index:120;background:#030811d9;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
 .picker-overlay.show{display:flex}
 .picker-card{--accent:#ff847c;width:min(680px,100%);max-height:91dvh;display:flex;flex-direction:column;min-height:0;background:linear-gradient(135deg,#1c2c43,#09182a);border:2px solid var(--accent);border-radius:16px;padding:16px;box-shadow:0 24px 75px #0009}
@@ -236,7 +237,7 @@ input[type=file]{display:none}
 
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
-  <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
+  <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label><div class="player-quick" id="playerQuickB"></div>
   <div class="m17-legacy" hidden aria-hidden="true"><div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="blade"><span class="current-text" id="bladeB">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeB"></div></div>
   <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="ratchet"><span class="current-text" id="ratchetB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetB"></div></div>
   <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="bit"><span class="current-text" id="bitB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitB"></div></div></div>
@@ -244,7 +245,7 @@ input[type=file]{display:none}
  </section>
  <div class="vs">VS</div>
  <section class="fighter x"><div class="sidehead"><strong>X-SIDE</strong><small>TEST UNIT / 02</small></div>
-  <label class="field"><span>プレイヤー</span><select id="playerX" data-field="player" data-side="X"></select></label>
+  <label class="field"><span>プレイヤー</span><select id="playerX" data-field="player" data-side="X"></select></label><div class="player-quick" id="playerQuickX"></div>
   <div class="m17-legacy" hidden aria-hidden="true"><div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="blade"><span class="current-text" id="bladeX">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeX"></div></div>
   <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="ratchet"><span class="current-text" id="ratchetX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetX"></div></div>
   <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="bit"><span class="current-text" id="bitX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitX"></div></div></div>
@@ -638,11 +639,22 @@ function m17SaveCurrent(side){
  }catch(e){alert("保存できませんでした。端末の空き容量を確認してください。")}
 }
 
+function selectPlayer(side,v){
+ if(!["B","X"].includes(side)||!data.players.includes(v)||data.slots[side].player===v)return;
+ if(!readyForBuildEdit()){render();return}
+ const before={...data.slots[side]};data.slots[side].player=v;
+ const saved=window.BEY_HANDS?.presetsGet(v)||[],owned=window.BEY_HANDS?.get(v,"blade")||[];
+ const favorite=saved.find(p=>data.blades.includes(p.blade));
+ data.slots[side].blade=favorite?.blade||owned.find(x=>data.blades.includes(x))||data.blades[0];
+ data.slots[side].ratchet=favorite?.ratchet||"";data.slots[side].bit=favorite?.bit||"";
+ if(!save()){data.slots[side]=before;render();return}render();
+}
 function renderSelectors(){
  for(const side of ["B","X"]){
   const x=data.slots[side];
   $("player"+side).innerHTML=options(data.players,x.player);
   $("player"+side).value=x.player;
+  $("playerQuick"+side).innerHTML=data.players.map(name=>'<button type="button" data-action="quick-player" data-side="'+side+'" data-player="'+esc(name)+'" class="'+(name===x.player?"on":"")+'" aria-pressed="'+(name===x.player)+'">'+esc(name)+'</button>').join("");
   $("blade"+side).textContent="✓ "+x.blade;
   $("ratchet"+side).textContent=x.ratchet?"✓ "+x.ratchet:"未設定";
   $("bit"+side).textContent=x.bit?"✓ "+x.bit:"未設定";
@@ -916,7 +928,8 @@ async function importJson(file){
 document.addEventListener("click",e=>{
  const b=e.target.closest("[data-action]");if(!b)return;
  const action=b.dataset.action;
- if(action==="m17-toggle"){const side=b.dataset.side;if(["B","X"].includes(side)){m17Expanded[side]=!m17Expanded[side];m17RenderSide(side)}}
+ if(action==="quick-player")selectPlayer(b.dataset.side,b.dataset.player);
+ else if(action==="m17-toggle"){const side=b.dataset.side;if(["B","X"].includes(side)){m17Expanded[side]=!m17Expanded[side];m17RenderSide(side)}}
  else if(action==="m17-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
  else if(action==="m17-preset")m17LoadPreset(b.dataset.side,Number(b.dataset.index));
  else if(action==="m17-save-current")m17SaveCurrent(b.dataset.side);
@@ -951,18 +964,7 @@ document.addEventListener("change",e=>{
   const v=clean(target.value,field==="ratchet"||field==="bit"?22:70);
   if(field==="player"&&!data.players.includes(v)||field==="blade"&&!data.blades.includes(v))return;
   if(field==="player"){
-   if(!readyForBuildEdit()){render();return;}
-   const prior={...data.slots[side]};data.slots[side][field]=v;
-   const handBlades=window.BEY_HANDS?.get(v,"blade")||[];
-   const saved=window.BEY_HANDS?.presetsGet(v)||[];
-   const favorite=saved.find(p=>data.blades.includes(p.blade));
-   const owned=handBlades.find(blade=>data.blades.includes(blade));
-   // Never carry the previous player's custom into a different player's slot.
-   data.slots[side].blade=favorite?.blade||owned||data.blades[0];
-   data.slots[side].ratchet=favorite?.ratchet||"";
-   data.slots[side].bit=favorite?.bit||"";
-   if(!save()){data.slots[side]=prior;render();return;}
-   render();
+   selectPlayer(side,v);
   }else changePart(side,field,v);
  }
  else if(target.id==="scope"){renderFocus();summary();}
