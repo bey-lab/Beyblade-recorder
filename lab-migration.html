@@ -972,8 +972,13 @@ document.addEventListener("change",e=>{
    if(!readyForBuildEdit()){render();return;}
    const prior=data.slots[side][field];data.slots[side][field]=v;
    const handBlades=window.BEY_HANDS?.get(v,"blade")||[];
-   if(handBlades.length&&data.blades.includes(handBlades[0]))data.slots[side].blade=handBlades[0];
-   data.slots[side].ratchet="";data.slots[side].bit="";
+   const saved=window.BEY_HANDS?.presetsGet(v)||[];
+   const favorite=saved.find(p=>data.blades.includes(p.blade));
+   const owned=handBlades.find(blade=>data.blades.includes(blade));
+   // Never carry the previous player's custom into a different player's slot.
+   data.slots[side].blade=favorite?.blade||owned||data.blades[0];
+   data.slots[side].ratchet=favorite?.ratchet||"";
+   data.slots[side].bit=favorite?.bit||"";
    if(!save()){data.slots[side][field]=prior;render();return;}
    render();
   }else changePart(side,field,v);
