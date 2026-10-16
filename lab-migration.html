@@ -617,16 +617,7 @@ function m17SyncRoster(){
 }
 const m17Expanded={B:false,X:false};
 function m17Presets(player){
- const v11=m17Player(player);
- const foundation=Array.isArray(v11?.presets)?v11.presets:[];
- const shared=window.BEY_HANDS?.presetsGet(player)||[];
- const result=[];
- for(const item of [...foundation,...shared]){
-  if(!item||typeof item.blade!=="string"||!item.blade)continue;
-  const normalized={blade:item.blade,ratchet:item.ratchet||"",bit:item.bit||""};
-  if(!result.some(p=>["blade","ratchet","bit"].every(k=>p[k]===normalized[k])))result.push(normalized);
- }
- return result;
+ return window.BEY_HANDS?.presetsGet(player)||[];
 }
 function m17RenderSide(side){
  const host=$("prototype"+side);if(!host)return;
