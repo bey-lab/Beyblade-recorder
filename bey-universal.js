@@ -39,6 +39,7 @@
    const homeEnv=old.querySelector(".home-env");
    if(homeEnv){homeEnv.classList.add("bey-home-env-shared");nav.prepend(homeEnv)}
   }
+  nav.classList.add("bey-seven-active");
   header.append(brand,nav);
   if(old){old.parentNode.insertBefore(header,old);old.classList.add("bey-original-header-hidden")}
   else{const wrap=document.querySelector("main")||document.body;wrap.insertBefore(header,wrap.firstChild)}
