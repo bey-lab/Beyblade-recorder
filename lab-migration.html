@@ -632,23 +632,36 @@ function m17SyncRoster(){
  if(changed){syncPartOrders();save()}
 }
 const m17Expanded={B:false,X:false};
+function m17Presets(player){
+ const v11=m17Player(player);
+ const foundation=Array.isArray(v11?.presets)?v11.presets:[];
+ const shared=window.BEY_HANDS?.presetsGet(player)||[];
+ const result=[];
+ for(const item of [...foundation,...shared]){
+  if(!item||typeof item.blade!=="string"||!item.blade)continue;
+  const normalized={blade:item.blade,ratchet:item.ratchet||"",bit:item.bit||""};
+  if(!result.some(p=>["blade","ratchet","bit"].every(k=>p[k]===normalized[k])))result.push(normalized);
+ }
+ return result;
+}
 function m17RenderSide(side){
  const host=$("prototype"+side);if(!host)return;
  const slot=data.slots[side],p=m17Player(slot.player),expanded=m17Expanded[side];
  const selected=[slot.blade,slot.ratchet,slot.bit].filter(Boolean).join(" · ")||"機体未設定";
- const presets=Array.isArray(p?.presets)?p.presets:[];
+ const presets=m17Presets(slot.player);
  const toggle='<button type="button" class="m17-toggle" data-action="m17-toggle" data-side="'+side+'" aria-expanded="'+expanded+'">'+(expanded?'▲ 保存庫を閉じる':'▦ 機体を変更')+'</button>';
  const head='<div class="m17-compact"><div><small>現在のカスタム</small><strong>'+esc(selected)+'</strong><small>保存済み完成ベイ '+presets.length+'機</small></div>'+toggle+'</div>';
  if(!expanded){host.innerHTML=head;return}
- if(!p){host.innerHTML=head+'<p class="m17-empty">このプレイヤーにはV11保存庫のデータがありません。</p>';return}
  const sections=["blade","ratchet","bit"].map(part=>{
-  const values=Array.isArray(p.hand?.[part])?p.hand[part]:[];
-  return '<small>'+({blade:"ブレード",ratchet:"ラチェット",bit:"ビット"}[part])+' / 登録済み '+values.length+'</small><div class="m17-row">'+values.map(v=>'<button type="button" class="'+(slot[part]===v?"m17-on":"")+'" data-action="m17-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join("")+'</div>'
+  const values=[...new Set([...(Array.isArray(p?.hand?.[part])?p.hand[part]:[]),...(window.BEY_HANDS?.get(slot.player,part)||[])])];
+  return '<small>'+({blade:"ブレード",ratchet:"ラチェット",bit:"ビット"}[part])+' / 登録済み '+values.length+'</small><div class="m17-row">'+values.map(v=>'<button type="button" class="'+(slot[part]===v?"m17-on":"")+'" data-action="m17-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join("")+'</div>';
  }).join("");
- host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div></div>';
+ const saveButton='<button type="button" data-action="m17-save-current" data-side="'+side+'" '+(!slot.blade||!slot.ratchet||!slot.bit?'disabled':'')+'>＋ 現在の機体を保存</button>';
+ const help=presets.length?'':'<p class="m17-empty">保存済み完成ベイはまだありません。現在の機体を保存するか、下の管理欄からV11保存庫のJSONを読み込めます。</p>';
+ host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div>'+help+'<div class="m17-row">'+saveButton+'</div></div>';
 }
 function m17LoadPreset(side,index){
- const p=m17Player(data.slots[side].player),item=p?.presets?.[index];if(!item)return;
+ const item=m17Presets(data.slots[side].player)[index];if(!item)return;
  if(!readyForBuildEdit())return;
  if(!data.blades.includes(item.blade)){data.blades.push(item.blade);syncPartOrders()}
  const before={...data.slots[side]};
@@ -656,6 +669,16 @@ function m17LoadPreset(side,index){
  if(!save()){data.slots[side]=before;return}
  m17Expanded[side]=false;
  render();
+}
+function m17SaveCurrent(side){
+ if(!["B","X"].includes(side)||!readyForBuildEdit())return;
+ const slot=data.slots[side];
+ if(!slot.blade||!slot.ratchet||!slot.bit){alert("ブレード・ラチェット・ビットを選んでください。");return}
+ try{
+  if(!window.BEY_HANDS?.presetsSave(slot.player,slot)){alert("保存できませんでした。");return}
+  m17RenderSide(side);
+  $("lastNotice").textContent="✓ "+slot.player+"の完成ベイを共通保存庫に登録しました。";
+ }catch(e){alert("保存できませんでした。端末の空き容量を確認してください。")}
 }
 
 function renderSelectors(){
@@ -939,6 +962,7 @@ document.addEventListener("click",e=>{
  if(action==="m17-toggle"){const side=b.dataset.side;if(["B","X"].includes(side)){m17Expanded[side]=!m17Expanded[side];m17RenderSide(side)}}
  else if(action==="m17-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
  else if(action==="m17-preset")m17LoadPreset(b.dataset.side,Number(b.dataset.index));
+ else if(action==="m17-save-current")m17SaveCurrent(b.dataset.side);
  else if(action==="preset-save"){const slot=data.slots[b.dataset.side];if(window.BEY_HANDS?.presetsSave(slot.player,slot))alert("共通保存庫に登録したぞ！");else alert("プレイヤーとブレードを選択してください。")}
  else if(action==="preset-load"){const side=b.dataset.side,slot=data.slots[side],list=window.BEY_HANDS?.presetsGet(slot.player)||[];if(!list.length){alert("このプレイヤーには保存済みの一式がありません。");return}const choice=prompt("呼び出す番号を入力してください:\n"+list.map((p,i)=>(i+1)+". "+[p.blade,p.ratchet,p.bit].join(" · ")).join("\n"));const i=Number(choice)-1;if(!Number.isInteger(i)||!list[i])return;Object.assign(slot,list[i]);save();render()}
  else if(action==="finish")commitResult(b.dataset.side,b.dataset.finish);
