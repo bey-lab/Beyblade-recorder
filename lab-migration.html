@@ -201,7 +201,13 @@ input[type=file]{display:none}
 .m17-management{margin:14px 0;padding:14px;border:1px solid #405776;border-radius:15px;background:#101f32}.m17-management h2{font-size:17px;margin:0 0 10px}.m17-management>.field{max-width:600px}.m17-management .m17-transfer{margin:12px 0 0}.m17-battle-heading{padding-bottom:8px}
 .m17-brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.m17-brand strong{white-space:nowrap}.m17-brand-title{font-size:clamp(16px,2vw,23px);font-weight:900;color:#f1f5ff;white-space:nowrap}.m17-brand-sep{font-size:20px;color:#9aaac1}.m17-brand small{width:100%;margin-top:-5px}@media(max-width:700px){.m17-brand{gap:5px}.m17-brand-title{font-size:15px}.m17-brand small{margin-top:0}}
 .m17-staging-notice{padding:8px 12px;border:1px solid #8a7542;border-radius:9px;background:#372c1b;color:#ffe1a1;font-size:12px;font-weight:800;margin:7px 0 10px}
-.m17-env-control{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#f3d693}.m17-env-control select{padding:8px 9px;min-width:105px;border-radius:9px;border:1px solid #7a90a8;background:#10233b;color:#fff;font-weight:800}.m17-nav{gap:7px;flex-wrap:wrap}.m17-nav .btn{padding:9px 12px}.m17-nav #saveState{white-space:nowrap}html{scroll-behavior:smooth}</style><link rel="stylesheet" href="./bey-universal.css"><script>
+.m17-env-control{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#f3d693}.m17-env-control select{padding:8px 9px;min-width:105px;border-radius:9px;border:1px solid #7a90a8;background:#10233b;color:#fff;font-weight:800}.m17-nav{gap:7px;flex-wrap:wrap}.m17-nav .btn{padding:9px 12px}.m17-nav #saveState{white-space:nowrap}html{scroll-behavior:smooth}
+/* Seven primary Bey-Lab pages: navigation only; no record data is changed. */
+.bey-seven-nav{box-sizing:border-box;display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:12px auto 18px;padding:10px;max-width:1160px;border:1px solid #435b76;border-radius:12px;background:#10243a;color:#fff;font:700 12px/1.4 system-ui,sans-serif}
+.bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
+.bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
+.bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -236,8 +242,9 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 </script></head><body data-bey-mode="lab">
 <div class="wrap">
 <header><div class="brand m17-brand"><strong>BEY LAB</strong><span class="m17-brand-sep">/</span><span class="m17-brand-title">🔬 1on1研究室</span><small>正式移植候補 · 検証環境</small></div>
-<nav class="m17-nav"><label class="m17-env-control">データ<select id="m17Environment" aria-label="検証版のテスト・本番データを切り替える"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><a class="btn" href="./arena.html">👑 勝ち抜き</a><a class="btn" href="./league.html">🏆 3on3</a><a class="btn" href="./hands.html">🧩 パーツ管理</a><a class="btn" href="./records.html">📊 記録・履歴</a><a class="btn" href="./data.html">⚙ データ管理</a><a class="btn" href="./index.html?home=1">⌂ ホーム</a><span id="saveState" class="hint">端末内保存</span></nav></header>
+<nav class="m17-nav"><label class="m17-env-control">データ<select id="m17Environment" aria-label="検証版のテスト・本番データを切り替える"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><span id="saveState" class="hint">端末内保存</span></nav></header>
 
+<nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6" aria-current="page">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html">💾 データ管理</a><a href="./records.html">📊 記録と履歴</a></nav>
 <div class="m17-staging-notice">🧪 正式移植候補・検証版｜試合履歴は本番1on1と分離しています。保存庫はV11と共通です。</div>
 <section class="duel-score" aria-label="今回の研究の試合勝利数">
   <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE / FIRST TO 4</div>
