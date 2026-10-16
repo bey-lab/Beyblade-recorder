@@ -217,7 +217,7 @@ input[type=file]{display:none}
  window.BEY_ENV=env;
  document.documentElement.dataset.beyEnv=env;
 })();
-</script><script src="./bey-hands.js?v=14"></script></head><body data-bey-mode="lab">
+</script><script src="./bey-hands.js?v=15"></script></head><body data-bey-mode="lab">
 <div class="wrap">
 <header><div class="brand m17-brand"><strong>BEY LAB</strong><span class="m17-brand-sep">/</span><span class="m17-brand-title">🔬 1on1研究室</span><small>正式移植候補 · 検証環境</small></div>
 <nav class="m17-nav"><label class="m17-env-control">データ<select id="m17Environment" aria-label="検証版のテスト・本番データを切り替える"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><span id="saveState" class="hint">端末内保存</span></nav></header>
@@ -481,7 +481,7 @@ function pinOrderedPart(part,value){
 }
 function renderPartQuick(side,part){
  const value=data.slots[side][part];
- const quick=quickOptions(part,side);
+ const quick=part==="ratchet"&&integratedSlot(data.slots[side])?[]:quickOptions(part,side);
  const prefix=part[0].toUpperCase()+part.slice(1);
  $("quick"+prefix+side).innerHTML=quick.map(item=>
   '<button type="button" class="quickchip '+(item===value?"on":"")+
@@ -510,14 +510,27 @@ function readyForBuildEdit(){
  archiveActiveMatch();save();render();
  return true;
 }
+function structuralStatus(slot){return window.BEY_HANDS?.ratchetStatus(slot.blade,slot.ratchet,slot.bit)||"missing"}
+function integratedSlot(slot){return ["integrated_blade","integrated_bit"].includes(structuralStatus(slot))}
+function displayRatchet(slot){return integratedSlot(slot)?"内蔵":slot.ratchet||"未設定"}
+function snapshotSlots(){const result=clone(data.slots);for(const side of ["B","X"]){const slot=result[side];slot.ratchetStatus=structuralStatus(slot);if(["integrated_blade","integrated_bit"].includes(slot.ratchetStatus))slot.ratchet="";}return result}
+function checkIntegratedBuild(side,part,value){
+ const slot={...data.slots[side],[part]:value};
+ const status=structuralStatus(slot);
+ if(status==="conflict"){alert("このブレードとビットは両方ラチェット一体型です。組み合わせられません。");return false}
+ if(part==="ratchet"&&integratedSlot(slot)){alert("ラチェット一体型のため、通常ラチェットは選択できません。");return false}
+ return true;
+}
 function changePart(side,part,value){
  if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return false;
  const v=clean(value,part==="blade"?70:22);
  if(part==="blade"&&!data.blades.includes(v))return false;
  if(data.slots[side][part]===v){if(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide)$("lastNotice").textContent="🔒 対戦中はカスタム固定。4点先取か試合リセット後に変更できます。";return true;}
+ if(!checkIntegratedBuild(side,part,v))return false;
  if(!readyForBuildEdit())return false;
  const prev=data.slots[side][part];
  data.slots[side][part]=v;
+ if(integratedSlot(data.slots[side]))data.slots[side].ratchet="";
  syncPartOrders();
  if(!save()){data.slots[side][part]=prev;syncPartOrders();return false}
  render();flashBuild(side,part);
@@ -568,6 +581,7 @@ function togglePickerOrder(){
 }
 function openPicker(side,part){
  if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return;
+ if(part==="ratchet"&&integratedSlot(data.slots[side]))return;
  pickerSide=side;pickerPart=part;pickerEditing=false;
  $("pickerHeading").textContent=side+"-SIDE · "+PICKER_NAMES[part]+"を選択";
  $("pickerCard").className="picker-card"+(side==="X"?" x":"");
@@ -605,16 +619,16 @@ function m17Presets(player){
 function m17RenderSide(side){
  const host=$("prototype"+side);if(!host)return;
  const slot=data.slots[side],expanded=m17Expanded[side];
- const selected=[slot.blade,slot.ratchet,slot.bit].filter(Boolean).join(" · ")||"機体未設定";
+ const selected=[slot.blade,displayRatchet(slot),slot.bit].filter(Boolean).join(" · ")||"機体未設定";
  const presets=m17Presets(slot.player);
  const toggle='<button type="button" class="m17-toggle" data-action="m17-toggle" data-side="'+side+'" aria-expanded="'+expanded+'">'+(expanded?'▲ 保存庫を閉じる':'▦ 機体を変更')+'</button>';
  const head='<div class="m17-compact"><div><small>現在のカスタム</small><strong>'+esc(selected)+'</strong><small>保存済み完成ベイ '+presets.length+'機</small></div>'+toggle+'</div>';
  if(!expanded){host.innerHTML=head;return}
  const sections=["blade","ratchet","bit"].map(part=>{
-  const values=window.BEY_HANDS?.get(slot.player,part)||[];
-  return '<small>'+({blade:"ブレード",ratchet:"ラチェット",bit:"ビット"}[part])+' / 登録済み '+values.length+'</small><div class="m17-row">'+values.map(v=>'<button type="button" class="'+(slot[part]===v?"m17-on":"")+'" data-action="m17-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join("")+'</div>';
+  const values=part==="ratchet"&&integratedSlot(slot)?[]:window.BEY_HANDS?.get(slot.player,part)||[];
+  return '<small>'+({blade:"ブレード",ratchet:"ラチェット",bit:"ビット"}[part])+' / '+(part==="ratchet"&&integratedSlot(slot)?"内蔵":("登録済み "+values.length))+'</small><div class="m17-row">'+values.map(v=>'<button type="button" class="'+(slot[part]===v?"m17-on":"")+'" data-action="m17-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join("")+'</div>';
  }).join("");
- const saveButton='<button type="button" data-action="m17-save-current" data-side="'+side+'" '+(!slot.blade||!slot.ratchet||!slot.bit?'disabled':'')+'>＋ 現在の機体を保存</button>';
+ const saveButton='<button type="button" data-action="m17-save-current" data-side="'+side+'" '+(!slot.blade||(!slot.ratchet&&!integratedSlot(slot))||!slot.bit?'disabled':'')+'>＋ 現在の機体を保存</button>';
  const help=presets.length?'':'<p class="m17-empty">保存済み完成ベイはまだありません。現在の機体を保存するか、パーツ管理で登録できます。</p>';
  host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div>'+help+'<div class="m17-row">'+saveButton+'</div></div>';
 }
@@ -624,6 +638,8 @@ function m17LoadPreset(side,index){
  if(!data.blades.includes(item.blade)){data.blades.push(item.blade);syncPartOrders()}
  const before={...data.slots[side]};
  for(const part of ["blade","ratchet","bit"])data.slots[side][part]=item[part]||"";
+ if(structuralStatus(data.slots[side])==="conflict"){data.slots[side]=before;alert("一体型同士の組み合わせは使えません。");return}
+ if(integratedSlot(data.slots[side]))data.slots[side].ratchet="";
  if(!save()){data.slots[side]=before;return}
  m17Expanded[side]=false;
  render();
@@ -631,7 +647,7 @@ function m17LoadPreset(side,index){
 function m17SaveCurrent(side){
  if(!["B","X"].includes(side)||!readyForBuildEdit())return;
  const slot=data.slots[side];
- if(!slot.blade||!slot.ratchet||!slot.bit){alert("ブレード・ラチェット・ビットを選んでください。");return}
+ if(!slot.blade||(!slot.ratchet&&!integratedSlot(slot))||!slot.bit){alert("ブレード・ラチェット・ビットを選んでください。");return}
  try{
   if(!window.BEY_HANDS?.presetsSave(slot.player,slot)){alert("保存できませんでした。");return}
   m17RenderSide(side);
@@ -647,6 +663,8 @@ function selectPlayer(side,v){
  const favorite=saved.find(p=>data.blades.includes(p.blade));
  data.slots[side].blade=favorite?.blade||owned.find(x=>data.blades.includes(x))||data.blades[0];
  data.slots[side].ratchet=favorite?.ratchet||"";data.slots[side].bit=favorite?.bit||"";
+ if(structuralStatus(data.slots[side])==="conflict")data.slots[side].bit="";
+ if(integratedSlot(data.slots[side]))data.slots[side].ratchet="";
  if(!save()){data.slots[side]=before;render();return}render();
 }
 function renderSelectors(){
@@ -656,13 +674,14 @@ function renderSelectors(){
   $("player"+side).value=x.player;
   $("playerQuick"+side).innerHTML=data.players.map(name=>'<button type="button" data-action="quick-player" data-side="'+side+'" data-player="'+esc(name)+'" class="'+(name===x.player?"on":"")+'" aria-pressed="'+(name===x.player)+'">'+esc(name)+'</button>').join("");
   $("blade"+side).textContent="✓ "+x.blade;
-  $("ratchet"+side).textContent=x.ratchet?"✓ "+x.ratchet:"未設定";
+  $("ratchet"+side).textContent=integratedSlot(x)?"✓ 内蔵":x.ratchet?"✓ "+x.ratchet:"未設定";
   $("bit"+side).textContent=x.bit?"✓ "+x.bit:"未設定";
   for(const part of ["blade","ratchet","bit"]){
    const btn=document.querySelector('.partpick-main[data-side="'+side+'"][data-part="'+part+'"]');
    if(btn)btn.classList.toggle("has-selection",Boolean(x[part]));
   }
   for(const part of ["blade","ratchet","bit"])renderPartQuick(side,part);
+  const ratchetBtn=document.querySelector('.partpick-main[data-side="'+side+'"][data-part="ratchet"]');if(ratchetBtn){ratchetBtn.disabled=integratedSlot(x);ratchetBtn.title=integratedSlot(x)?"ラチェット一体型・内蔵":"";}
   for(const btn of document.querySelectorAll('[data-action="quick-part"][data-side="'+side+'"]'))btn.setAttribute("aria-label",btn.textContent+"を選択"+(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide?"（対戦中は変更不可）":""));
   $("build"+side).textContent=combo(x);
   const handLink=$("player"+side).parentElement.querySelector(".bey-hand-link");
@@ -829,7 +848,7 @@ function commitResult(side,finish){
  ensureSession();
  const previous=clone(data.activeMatch);
  if(!data.activeMatch){
-  data.activeMatch={id:uid(),started:new Date().toISOString(),slots:clone(data.slots),
+  data.activeMatch={id:uid(),started:new Date().toISOString(),slots:snapshotSlots(),
    scores:{B:0,X:0},events:[],winnerSide:null,finished:null};
  }
  const m=data.activeMatch;
