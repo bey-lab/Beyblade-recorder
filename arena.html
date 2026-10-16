@@ -872,4 +872,4 @@ ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeMo
 if(navigator.standalone||(typeof matchMedia==="function"&&matchMedia("(display-mode: standalone)").matches)){document.documentElement?.classList?.add("installed-mode");}
 ids("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";ids("environmentBadge").classList.toggle("official",window.BEY_ENV==="official");ensureMeeting();render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
-</script><script src="./bey-universal.js"></script></body></html>
+</script><script src="./bey-universal.js?v=8"></script></body></html>
