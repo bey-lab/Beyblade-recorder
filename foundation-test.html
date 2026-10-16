@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>BEY LAB | 手札基礎実験</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#081324;color:#f0f5ff;font-family:system-ui,-apple-system,sans-serif}main{max-width:950px;margin:auto;padding:16px 14px 70px}a{color:#9ac9ff}h1{font-size:25px;margin:14px 0 5px}h2{font-size:19px;margin:0 0 12px}.sub{color:#a6b8d0;font-size:13px;line-height:1.6}.panel{border:1px solid #39516e;background:#11243c;border-radius:16px;padding:15px;margin-top:14px}button,input,select{font:inherit;color:inherit}button{border:1px solid #587292;background:#1b3657;border-radius:10px;padding:11px 13px;cursor:pointer;touch-action:manipulation}button:active{transform:scale(.98)}button.active{background:#205d99;border:2px solid #8cd6ff;padding:10px 12px}button:focus-visible{outline:3px solid #ffce6d}input,select{background:#09182a;border:1px solid #607a9b;border-radius:9px;padding:12px;min-width:0}.line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.line select{flex:1;min-width:130px}.line input{flex:2;min-width:140px}.pick-grid{display:flex;flex-wrap:wrap;gap:7px;max-height:270px;overflow:auto;padding:2px}.pick-grid button{min-width:65px}.pick-grid button:disabled{opacity:.6}.part-title{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;font-weight:800}.picked{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.picked>div{background:#09182a;border:1px solid #3a5878;border-radius:11px;padding:12px 6px;text-align:center;min-width:0}.picked small{display:block;color:#a9c2e0;margin-bottom:5px}.picked strong{font-size:clamp(12px,2.8vw,18px);overflow-wrap:anywhere}.save{width:100%;margin-top:12px;background:#14644f;border-color:#43b99a;font-weight:800;font-size:17px}.save:disabled{opacity:.4}.presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px}.preset{display:flex;align-items:stretch;gap:6px;border:1px solid #3e5b7d;border-radius:11px;padding:6px;background:#0b1b30}.preset .load{flex:1;text-align:left;background:#1b3858;border:0;min-width:0}.preset .load strong{display:block}.preset .load small{display:block;color:#c0d3ec;margin-top:3px}.preset .remove{background:#49303a;border-color:#8a5661;padding:8px}#status{min-height:1.6em;color:#8fe5c6;font-weight:700}.tag{font-size:12px;color:#ffdd99}.empty{color:#91a8c5}.poolnote{color:#a5bdd9;font-size:12px;margin:6px 0}.back{display:inline-block;margin:7px 0} @media(max-width:420px){.panel{padding:11px}.pick-grid button{padding:10px 9px;min-width:57px}}
+</style></head><body><main><a class="back" href="./index.html">← ホームへ</a><h1>🔧 手札基礎実験</h1><p class="sub">試作版。本体の手札・試合・保存済みカスタムは変更しません。ここで作ったデータは試作用の別保存です。</p>
+<section class="panel"><h2>① プレイヤー</h2><div class="line"><select id="player" aria-label="プレイヤー"></select><input id="newPlayer" placeholder="新しいプレイヤー名" maxlength="70"><button id="addPlayer">＋ 追加</button></div></section>
+<section class="panel"><h2>② 完成ベイを組む</h2><div class="picked" id="picked"></div><div id="partPickers"></div><button class="save" id="save">＋ この一式を保存</button><p id="status" role="status"></p></section>
+<section class="panel"><h2>③ 保存済み完成ベイ <span id="count" class="tag"></span></h2><p class="sub">機体をタップすると、上の3つのパーツ欄へ一括で戻ります。</p><div id="presets" class="presets"></div></section>
+<p class="sub">この実験は端末内の localStorage を使います。ブラウザや端末を変えると共有されません。</p></main>
+<script src="./bey-hands.js"></script><script>
+(()=>{
+"use strict";
+const KEY="bey-lab-foundation-prototype-v1", parts=["blade","ratchet","bit"],labels={blade:"ブレード",ratchet:"ラチェット",bit:"ビット"};
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function read(){try{const x=JSON.parse(localStorage.getItem(KEY));return x&&typeof x==="object"&&!Array.isArray(x)?x:{}}catch(e){return {}}}
+function write(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function clean(s){return String(s||"").trim().slice(0,70)}
+const state={player:"",selection:{blade:"",ratchet:"",bit:""}};
+function names(){return [...new Set([...Object.keys(read()),...(window.BEY_HANDS?.players?.()||[])])].filter(Boolean).sort((a,b)=>a.localeCompare(b,"ja"))}
+function natural(a,b){return a.localeCompare(b,"ja",{numeric:true,sensitivity:"base"})}
+function options(part){const all=new Set(window.BEY_HANDS?.pool?.(part)||[]);const d=read();for(const p of Object.values(d))for(const v of p?.presets||[])if(v?.[part])all.add(v[part]);const arr=[...all].filter(Boolean);return arr.sort(natural)}
+function playerData(){return read()[state.player]||{presets:[]}}
+function setPlayer(p){state.player=p;state.selection={blade:"",ratchet:"",bit:""};render();$("status").textContent=""}
+function renderPlayers(){const list=names();$("player").innerHTML=list.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join("");$("player").value=state.player}
+function renderPicked(){$("picked").innerHTML=parts.map(p=>'<div><small>'+labels[p]+'</small><strong>'+esc(state.selection[p]||"未選択")+'</strong></div>').join("");$("save").disabled=!state.player||parts.some(p=>!state.selection[p])}
+function renderParts(){
+ $("partPickers").innerHTML=parts.map(part=>{
+ const vals=options(part);
+ return '<div class="part-title"><span>'+labels[part]+'</span><small class="tag">'+vals.length+'種類</small></div><div class="pick-grid" data-group="'+part+'">'+(vals.length?vals.map(v=>'<button type="button" data-part="'+part+'" data-value="'+esc(v)+'" class="'+(state.selection[part]===v?"active":"")+'" aria-pressed="'+(state.selection[part]===v)+'">'+esc(v)+'</button>').join(""):'<span class="empty">パーツ一覧がありません。既存モードのパーツ登録が必要です。</span>')+'</div>'
+ }).join("")
+}
+function renderPresets(){const ps=playerData().presets||[];$("count").textContent=ps.length+'機';$("presets").innerHTML=ps.length?ps.map((p,i)=>'<div class="preset"><button type="button" class="load" data-load="'+i+'"><strong>'+esc(p.blade)+'</strong><small>'+esc(p.ratchet)+' · '+esc(p.bit)+'</small></button><button type="button" class="remove" data-remove="'+i+'" aria-label="この完成ベイを削除">削除</button></div>').join(""):'<p class="empty">まだ保存されていません。</p>'}
+function render(){renderPlayers();renderPicked();renderParts();renderPresets()}
+$("player").addEventListener("change",e=>setPlayer(e.target.value));
+$("addPlayer").addEventListener("click",()=>{const p=clean($("newPlayer").value);if(!p)return;const d=read();d[p]??={presets:[]};try{write(d);$("newPlayer").value="";setPlayer(p)}catch(e){$("status").textContent="保存に失敗しました: "+e.message}});
+$("partPickers").addEventListener("click",e=>{const b=e.target.closest("button[data-part]");if(!b)return;state.selection[b.dataset.part]=b.dataset.value;renderPicked();renderParts()});
+$("save").addEventListener("click",()=>{if(!state.player||parts.some(p=>!state.selection[p]))return;const d=read();d[state.player]??={presets:[]};const p={...state.selection};d[state.player].presets??=[];if(d[state.player].presets.some(x=>parts.every(k=>x[k]===p[k]))){$("status").textContent="この完成ベイは登録済みです。";return}d[state.player].presets.push(p);try{write(d);renderPresets();$("status").textContent=p.blade+" / "+p.ratchet+" / "+p.bit+" を保存しました"}catch(e){$("status").textContent="保存に失敗しました: "+e.message}});
+$("presets").addEventListener("click",e=>{const load=e.target.closest("[data-load]"),remove=e.target.closest("[data-remove]");if(!load&&!remove)return;const d=read(),list=d[state.player]?.presets||[];const i=Number((load||remove).dataset[load?"load":"remove"]);const p=list[i];if(!p)return;if(load){state.selection={blade:p.blade,ratchet:p.ratchet,bit:p.bit};renderPicked();renderParts();$("status").textContent="3パーツを一括で呼び出しました"}else{if(!confirm("この完成ベイを削除しますか？"))return;list.splice(i,1);try{write(d);renderPresets();$("status").textContent="削除しました"}catch(err){$("status").textContent="削除に失敗しました: "+err.message}}}});
+const list=names();if(list.length)setPlayer(new URLSearchParams(location.search).get("player")&&list.includes(new URLSearchParams(location.search).get("player"))?new URLSearchParams(location.search).get("player"):list[0]);else render();
+})();
+</script></body></html>
