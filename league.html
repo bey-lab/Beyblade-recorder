@@ -78,6 +78,9 @@
 .bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
 .bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
 .bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+
+/* Hide unactivated static nav; shared header will activate and move it. */
+.bey-seven-nav:not(.bey-seven-active){display:none!important}
 </style><link rel="stylesheet" href="./bey-universal.css"></head><body data-bey-mode="league"><main><header class="top"><div><div class="brand">3ON3 LEAGUE</div><div class="sub">BEY LAB · CHAMPIONSHIP DIVISION</div></div><a class="back" href="./index.html">⌂ ホームへ戻る</a></header>
 <nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html" aria-current="page">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html">💾 データ管理</a><a href="./records.html">📊 記録と履歴</a></nav><div class="row" style="margin-top:16px"><span class="env" id="environment"></span><span class="pill">4 POINT MATCH</span><span class="pill">3-BEY DECK</span></div>
 <h1 class="league-title">3on3 <span>LEAGUE</span></h1><p class="league-tagline">🏆 リーグを制覇せよ。</p><div id="leagueBanner" class="league-banner"></div><p class="muted">3機のデッキを組んで4点先取で対戦。使用機体は各ラウンド手動で選択します。完了試合をリーグ順位に集計します。</p>
@@ -205,4 +208,4 @@ $("undo").addEventListener("click",undo);$("next").addEventListener("click",next
 $("export").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bey-lab-3on3-"+env+"-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)});
 render();
 })();
-</script><script src="./bey-universal.js?v=8"></script></main></body></html>
+</script><script src="./bey-universal.js?v=9"></script></main></body></html>
