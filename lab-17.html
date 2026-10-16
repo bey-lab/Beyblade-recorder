@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
-<title>BEY LAB | 1on1-17 横画面実験 V4</title>
+<title>BEY LAB | 1on1-17 操作順実験 V5</title>
 <style>
 :root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
 *{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -244,7 +244,7 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
     <div class="duel-side x"><span>X-SIDE POINTS</span><strong id="winsX">0</strong></div>
   </div>
 <div id="matchLockBanner" class="match-lock-banner" aria-live="polite">🔓 カスタム変更可能 · 得点が入ると試合終了まで固定</div><div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
-<div id="victoryBanner" class="victory-banner" role="status" aria-live="polite" hidden></div><div id="nextMatchPrimary" class="next-match-primary" hidden><button type="button" data-action="next-match" class="next-match-hero">▶ 次の試合へ <small>結果を保存して次のバトルを開始</small></button><button type="button" data-action="undo" class="next-match-undo">↶ 最後の得点を取り消す</button></div><div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
+<div id="victoryBanner" class="victory-banner" role="status" aria-live="polite" hidden></div><div id="nextMatchPrimary" class="next-match-primary" hidden><button type="button" data-action="next-match" class="next-match-hero">▶ 次の試合へ <small>結果を保存して次のバトルを開始</small></button><button type="button" data-action="undo" class="next-match-undo">↶ 最後の得点を取り消す</button></div>
 </section>
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
@@ -266,9 +266,10 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 <datalist id="ratchets"><option value="1-60"><option value="3-60"><option value="5-60"><option value="9-60"><option value="1-70"><option value="3-70"><option value="5-70"><option value="9-70"><option value="1-80"><option value="3-80"><option value="5-80"></datalist>
 <datalist id="bits"><option value="R"><option value="F"><option value="B"><option value="T"><option value="H"><option value="C"><option value="A"><option value="GF"><option value="FB"><option value="LR"><option value="N"><option value="P"><option value="LF"></datalist>
 <section class="battle" aria-label="1on1の4点先取スコア入力">
+ <div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
  <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST TO FOUR POINTS</div><b>勝った側のフィニッシュをタップ！ 4点先取で勝利</b></div><small class="hint">途中スコアは自動保存 · 決着後に1試合として戦績確定</small></div>
  <div class="winnerline"><strong style="color:#ffaca7">B 勝利</strong><strong style="color:#a4cdff">X 勝利</strong></div>
- <p class="hint">得点操作は画面上部のスコアボードに移動しました。</p>
+ <p class="hint">フィニッシュをタップして得点を記録します。</p>
  <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
 </section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
