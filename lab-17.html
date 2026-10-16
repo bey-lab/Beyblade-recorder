@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
-<title>BEY LAB | 1on1-17 折りたたみ V7</title>
+<title>BEY LAB | 1on1-17 管理欄移動 V8</title>
 <style>
 :root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
 *{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -198,6 +198,7 @@ input[type=file]{display:none}
 }
 .m17-transfer{border:1px solid #4b7592;border-radius:12px;padding:10px 14px;margin:10px 0;background:#102a3b}.m17-transfer strong{display:block}.m17-transfer p{font-size:12px;color:#b8d2e4;margin:5px 0}.m17-transfer button{margin:4px;padding:9px 12px;border:1px solid #668ba9;border-radius:8px;background:#193b56}
 .m17-compact{display:flex;align-items:center;justify-content:space-between;gap:12px}.m17-compact>div{min-width:0}.m17-compact strong{overflow-wrap:anywhere;margin:3px 0}.m17-compact .m17-toggle{flex-shrink:0;min-height:46px;background:#245477;border-color:#75b4d7;font-weight:800}.m17-expanded{margin-top:12px;border-top:1px solid #66516f;padding-top:10px}.m17-empty{font-size:12px;color:#b6c6da}
+.m17-management{margin:14px 0;padding:14px;border:1px solid #405776;border-radius:15px;background:#101f32}.m17-management h2{font-size:17px;margin:0 0 10px}.m17-management>.field{max-width:600px}.m17-management .m17-transfer{margin:12px 0 0}.m17-battle-heading{padding-bottom:8px}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
@@ -234,10 +235,7 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 <div class="wrap">
 <header><div class="brand"><strong>BEY LAB</strong><small>DEEP RESEARCH · 1ON1</small></div>
 <nav><span class="env-indicator" id="environmentBadge"></span><a class="btn" href="./records.html">📊 記録</a><a class="btn" href="#history">📖 履歴</a><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a><span id="saveState" class="hint">端末内保存</span></nav></header>
-<div class="topbar">
- <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE BLADE · FIRST TO 4 POINTS · DEEP RESEARCH</p></div>
- <div><label class="field" style="margin:0"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></div>
-</div>
+<div class="topbar m17-battle-heading"><div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE BLADE · FIRST TO 4 POINTS · DEEP RESEARCH</p></div></div>
 <section class="duel-score" aria-label="今回の研究の試合勝利数">
   <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE / FIRST TO 4</div>
   <div class="duel-scoreline" id="duelScore">
@@ -248,7 +246,7 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 <div id="matchLockBanner" class="match-lock-banner" aria-live="polite">🔓 カスタム変更可能 · 得点が入ると試合終了まで固定</div><div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
 <div id="victoryBanner" class="victory-banner" role="status" aria-live="polite" hidden></div><div id="nextMatchPrimary" class="next-match-primary" hidden><button type="button" data-action="next-match" class="next-match-hero">▶ 次の試合へ <small>結果を保存して次のバトルを開始</small></button><button type="button" data-action="undo" class="next-match-undo">↶ 最後の得点を取り消す</button></div>
 </section>
-<section class="m17-transfer"><strong>📦 V11保存庫の引っ越し</strong><p>V11で書き出したJSONを読み込みます。既存の保存庫はバックアップしてから置き換えます。試合記録はそのままです。</p><button type="button" id="m17Import">⬆ 保存庫を読み込む</button><button type="button" id="m17Export">⬇ 保存庫を書き出す</button><input type="file" id="m17ImportFile" accept=".json,application/json" hidden></section>
+
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
   <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
@@ -275,6 +273,7 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
  <p class="hint">フィニッシュをタップして得点を記録します。</p>
  <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
 </section>
+<section class="m17-management"><h2>⚙ 研究・データ管理</h2><label class="field"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label><section class="m17-transfer"><strong>📦 V11保存庫の引っ越し</strong><p>V11で書き出したJSONを読み込みます。既存の保存庫はバックアップしてから置き換えます。試合記録はそのままです。</p><button type="button" id="m17Import">⬆ 保存庫を読み込む</button><button type="button" id="m17Export">⬇ 保存庫を書き出す</button><input type="file" id="m17ImportFile" accept=".json,application/json" hidden></section></section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
 <div class="scroll-cue"><a href="#analysis">↓ SWIPE TO ANALYSIS · 下へスクロールして研究結果を見る</a></div>
 <div class="twocol" id="analysis">
