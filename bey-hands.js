@@ -12,7 +12,7 @@ function preferred(player,part,all){const hand=get(player,part);return hand.leng
 function pool(part){const values=new Set();for(const env of ["test","official"]){for(const mode of ["arena","1on1"]){try{const d=JSON.parse(localStorage.getItem("bey-lab-m17-"+(mode==="arena"?"arena-v1-":"1on1-v1-")+env));if(!d)continue;if(part==="blade")for(const x of d.blades||[])if(clean(x))values.add(clean(x));if(mode==="1on1"){for(const x of d.partOrders?.[part]||[])if(clean(x))values.add(clean(x));for(const side of ["B","X"])if(clean(d.slots?.[side]?.[part]))values.add(clean(d.slots[side][part]))}}catch(e){}}}
 for(const list of Object.values(read()))for(const x of list?.[part]||[])if(clean(x))values.add(clean(x));
 return [...values].sort((a,b)=>a.localeCompare(b,"ja"))}
-function players(){const names=new Set(Object.keys(read()));for(const env of ["test","official"])for(const mode of ["arena","1on1"]){try{const d=JSON.parse(localStorage.getItem("bey-lab-"+(mode==="arena"?"arena-v1-":"1on1-v1-")+env));for(const n of d?.players||[])if(clean(n))names.add(clean(n))}catch(e){}}
+function players(){const names=new Set(Object.keys(read()));for(const env of ["test","official"])for(const mode of ["arena","1on1"]){try{const d=JSON.parse(localStorage.getItem("bey-lab-migration-"+(mode==="arena"?"arena-v1-":"1on1-v1-")+env));for(const n of d?.players||[])if(clean(n))names.add(clean(n))}catch(e){}}
 return [...names].sort((a,b)=>a.localeCompare(b,"ja"))}
 const PRESET_KEY="bey-lab-migration-presets-v1";
 function presetsRead(){try{const d=JSON.parse(localStorage.getItem(PRESET_KEY));return d&&typeof d==="object"&&!Array.isArray(d)?d:{}}catch(e){return {}}}
