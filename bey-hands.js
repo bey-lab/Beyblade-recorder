@@ -70,5 +70,20 @@ function changePlayer(oldName,newName){
  catch(e){for(const [key,raw] of originals){try{if(raw===null)localStorage.removeItem(key);else localStorage.setItem(key,raw)}catch(_){}}throw Error("保存に失敗しました。空き容量を確認してください。")}
  window.dispatchEvent(new Event("bey-hands-updated"));return true;
 }
-window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups,changePlayer};
+// Structural metadata is separate from owned parts and historical results.
+const STRUCTURE_KEY="bey-lab-part-structure-v1";
+function structures(){try{const d=JSON.parse(localStorage.getItem(STRUCTURE_KEY));return d&&typeof d==="object"&&!Array.isArray(d)?d:{}}catch(e){return {}}}
+function integrated(part,name){if(!["blade","bit"].includes(part))return false;return structures()[part]?.[clean(name)]==="ratchet"}
+function setIntegrated(part,name,enabled){
+ if(!["blade","bit"].includes(part)||!clean(name))throw Error("対象パーツが不正です");
+ const d=structures();d[part]??={};
+ if(enabled)d[part][clean(name)]="ratchet";else delete d[part][clean(name)];
+ localStorage.setItem(STRUCTURE_KEY,JSON.stringify(d));
+ window.dispatchEvent(new Event("bey-hands-updated"));
+}
+function ratchetStatus(blade,ratchet,bit){
+ const b=integrated("blade",blade),t=integrated("bit",bit);
+ return b&&t?"conflict":b?"integrated_blade":t?"integrated_bit":clean(ratchet)?"separate":"missing";
+}
+window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups,changePlayer,integrated,setIntegrated,ratchetStatus};
 })();
