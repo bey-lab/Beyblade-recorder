@@ -6,6 +6,9 @@
 .bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
 .bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
 .bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+
+/* Hide unactivated static nav; shared header will activate and move it. */
+.bey-seven-nav:not(.bey-seven-active){display:none!important}
 </style><link rel="stylesheet" href="./bey-universal.css"></head><body data-bey-mode="records"><main class="wrap"><header class="head"><div><div class="brand">BEY LAB</div><div class="sub">BATTLE RECORDS · INTELLIGENCE DIVISION</div></div><a class="nav" href="./index.html">⌂ ホームへ戻る</a></header>
 <nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html">💾 データ管理</a><a href="./records.html" aria-current="page">📊 記録と履歴</a></nav>
 <div class="intro"><h1>📊 バトル記録室</h1><p class="hint">記録から強さを読み解く。勝ち抜きと1on1を、それぞれのルールで分析します。</p></div>
@@ -50,4 +53,4 @@ function draw(){
 try{if(localStorage.getItem("bey-lab-environment-v1")==="official")$("env").value="official"}catch(e){}
 $("env").addEventListener("change",draw);draw();
 })();
-</script><script src="./bey-universal.js?v=8"></script></body></html>
+</script><script src="./bey-universal.js?v=9"></script></body></html>
