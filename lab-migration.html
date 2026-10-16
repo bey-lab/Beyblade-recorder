@@ -201,12 +201,12 @@ input[type=file]{display:none}
 .m17-management{margin:14px 0;padding:14px;border:1px solid #405776;border-radius:15px;background:#101f32}.m17-management h2{font-size:17px;margin:0 0 10px}.m17-management>.field{max-width:600px}.m17-management .m17-transfer{margin:12px 0 0}.m17-battle-heading{padding-bottom:8px}
 .m17-brand{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.m17-brand strong{white-space:nowrap}.m17-brand-title{font-size:clamp(16px,2vw,23px);font-weight:900;color:#f1f5ff;white-space:nowrap}.m17-brand-sep{font-size:20px;color:#9aaac1}.m17-brand small{width:100%;margin-top:-5px}@media(max-width:700px){.m17-brand{gap:5px}.m17-brand-title{font-size:15px}.m17-brand small{margin-top:0}}
 .m17-staging-notice{padding:8px 12px;border:1px solid #8a7542;border-radius:9px;background:#372c1b;color:#ffe1a1;font-size:12px;font-weight:800;margin:7px 0 10px}
-</style><link rel="stylesheet" href="./bey-universal.css"><script>
+.m17-env-control{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#f3d693}.m17-env-control select{padding:8px 9px;min-width:105px;border-radius:9px;border:1px solid #7a90a8;background:#10233b;color:#fff;font-weight:800}.m17-nav{gap:7px;flex-wrap:wrap}.m17-nav .btn{padding:9px 12px}.m17-nav #saveState{white-space:nowrap}html{scroll-behavior:smooth}</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
  let env="test";
- try{if(localStorage.getItem(setting)==="official")env="official"}catch(e){}
+ try{const own=localStorage.getItem("bey-lab-migration-environment-v1");if(own==="official"||own==="test")env=own;else if(localStorage.getItem(setting)==="official")env="official"}catch(e){}
  window.BEY_ENV=env;
  document.documentElement.dataset.beyEnv=env;
 })();
@@ -236,7 +236,7 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 </script></head><body data-bey-mode="lab">
 <div class="wrap">
 <header><div class="brand m17-brand"><strong>BEY LAB</strong><span class="m17-brand-sep">/</span><span class="m17-brand-title">🔬 1on1研究室</span><small>正式移植候補 · 検証環境</small></div>
-<nav><span class="env-indicator" id="environmentBadge"></span><a class="btn" href="./records.html">📊 記録</a><a class="btn" href="#history">📖 履歴</a><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a><span id="saveState" class="hint">端末内保存</span></nav></header>
+<nav class="m17-nav"><label class="m17-env-control">データ<select id="m17Environment" aria-label="検証版のテスト・本番データを切り替える"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><a class="btn" href="#battleInput">⚔️ 対戦</a><a class="btn" href="#analysis">📊 分析</a><a class="btn" href="#history">📖 履歴</a><a class="btn" href="#management">⚙ 管理</a><a class="btn" href="./index.html?home=1">⌂ ホーム</a><span id="saveState" class="hint">端末内保存</span></nav></header>
 
 <div class="m17-staging-notice">🧪 正式移植候補・検証版｜試合履歴は本番1on1と分離しています。保存庫はV11と共通です。</div>
 <section class="duel-score" aria-label="今回の研究の試合勝利数">
@@ -269,14 +269,14 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 </div>
 <datalist id="ratchets"><option value="1-60"><option value="3-60"><option value="5-60"><option value="9-60"><option value="1-70"><option value="3-70"><option value="5-70"><option value="9-70"><option value="1-80"><option value="3-80"><option value="5-80"></datalist>
 <datalist id="bits"><option value="R"><option value="F"><option value="B"><option value="T"><option value="H"><option value="C"><option value="A"><option value="GF"><option value="FB"><option value="LR"><option value="N"><option value="P"><option value="LF"></datalist>
-<section class="battle" aria-label="1on1の4点先取スコア入力">
+<section class="battle" id="battleInput" aria-label="1on1の4点先取スコア入力">
  <div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
  <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST TO FOUR POINTS</div><b>勝った側のフィニッシュをタップ！ 4点先取で勝利</b></div><small class="hint">途中スコアは自動保存 · 決着後に1試合として戦績確定</small></div>
  <div class="winnerline"><strong style="color:#ffaca7">B 勝利</strong><strong style="color:#a4cdff">X 勝利</strong></div>
  <p class="hint">フィニッシュをタップして得点を記録します。</p>
  <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
 </section>
-<section class="m17-management"><h2>⚙ 研究・データ管理</h2><label class="field"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label><section class="m17-transfer"><strong>📦 V11保存庫の引っ越し</strong><p>V11で書き出したJSONを読み込みます。既存の保存庫はバックアップしてから置き換えます。試合記録はそのままです。</p><button type="button" id="m17Import">⬆ 保存庫を読み込む</button><button type="button" id="m17Export">⬇ 保存庫を書き出す</button><input type="file" id="m17ImportFile" accept=".json,application/json" hidden></section></section>
+<section class="m17-management" id="management"><h2>⚙ 研究・データ管理</h2><label class="field"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label><section class="m17-transfer"><strong>📦 V11保存庫の引っ越し</strong><p>V11で書き出したJSONを読み込みます。既存の保存庫はバックアップしてから置き換えます。試合記録はそのままです。</p><button type="button" id="m17Import">⬆ 保存庫を読み込む</button><button type="button" id="m17Export">⬇ 保存庫を書き出す</button><input type="file" id="m17ImportFile" accept=".json,application/json" hidden></section></section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
 <div class="scroll-cue"><a href="#analysis">↓ SWIPE TO ANALYSIS · 下へスクロールして研究結果を見る</a></div>
 <div class="twocol" id="analysis">
@@ -1007,6 +1007,15 @@ document.addEventListener("change",e=>{
  else if(target.id==="focus"){summary();}
  else if(target.id==="seriesTitle"){const s=getSession();if(s){s.title=clean(target.value);save();render();}}
  else if(target.id==="importFile"){importJson(target.files?.[0]);}
+});
+const m17EnvironmentSelect=document.getElementById("m17Environment");
+m17EnvironmentSelect.value=window.BEY_ENV;
+m17EnvironmentSelect.addEventListener("change",()=>{
+ const next=m17EnvironmentSelect.value;
+ if(next!=="test"&&next!=="official")return;
+ if(next===window.BEY_ENV)return;
+ if(!confirm("検証版の"+(next==="official"?"本番":"テスト")+"データに切り替えます。\\n今の研究記録はそのまま保存され、切り替え先の記録が表示されます。続けますか？")){m17EnvironmentSelect.value=window.BEY_ENV;return}
+ try{localStorage.setItem("bey-lab-migration-environment-v1",next);location.reload()}catch(e){m17EnvironmentSelect.value=window.BEY_ENV;alert("切り替えを保存できませんでした。")}
 });
 document.getElementById("m17Export").addEventListener("click",m17TransferExport);document.getElementById("m17Import").addEventListener("click",()=>{const el=document.getElementById("m17ImportFile");el.value="";el.click()});document.getElementById("m17ImportFile").addEventListener("change",e=>m17TransferImport(e.target.files?.[0]));
 syncPartOrders();save();render();
