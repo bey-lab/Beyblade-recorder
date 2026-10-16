@@ -222,7 +222,7 @@ input[type=file]{display:none}
 <nav class="m17-nav"><label class="m17-env-control">データ<select id="m17Environment" aria-label="検証版のテスト・本番データを切り替える"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><span id="saveState" class="hint">端末内保存</span></nav></header>
 
 <nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6" aria-current="page">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html">💾 データ管理</a><a href="./records.html">📊 記録と履歴</a></nav>
-<div class="m17-staging-notice">🧪 正式移植候補・検証版｜試合履歴は本番1on1と分離しています。保存庫はV11と共通です。</div>
+<div class="m17-staging-notice">⚔ 1on1研究｜パーツ管理と完成ベイ保存庫を共有しています。</div>
 <section class="duel-score" aria-label="今回の研究の試合勝利数">
   <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE / FIRST TO 4</div>
   <div class="duel-scoreline" id="duelScore">
@@ -260,7 +260,7 @@ input[type=file]{display:none}
  <p class="hint">フィニッシュをタップして得点を記録します。</p>
  <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
 </section>
-<section class="m17-management" id="management"><h2>⚙ 研究・データ管理</h2><label class="field"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label><section class="m17-transfer"><strong>📦 V11保存庫の引っ越し</strong><p>V11で書き出したJSONを読み込みます。既存の保存庫はバックアップしてから置き換えます。試合記録はそのままです。</p><button type="button" id="m17Import">⬆ 保存庫を読み込む</button><button type="button" id="m17Export">⬇ 保存庫を書き出す</button><input type="file" id="m17ImportFile" accept=".json,application/json" hidden></section></section>
+<section class="m17-management" id="management"><h2>⚙ 研究・データ管理</h2><label class="field"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></section>
 <div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
 <div class="scroll-cue"><a href="#analysis">↓ SWIPE TO ANALYSIS · 下へスクロールして研究結果を見る</a></div>
 <div class="twocol" id="analysis">
@@ -597,42 +597,24 @@ function submitPicker(value){
  return ok;
 }
 
-function m17TransferCheck(x){if(!x||typeof x!=="object"||Array.isArray(x))throw Error("データ形式が違います");const d=x.format==="bey-lab-foundation-transfer-v1"?x.data:x;if(!d||typeof d!=="object"||Array.isArray(d))throw Error("保存庫データが見つかりません");let players=0,presets=0;for(const [name,p] of Object.entries(d)){if(name==="customParts")continue;if(!p||typeof p!=="object"||Array.isArray(p))throw Error("プレイヤーデータが不正です");if(!Array.isArray(p.presets))throw Error("完成ベイ一覧が不正です");for(const x of p.presets){if(!x||["blade","ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=70)===false)throw Error("完成ベイの形式が不正です")}for(const k of ["blade","ratchet","bit"])if(p.hand?.[k]!==undefined&&(!Array.isArray(p.hand[k])||p.hand[k].some(v=>typeof v!=="string"||v.length>70)))throw Error("パーツ一覧が不正です");players++;presets+=p.presets.length}if(players===0)throw Error("プレイヤーがありません");return {data:d,players,presets}}
-function m17TransferExport(){const d=JSON.parse(localStorage.getItem("bey-lab-foundation-prototype-v1")||"{}");const out=JSON.stringify({format:"bey-lab-foundation-transfer-v1",data:d},null,2);const blob=new Blob([out],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bey-lab-parts-and-presets.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
-async function m17TransferImport(file){if(!file)return;try{if(file.size>2e6)throw Error("ファイルが大きすぎます");const obj=JSON.parse(await file.text()),r=m17TransferCheck(obj);if(!confirm("読み込み内容：プレイヤー "+r.players+"人、完成ベイ "+r.presets+"機。\\nこのブラウザのV11保存庫を置き換えます。試合履歴は変更しません。続けますか？"))return;const key="bey-lab-foundation-prototype-v1",old=localStorage.getItem(key);if(old!==null)localStorage.setItem(key+"-before-import-"+Date.now(),old);localStorage.setItem(key,JSON.stringify(r.data));alert("読み込み完了！ プレイヤー "+r.players+"人、完成ベイ "+r.presets+"機");location.reload()}catch(e){alert("読み込み失敗："+e.message)}}
-
-// 1on1-17 bridge: read the isolated foundation prototype without writing to it.
-const M17_SOURCE="bey-lab-foundation-prototype-v1";
-function m17Source(){try{const x=JSON.parse(localStorage.getItem(M17_SOURCE));return x&&typeof x==="object"?x:{}}catch(e){return {}}}
-function m17Player(p){const x=m17Source()[p];return x&&typeof x==="object"?x:null}
-function m17SyncRoster(){
- const source=m17Source();let changed=false;
- for(const [name,entry] of Object.entries(source)){
-  if(!entry||typeof entry!=="object"||!Array.isArray(entry.presets))continue;
-  if(!data.players.includes(name)&&data.players.length<200){data.players.push(name);changed=true}
-  const blades=[...(entry.hand?.blade||[]),...entry.presets.map(p=>p.blade)];
-  for(const blade of blades)if(typeof blade==="string"&&blade&&blade.length<=70&&!data.blades.includes(blade)&&data.blades.length<200){data.blades.push(blade);changed=true}
- }
- if(changed){syncPartOrders();save()}
-}
 const m17Expanded={B:false,X:false};
 function m17Presets(player){
  return window.BEY_HANDS?.presetsGet(player)||[];
 }
 function m17RenderSide(side){
  const host=$("prototype"+side);if(!host)return;
- const slot=data.slots[side],p=m17Player(slot.player),expanded=m17Expanded[side];
+ const slot=data.slots[side],expanded=m17Expanded[side];
  const selected=[slot.blade,slot.ratchet,slot.bit].filter(Boolean).join(" · ")||"機体未設定";
  const presets=m17Presets(slot.player);
  const toggle='<button type="button" class="m17-toggle" data-action="m17-toggle" data-side="'+side+'" aria-expanded="'+expanded+'">'+(expanded?'▲ 保存庫を閉じる':'▦ 機体を変更')+'</button>';
  const head='<div class="m17-compact"><div><small>現在のカスタム</small><strong>'+esc(selected)+'</strong><small>保存済み完成ベイ '+presets.length+'機</small></div>'+toggle+'</div>';
  if(!expanded){host.innerHTML=head;return}
  const sections=["blade","ratchet","bit"].map(part=>{
-  const values=[...new Set([...(Array.isArray(p?.hand?.[part])?p.hand[part]:[]),...(window.BEY_HANDS?.get(slot.player,part)||[])])];
+  const values=window.BEY_HANDS?.get(slot.player,part)||[];
   return '<small>'+({blade:"ブレード",ratchet:"ラチェット",bit:"ビット"}[part])+' / 登録済み '+values.length+'</small><div class="m17-row">'+values.map(v=>'<button type="button" class="'+(slot[part]===v?"m17-on":"")+'" data-action="m17-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(v)+'">'+esc(v)+'</button>').join("")+'</div>';
  }).join("");
  const saveButton='<button type="button" data-action="m17-save-current" data-side="'+side+'" '+(!slot.blade||!slot.ratchet||!slot.bit?'disabled':'')+'>＋ 現在の機体を保存</button>';
- const help=presets.length?'':'<p class="m17-empty">保存済み完成ベイはまだありません。現在の機体を保存するか、下の管理欄からV11保存庫のJSONを読み込めます。</p>';
+ const help=presets.length?'':'<p class="m17-empty">保存済み完成ベイはまだありません。現在の機体を保存するか、パーツ管理で登録できます。</p>';
  host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div>'+help+'<div class="m17-row">'+saveButton+'</div></div>';
 }
 function m17LoadPreset(side,index){
@@ -823,7 +805,7 @@ function history(){
  }).join("")||'<p class="empty">研究ログはまだありません。</p>';
 }
 function render(){
- m17SyncRoster();syncHandsIntoRoster();renderSelectors();m17RenderSide("B");m17RenderSide("X");renderScore();renderFinishes();renderFocus();summary();history();
+ syncHandsIntoRoster();renderSelectors();m17RenderSide("B");m17RenderSide("X");renderScore();renderFinishes();renderFocus();summary();history();
  const session=getSession();
  $("seriesTitle").value=session?.title||"";
  $("seriesLine").textContent=(session?.date||day())+" · この研究 "+(session?.matches?.length||0)+"試合完了 / 総計 "+completedMatches().length+"試合・"+records().length+"フィニッシュ";
@@ -970,7 +952,7 @@ document.addEventListener("change",e=>{
   if(field==="player"&&!data.players.includes(v)||field==="blade"&&!data.blades.includes(v))return;
   if(field==="player"){
    if(!readyForBuildEdit()){render();return;}
-   const prior=data.slots[side][field];data.slots[side][field]=v;
+   const prior={...data.slots[side]};data.slots[side][field]=v;
    const handBlades=window.BEY_HANDS?.get(v,"blade")||[];
    const saved=window.BEY_HANDS?.presetsGet(v)||[];
    const favorite=saved.find(p=>data.blades.includes(p.blade));
@@ -979,7 +961,7 @@ document.addEventListener("change",e=>{
    data.slots[side].blade=favorite?.blade||owned||data.blades[0];
    data.slots[side].ratchet=favorite?.ratchet||"";
    data.slots[side].bit=favorite?.bit||"";
-   if(!save()){data.slots[side][field]=prior;render();return;}
+   if(!save()){data.slots[side]=prior;render();return;}
    render();
   }else changePart(side,field,v);
  }
@@ -997,7 +979,7 @@ m17EnvironmentSelect.addEventListener("change",()=>{
  if(!confirm("検証版の"+(next==="official"?"本番":"テスト")+"データに切り替えます。\\n今の研究記録はそのまま保存され、切り替え先の記録が表示されます。続けますか？")){m17EnvironmentSelect.value=window.BEY_ENV;return}
  try{localStorage.setItem("bey-lab-migration-environment-v1",next);location.reload()}catch(e){m17EnvironmentSelect.value=window.BEY_ENV;alert("切り替えを保存できませんでした。")}
 });
-document.getElementById("m17Export").addEventListener("click",m17TransferExport);document.getElementById("m17Import").addEventListener("click",()=>{const el=document.getElementById("m17ImportFile");el.value="";el.click()});document.getElementById("m17ImportFile").addEventListener("change",e=>m17TransferImport(e.target.files?.[0]));
+
 syncPartOrders();save();render();
 })();
 </script></body></html>
