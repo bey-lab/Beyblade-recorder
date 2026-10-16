@@ -355,6 +355,9 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 .bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
 .bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
 .bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+
+/* Hide unactivated static nav; shared header will activate and move it. */
+.bey-seven-nav:not(.bey-seven-active){display:none!important}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
@@ -872,4 +875,4 @@ ids("overlay").addEventListener("click",e=>{if(e.target===ids("overlay"))closeMo
 if(navigator.standalone||(typeof matchMedia==="function"&&matchMedia("(display-mode: standalone)").matches)){document.documentElement?.classList?.add("installed-mode");}
 ids("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";ids("environmentBadge").classList.toggle("official",window.BEY_ENV==="official");ensureMeeting();render();if("serviceWorker"in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./sw.js").catch(()=>{});
 })();
-</script><script src="./bey-universal.js?v=8"></script></body></html>
+</script><script src="./bey-universal.js?v=9"></script></body></html>
