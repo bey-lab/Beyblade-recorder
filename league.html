@@ -205,4 +205,4 @@ $("undo").addEventListener("click",undo);$("next").addEventListener("click",next
 $("export").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bey-lab-3on3-"+env+"-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)});
 render();
 })();
-</script><script src="./bey-universal.js"></script></main></body></html>
+</script><script src="./bey-universal.js?v=8"></script></main></body></html>
