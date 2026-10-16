@@ -11,21 +11,12 @@
   const header=document.createElement("div");header.className="bey-shared-header";
   const brand=document.createElement("a");brand.className="bey-shared-brand";brand.href="./index.html?home=1";
   brand.innerHTML='<span class="bey-brand-orbit">⟳</span><span><strong>BEY LAB</strong><small>BATTLE RESEARCH SYSTEM</small></span>';
-  const nav=document.createElement("nav");nav.className="bey-shared-nav";nav.setAttribute("aria-label","共通メニュー");
-  const modes=[["arena","👑 勝ち抜き","./arena.html"],["lab","🔬 1on1研究","./lab.html"],["league","🏆 3on3リーグ","./league.html"]];
-  for(const [id,label,href] of modes){
-   const a=document.createElement("a");a.className="bey-nav-button"+(mode===id?" active":"");a.href=href;a.textContent=label;
-   if(mode===id)a.setAttribute("aria-current","page");
-   nav.appendChild(a);
-  }
-  const arenaEdit=mode==="arena"?old.querySelector('[data-action="edit"]'):null;
-  const arenaHistory=mode==="arena"?old.querySelector('[data-action="history"]'):null;
+  const nav=document.querySelector(".bey-seven-nav")||document.createElement("nav");
+  if(!nav.classList.contains("bey-seven-nav")){nav.className="bey-shared-nav";nav.setAttribute("aria-label","共通メニュー")}
+  const arenaEdit=mode==="arena"?old?.querySelector('[data-action="edit"]'):null;
+  const arenaHistory=mode==="arena"?old?.querySelector('[data-action="history"]'):null;
   if(arenaEdit){arenaEdit.classList.add("bey-nav-button");nav.appendChild(arenaEdit)}
-  else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./data.html";a.textContent="⚙ 登録・データ管理";nav.appendChild(a)}
-  const hands=document.createElement("a");hands.className="bey-nav-button"+(mode==="hands"?" active":"");hands.href="./hands.html";hands.textContent="🃏 手札管理";nav.appendChild(hands);
   if(arenaHistory){arenaHistory.classList.add("bey-nav-button");nav.appendChild(arenaHistory)}
-  else{const a=document.createElement("a");a.className="bey-nav-button";a.href="./records.html";a.textContent="📖 記録・履歴";nav.appendChild(a)}
-  const home=document.createElement("a");home.className="bey-nav-button bey-home-button";home.href="./index.html?home=1";home.textContent="⌂ ホームへ戻る";nav.appendChild(home);
   const env=old?.querySelector(".env-indicator")||document.getElementById("environment");
   if(env){
    env.classList.add("bey-shared-env");nav.prepend(env);
