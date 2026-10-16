@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
-<title>BEY LAB | 1on1-17 一本化実験 V3</title>
+<title>BEY LAB | 1on1-17 横画面実験 V4</title>
 <style>
 :root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
 *{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -184,6 +184,18 @@ input[type=file]{display:none}
 .m17-banner{background:#422235;border:2px solid #fa8ab0;color:#ffe6ee;border-radius:12px;padding:12px;margin:12px 0;font-weight:800;text-align:center}
 .m17-prototype{border:1px solid #aa6485;border-radius:12px;padding:10px;margin:12px 0;background:#271b32}.m17-prototype strong{display:block;color:#ffb8d2;margin-bottom:7px}.m17-prototype .m17-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.m17-prototype button{border:1px solid #78627c;background:#392f4d;color:#fff;padding:9px;border-radius:8px}.m17-prototype button.m17-on{background:#1764a8;border-color:#92dcff}.m17-prototype small{color:#c4b7ce;display:block}
 .m17-legacy{display:none!important}.m17-prototype{margin-top:12px}.m17-prototype .m17-row button{min-height:42px}.m17-prototype .m17-row button:active{filter:brightness(1.25)}
+/* V4: iPad landscape battle bench */
+@media (orientation:landscape) and (min-width:800px){
+ .versus{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)!important;gap:9px!important;align-items:start}
+ .versus>.fighter{padding:12px!important;min-width:0}
+ .versus>.vs{align-self:center;font-size:clamp(24px,3vw,42px)}
+ .m17-prototype{margin:8px 0 0;padding:9px;background:#1b253d;border-color:#516c92}
+ .m17-prototype strong{color:#dceaff;font-size:13px}
+ .m17-prototype .m17-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(75px,1fr));gap:5px;margin:5px 0 10px}
+ .m17-prototype .m17-row button{min-width:0;min-height:42px;padding:7px 5px;overflow-wrap:anywhere;font-size:12px}
+ .m17-prototype small{font-size:11px}
+ .score-controls .finishbtn{min-height:54px}
+}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
