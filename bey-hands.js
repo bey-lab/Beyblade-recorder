@@ -9,9 +9,25 @@ function get(player,part){const d=read()[player];return d&&Array.isArray(d[part]
 function has(player,part){return get(player,part).length>0}
 function set(player,part,names){if(!["blade","ratchet","bit"].includes(part)||!clean(player))return;const all=read();all[player]??={};all[player][part]=[...new Set(names.map(clean).filter(Boolean))];write(all)}
 function preferred(player,part,all){const hand=get(player,part);return hand.length?[...hand.filter(x=>all.includes(x)),...all.filter(x=>!hand.includes(x))]:all.slice()}
-function pool(part){const values=new Set();for(const env of ["test","official"]){for(const mode of ["arena","1on1"]){try{const d=JSON.parse(localStorage.getItem("bey-lab-m17-"+(mode==="arena"?"arena-v1-":"1on1-v1-")+env));if(!d)continue;if(part==="blade")for(const x of d.blades||[])if(clean(x))values.add(clean(x));if(mode==="1on1"){for(const x of d.partOrders?.[part]||[])if(clean(x))values.add(clean(x));for(const side of ["B","X"])if(clean(d.slots?.[side]?.[part]))values.add(clean(d.slots[side][part]))}}catch(e){}}}
+function pool(part){const values=new Set();for(const env of ["test","official"]){for(const mode of ["arena","1on1"]){try{const d=JSON.parse(localStorage.getItem("bey-lab-migration-"+(mode==="arena"?"arena-v1-":"1on1-v1-")+env));if(!d)continue;if(part==="blade")for(const x of d.blades||[])if(clean(x))values.add(clean(x));if(mode==="1on1"){for(const x of d.partOrders?.[part]||[])if(clean(x))values.add(clean(x));for(const side of ["B","X"])if(clean(d.slots?.[side]?.[part]))values.add(clean(d.slots[side][part]))}}catch(e){}}}
 for(const list of Object.values(read()))for(const x of list?.[part]||[])if(clean(x))values.add(clean(x));
 return [...values].sort((a,b)=>a.localeCompare(b,"ja"))}
+// Shared ratchet display classification. Keep all categories visible.
+function ratchetGroup(name){
+ const v=clean(name).toUpperCase();
+ if(/^M-?\d{2,3}$/.test(v))return "metal";
+ const m=v.match(/^(\d+)-(\d{2,3})$/);
+ if(m)return ["50","60","70","80"].includes(m[2])?"standard":"simple";
+ return "other";
+}
+function ratchetHeight(name){const v=clean(name).toUpperCase(),m=v.match(/(?:-|^)(\d{2,3})$/);return m?Number(m[1]):999}
+function ratchetSort(a,b){return ratchetHeight(a)-ratchetHeight(b)||a.localeCompare(b,"ja",{numeric:true})}
+function ratchetGroups(values){
+ const groups={standard:[],simple:[],metal:[],other:[]};
+ for(const value of [...new Set(values.map(clean).filter(Boolean))])groups[ratchetGroup(value)].push(value);
+ for(const key of Object.keys(groups))groups[key].sort(ratchetSort);
+ return groups;
+}
 function players(){const names=new Set(Object.keys(read()));for(const env of ["test","official"])for(const mode of ["arena","1on1"]){try{const d=JSON.parse(localStorage.getItem("bey-lab-migration-"+(mode==="arena"?"arena-v1-":"1on1-v1-")+env));for(const n of d?.players||[])if(clean(n))names.add(clean(n))}catch(e){}}
 return [...names].sort((a,b)=>a.localeCompare(b,"ja"))}
 const PRESET_KEY="bey-lab-migration-presets-v1";
@@ -19,5 +35,5 @@ function presetsRead(){try{const d=JSON.parse(localStorage.getItem(PRESET_KEY));
 function presetsGet(player){return (presetsRead()[clean(player)]||[]).filter(x=>x&&typeof x==="object"&&clean(x.blade)).map(x=>({blade:clean(x.blade),ratchet:clean(x.ratchet),bit:clean(x.bit)}))}
 function presetsSave(player,part){player=clean(player);if(!player||!clean(part?.blade))return false;const all=presetsRead(),item={blade:clean(part.blade),ratchet:clean(part.ratchet),bit:clean(part.bit)};all[player]??=[];if(!all[player].some(x=>x.blade===item.blade&&x.ratchet===item.ratchet&&x.bit===item.bit))all[player].unshift(item);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
 function presetsRemove(player,index){const all=presetsRead();if(!Array.isArray(all[clean(player)])||index<0||index>=all[clean(player)].length)return false;all[clean(player)].splice(index,1);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
-window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove};
+window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups};
 })();
