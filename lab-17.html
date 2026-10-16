@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
-<title>BEY LAB | 1on1-17 移植実験 V2</title>
+<title>BEY LAB | 1on1-17 一本化実験 V3</title>
 <style>
 :root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
 *{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -183,6 +183,7 @@ input[type=file]{display:none}
 .preset-bar{display:flex;gap:7px;margin:10px 0}.preset-bar button{flex:1;min-height:46px;background:#293e59;color:#ffe2a4;border:1px solid #a88d5c;border-radius:8px;font-weight:800}@media(max-width:650px){.preset-bar{flex-direction:column}}
 .m17-banner{background:#422235;border:2px solid #fa8ab0;color:#ffe6ee;border-radius:12px;padding:12px;margin:12px 0;font-weight:800;text-align:center}
 .m17-prototype{border:1px solid #aa6485;border-radius:12px;padding:10px;margin:12px 0;background:#271b32}.m17-prototype strong{display:block;color:#ffb8d2;margin-bottom:7px}.m17-prototype .m17-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.m17-prototype button{border:1px solid #78627c;background:#392f4d;color:#fff;padding:9px;border-radius:8px}.m17-prototype button.m17-on{background:#1764a8;border-color:#92dcff}.m17-prototype small{color:#c4b7ce;display:block}
+.m17-legacy{display:none!important}.m17-prototype{margin-top:12px}.m17-prototype .m17-row button{min-height:42px}.m17-prototype .m17-row button:active{filter:brightness(1.25)}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
@@ -236,18 +237,18 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
   <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
-  <div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="blade"><span class="current-text" id="bladeB">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeB"></div></div>
+  <div class="m17-legacy" hidden aria-hidden="true"><div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="blade"><span class="current-text" id="bladeB">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeB"></div></div>
   <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="ratchet"><span class="current-text" id="ratchetB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetB"></div></div>
   <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="bit"><span class="current-text" id="bitB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitB"></div></div></div>
-  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildB">—</strong></div><div class="m17-prototype" id="prototypeB"></div><div class="preset-bar"><button data-action="preset-load" data-side="B">⚡ 一式を呼び出す</button><button data-action="preset-save" data-side="B">＋ 一式を共通保存</button></div>
+  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildB">—</strong></div></div><div class="m17-prototype" id="prototypeB"></div><div class="m17-legacy" hidden aria-hidden="true"><div class="preset-bar"><button data-action="preset-load" data-side="B">⚡ 一式を呼び出す</button><button data-action="preset-save" data-side="B">＋ 一式を共通保存</button></div></div>
  </section>
  <div class="vs">VS</div>
  <section class="fighter x"><div class="sidehead"><strong>X-SIDE</strong><small>TEST UNIT / 02</small></div>
   <label class="field"><span>プレイヤー</span><select id="playerX" data-field="player" data-side="X"></select></label>
-  <div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="blade"><span class="current-text" id="bladeX">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeX"></div></div>
+  <div class="m17-legacy" hidden aria-hidden="true"><div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="blade"><span class="current-text" id="bladeX">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeX"></div></div>
   <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="ratchet"><span class="current-text" id="ratchetX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetX"></div></div>
   <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="bit"><span class="current-text" id="bitX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitX"></div></div></div>
-  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildX">—</strong></div><div class="m17-prototype" id="prototypeX"></div><div class="preset-bar"><button data-action="preset-load" data-side="X">⚡ 一式を呼び出す</button><button data-action="preset-save" data-side="X">＋ 一式を共通保存</button></div>
+  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildX">—</strong></div></div><div class="m17-prototype" id="prototypeX"></div><div class="m17-legacy" hidden aria-hidden="true"><div class="preset-bar"><button data-action="preset-load" data-side="X">⚡ 一式を呼び出す</button><button data-action="preset-save" data-side="X">＋ 一式を共通保存</button></div></div>
  </section>
 </div>
 <datalist id="ratchets"><option value="1-60"><option value="3-60"><option value="5-60"><option value="9-60"><option value="1-70"><option value="3-70"><option value="5-70"><option value="9-70"><option value="1-80"><option value="3-80"><option value="5-80"></datalist>
