@@ -31,6 +31,10 @@
    const official=localStorage.getItem("bey-lab-environment-v1")==="official";
    badge.textContent=official?"🏆 現在：本番":"🧪 現在：テスト";nav.prepend(badge);
   }
+  if(mode==="lab"){
+   const switcher=old?.querySelector(".m17-env-control");
+   if(switcher)nav.prepend(switcher);
+  }
   if(mode==="home"){
    const homeEnv=old.querySelector(".home-env");
    if(homeEnv){homeEnv.classList.add("bey-home-env-shared");nav.prepend(homeEnv)}
