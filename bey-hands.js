@@ -20,7 +20,7 @@ function ratchetGroup(name){
  if(m)return ["50","60","70","80"].includes(m[2])?"standard":"simple";
  return "other";
 }
-function ratchetHeight(name){const v=clean(name).toUpperCase(),m=v.match(/(?:-|^)(\d{2,3})$/);return m?Number(m[1]):999}
+function ratchetHeight(name){const v=clean(name).toUpperCase(),m=v.match(/(?:-|^|^M)(\d{2,3})$/);return m?Number(m[1]):999}
 function ratchetSort(a,b){return ratchetHeight(a)-ratchetHeight(b)||a.localeCompare(b,"ja",{numeric:true})}
 function ratchetGroups(values){
  const groups={standard:[],simple:[],metal:[],other:[]};
