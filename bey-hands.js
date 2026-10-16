@@ -35,5 +35,40 @@ function presetsRead(){try{const d=JSON.parse(localStorage.getItem(PRESET_KEY));
 function presetsGet(player){return (presetsRead()[clean(player)]||[]).filter(x=>x&&typeof x==="object"&&clean(x.blade)).map(x=>({blade:clean(x.blade),ratchet:clean(x.ratchet),bit:clean(x.bit)}))}
 function presetsSave(player,part){player=clean(player);if(!player||!clean(part?.blade))return false;const all=presetsRead(),item={blade:clean(part.blade),ratchet:clean(part.ratchet),bit:clean(part.bit)};all[player]??=[];if(!all[player].some(x=>x.blade===item.blade&&x.ratchet===item.ratchet&&x.bit===item.bit))all[player].unshift(item);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
 function presetsRemove(player,index){const all=presetsRead();if(!Array.isArray(all[clean(player)])||index<0||index>=all[clean(player)].length)return false;all[clean(player)].splice(index,1);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
-window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups};
+// Player management updates active rosters and shared libraries, never historical match snapshots.
+function changePlayer(oldName,newName){
+ oldName=clean(oldName);newName=clean(newName);
+ if(!oldName||newName===oldName||newName&&players().includes(newName))throw Error("名前が重複しているか、変更できません。");
+ if(!players().includes(oldName))throw Error("プレイヤーが見つかりません。");
+ const keys=[KEY,PRESET_KEY,...["test","official"].flatMap(env=>["1on1","arena"].map(mode=>"bey-lab-migration-"+mode+"-v1-"+env))];
+ const updates=new Map();
+ for(const key of keys){
+  const raw=localStorage.getItem(key);if(raw===null)continue;
+  let data;try{data=JSON.parse(raw)}catch(e){throw Error("保存データが読み取れません: "+key)}
+  if(!data||typeof data!=="object"||Array.isArray(data))continue;
+  if(key===KEY||key===PRESET_KEY){
+   if(Object.prototype.hasOwnProperty.call(data,oldName)){
+    if(newName){data[newName]=data[oldName]}delete data[oldName];
+   }
+  }else{
+   if(Array.isArray(data.players))data.players=[...new Set(data.players.map(x=>x===oldName?newName:x).filter(Boolean))];
+   if(data.slots)for(const side of ["B","X"])if(data.slots[side]?.player===oldName){
+    data.slots[side].player=newName||data.players?.[0]||"";
+   }
+   // Completed match history and session snapshots are deliberately untouched.
+  }
+  updates.set(key,JSON.stringify(data));
+ }
+ // Keep a player visible even if it only existed in an active roster.
+ if(newName&&!updates.has(KEY)){
+  const hands=read();hands[newName]??={};updates.set(KEY,JSON.stringify(hands));
+ }else if(newName){
+  const hands=JSON.parse(updates.get(KEY));hands[newName]??={};updates.set(KEY,JSON.stringify(hands));
+ }
+ const originals=new Map([...updates.keys()].map(key=>[key,localStorage.getItem(key)]));
+ try{for(const [key,value] of updates)localStorage.setItem(key,value)}
+ catch(e){for(const [key,raw] of originals){try{if(raw===null)localStorage.removeItem(key);else localStorage.setItem(key,raw)}catch(_){}}throw Error("保存に失敗しました。空き容量を確認してください。")}
+ window.dispatchEvent(new Event("bey-hands-updated"));return true;
+}
+window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups,changePlayer};
 })();
