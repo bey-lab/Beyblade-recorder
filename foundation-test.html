@@ -9,7 +9,7 @@
 .back{display:inline-block;margin:7px 0} @media(max-width:420px){.panel{padding:11px}.pick-grid button{padding:10px 9px;min-width:57px}}
 </style></head><body><main><a class="back" href="./index.html">← ホームへ</a><h1>🔧 手札基礎実験</h1><p class="sub">試作版。本体の手札・試合・保存済みカスタムは変更しません。ここで作ったデータは試作用の別保存です。</p>
 <section class="panel"><h2>① プレイヤー</h2><div class="line"><select id="player" aria-label="プレイヤー"></select><input id="newPlayer" placeholder="新しいプレイヤー名" maxlength="70"><button id="addPlayer">＋ 追加</button></div></section>
-<section class="panel"><h2>② 手札管理</h2><p class="sub">プレイヤーごとの所有パーツを登録・解除。普段は閉じておけます。</p><div id="handSummary" class="inventory-note"></div><button id="inventoryToggle" class="inventory-toggle" type="button" aria-expanded="false">＋ 手札を編集する ▾</button><div id="inventoryBox" class="inventory-box" hidden></div></section>
+<section class="panel"><h2>② パーツ管理</h2><p class="sub">プレイヤーごとのパーツを登録・解除。普段は閉じておけます。</p><div id="handSummary" class="inventory-note"></div><button id="inventoryToggle" class="inventory-toggle" type="button" aria-expanded="false">＋ パーツを編集する ▾</button><div id="inventoryBox" class="inventory-box" hidden></div></section>
 <section class="panel"><h2>③ 完成ベイを組む</h2><p class="sub">登録した手札からワンタップでパーツを選択。</p><div class="picked" id="picked"></div><div id="partPickers"></div><button class="save" id="save">＋ この一式を保存</button><p id="status" role="status"></p></section>
 <section class="panel"><h2>④ 保存済み完成ベイ <span id="count" class="tag"></span></h2><p class="sub">機体をタップすると、上の3つのパーツ欄へ一括で戻ります。</p><div id="presets" class="presets"></div></section>
 <p class="sub">この実験は端末内の localStorage を使います。ブラウザや端末を変えると共有されません。</p></main>
@@ -62,7 +62,7 @@ function render(){renderPlayers();renderPicked();renderParts();renderPresets();r
 $("player").addEventListener("change",e=>setPlayer(e.target.value));
 $("addPlayer").addEventListener("click",()=>{const p=clean($("newPlayer").value);if(!p)return;const d=read();d[p]??={presets:[]};try{write(d);$("newPlayer").value="";setPlayer(p)}catch(e){$("status").textContent="保存に失敗しました: "+e.message}});
 $("partPickers").addEventListener("click",e=>{const b=e.target.closest("button[data-part]");if(!b)return;state.selection[b.dataset.part]=b.dataset.value;renderPicked();renderParts()});
-$("inventoryToggle").addEventListener("click",()=>{const box=$("inventoryBox");box.hidden=!box.hidden;$("inventoryToggle").setAttribute("aria-expanded",String(!box.hidden));$("inventoryToggle").textContent=box.hidden?"＋ 手札を編集する ▾":"－ 手札の編集を閉じる ▴";renderInventory()});
+$("inventoryToggle").addEventListener("click",()=>{const box=$("inventoryBox");box.hidden=!box.hidden;$("inventoryToggle").setAttribute("aria-expanded",String(!box.hidden));$("inventoryToggle").textContent=box.hidden?"＋ 手札を編集する ▾":"－ パーツの編集を閉じる ▴";renderInventory()});
 $("inventoryBox").addEventListener("click",e=>{
  const toggle=e.target.closest("button[data-togglepart]");
  if(toggle){updateHand(toggle.dataset.togglepart,toggle.dataset.value);return}
