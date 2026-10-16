@@ -5,7 +5,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
-<title>BEY LAB | 1on1-17 操作順実験 V5</title>
+<title>BEY LAB | 1on1-17 保存庫引っ越し V6</title>
 <style>
 :root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
 *{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
@@ -196,6 +196,7 @@ input[type=file]{display:none}
  .m17-prototype small{font-size:11px}
  .score-controls .finishbtn{min-height:54px}
 }
+.m17-transfer{border:1px solid #4b7592;border-radius:12px;padding:10px 14px;margin:10px 0;background:#102a3b}.m17-transfer strong{display:block}.m17-transfer p{font-size:12px;color:#b8d2e4;margin:5px 0}.m17-transfer button{margin:4px;padding:9px 12px;border:1px solid #668ba9;border-radius:8px;background:#193b56}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
@@ -246,6 +247,7 @@ window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave
 <div id="matchLockBanner" class="match-lock-banner" aria-live="polite">🔓 カスタム変更可能 · 得点が入ると試合終了まで固定</div><div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
 <div id="victoryBanner" class="victory-banner" role="status" aria-live="polite" hidden></div><div id="nextMatchPrimary" class="next-match-primary" hidden><button type="button" data-action="next-match" class="next-match-hero">▶ 次の試合へ <small>結果を保存して次のバトルを開始</small></button><button type="button" data-action="undo" class="next-match-undo">↶ 最後の得点を取り消す</button></div>
 </section>
+<section class="m17-transfer"><strong>📦 V11保存庫の引っ越し</strong><p>V11で書き出したJSONを読み込みます。既存の保存庫はバックアップしてから置き換えます。試合記録はそのままです。</p><button type="button" id="m17Import">⬆ 保存庫を読み込む</button><button type="button" id="m17Export">⬇ 保存庫を書き出す</button><input type="file" id="m17ImportFile" accept=".json,application/json" hidden></section>
 <div class="versus">
  <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
   <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
@@ -608,6 +610,10 @@ function submitPicker(value){
  return ok;
 }
 
+function m17TransferCheck(x){if(!x||typeof x!=="object"||Array.isArray(x))throw Error("データ形式が違います");const d=x.format==="bey-lab-foundation-transfer-v1"?x.data:x;if(!d||typeof d!=="object"||Array.isArray(d))throw Error("保存庫データが見つかりません");let players=0,presets=0;for(const [name,p] of Object.entries(d)){if(name==="customParts")continue;if(!p||typeof p!=="object"||Array.isArray(p))throw Error("プレイヤーデータが不正です");if(!Array.isArray(p.presets))throw Error("完成ベイ一覧が不正です");for(const x of p.presets){if(!x||["blade","ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=70)===false)throw Error("完成ベイの形式が不正です")}for(const k of ["blade","ratchet","bit"])if(p.hand?.[k]!==undefined&&(!Array.isArray(p.hand[k])||p.hand[k].some(v=>typeof v!=="string"||v.length>70)))throw Error("パーツ一覧が不正です");players++;presets+=p.presets.length}if(players===0)throw Error("プレイヤーがありません");return {data:d,players,presets}}
+function m17TransferExport(){const d=JSON.parse(localStorage.getItem("bey-lab-foundation-prototype-v1")||"{}");const out=JSON.stringify({format:"bey-lab-foundation-transfer-v1",data:d},null,2);const blob=new Blob([out],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="bey-lab-parts-and-presets.json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+async function m17TransferImport(file){if(!file)return;try{if(file.size>2e6)throw Error("ファイルが大きすぎます");const obj=JSON.parse(await file.text()),r=m17TransferCheck(obj);if(!confirm("読み込み内容：プレイヤー "+r.players+"人、完成ベイ "+r.presets+"機。\\nこのブラウザのV11保存庫を置き換えます。試合履歴は変更しません。続けますか？"))return;const key="bey-lab-foundation-prototype-v1",old=localStorage.getItem(key);if(old!==null)localStorage.setItem(key+"-before-import-"+Date.now(),old);localStorage.setItem(key,JSON.stringify(r.data));alert("読み込み完了！ プレイヤー "+r.players+"人、完成ベイ "+r.presets+"機");location.reload()}catch(e){alert("読み込み失敗："+e.message)}}
+
 // 1on1-17 bridge: read the isolated foundation prototype without writing to it.
 const M17_SOURCE="bey-lab-foundation-prototype-v1";
 function m17Source(){try{const x=JSON.parse(localStorage.getItem(M17_SOURCE));return x&&typeof x==="object"?x:{}}catch(e){return {}}}
@@ -968,6 +974,7 @@ document.addEventListener("change",e=>{
  else if(target.id==="seriesTitle"){const s=getSession();if(s){s.title=clean(target.value);save();render();}}
  else if(target.id==="importFile"){importJson(target.files?.[0]);}
 });
+document.getElementById("m17Export").addEventListener("click",m17TransferExport);document.getElementById("m17Import").addEventListener("click",()=>{const el=document.getElementById("m17ImportFile");el.value="";el.click()});document.getElementById("m17ImportFile").addEventListener("change",e=>m17TransferImport(e.target.files?.[0]));
 syncPartOrders();save();render();
 })();
 </script></body></html>
