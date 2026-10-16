@@ -18,7 +18,8 @@ function clean(s){return String(s||"").trim().slice(0,70)}
 const state={player:"",selection:{blade:"",ratchet:"",bit:""}};
 function names(){return [...new Set([...Object.keys(read()),...(window.BEY_HANDS?.players?.()||[])])].filter(Boolean).sort((a,b)=>a.localeCompare(b,"ja"))}
 function natural(a,b){return a.localeCompare(b,"ja",{numeric:true,sensitivity:"base"})}
-function options(part){const all=new Set(window.BEY_HANDS?.pool?.(part)||[]);const d=read();for(const p of Object.values(d))for(const v of p?.presets||[])if(v?.[part])all.add(v[part]);const arr=[...all].filter(Boolean);return arr.sort(natural)}
+const DEFAULT_PARTS={ratchet:["1-60","2-60","3-60","4-60","5-60","6-60","7-60","8-60","9-60","1-70","2-70","3-70","4-70","5-70","6-70","7-70","8-70","9-70","1-80","2-80","3-80","4-80","5-80","6-80","7-80","8-80","9-80","1-50","2-50","3-50","4-50","5-50","6-50","7-50","8-50","9-50"],bit:["R","F","B","T","H","C","A","GF","FB","LR","N","P","LF","E","S","L","D","O","HN","U","UN","MN","G","Q","K","W","HT","DB","GN"]};
+function options(part){const all=new Set([...(DEFAULT_PARTS[part]||[]),...(window.BEY_HANDS?.pool?.(part)||[])]);const d=read();for(const p of Object.values(d))for(const v of p?.presets||[])if(v?.[part])all.add(v[part]);const arr=[...all].filter(Boolean);return arr.sort(natural)}
 function playerData(){return read()[state.player]||{presets:[]}}
 function setPlayer(p){state.player=p;state.selection={blade:"",ratchet:"",bit:""};render();$("status").textContent=""}
 function renderPlayers(){const list=names();$("player").innerHTML=list.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join("");$("player").value=state.player}
