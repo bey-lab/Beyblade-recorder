@@ -349,7 +349,13 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
 @keyframes finishFlashPop{0%{opacity:1;box-shadow:0 0 0 2px #fff,0 0 20px 5px var(--finish-color),inset 0 0 15px var(--finish-color)}65%{opacity:1}100%{opacity:0;box-shadow:0 0 0 0 transparent}}
 @keyframes finishFlashSweep{to{transform:translateX(90%) skewX(-18deg)}}
 @media(prefers-reduced-motion:reduce){.finish-flash-overlay,.finish-flash-overlay::after{animation:none!important}.finish-flash-overlay{opacity:1;box-shadow:0 0 0 2px #fff,0 0 14px var(--finish-color)}}
-.preset-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.preset-bar button{min-height:52px;background:#293e59;color:#ffe1a0;border:1px solid #b69a62;border-radius:8px;font-weight:900}</style><link rel="stylesheet" href="./bey-universal.css"><script>
+.preset-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.preset-bar button{min-height:52px;background:#293e59;color:#ffe1a0;border:1px solid #b69a62;border-radius:8px;font-weight:900}
+/* Seven primary Bey-Lab pages: navigation only; no record data is changed. */
+.bey-seven-nav{box-sizing:border-box;display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:12px auto 18px;padding:10px;max-width:1160px;border:1px solid #435b76;border-radius:12px;background:#10243a;color:#fff;font:700 12px/1.4 system-ui,sans-serif}
+.bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
+.bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
+.bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+</style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
  const setting="bey-lab-environment-v1";
@@ -364,6 +370,7 @@ footer{color:#8fa9c8;font-size:11px;margin-top:13px;line-height:1.6}
  <div class="brand"><span class="brandmark">⟳</span><div><strong>BEY LAB</strong><small>KING OF THE STADIUM · ARENA β</small></div></div>
  <div class="top-actions"><span class="env-indicator" id="environmentBadge"></span><span class="status" id="saved">端末内保存</span><button class="minibtn accent" data-action="edit">⚙ 登録・並べ替え</button><a class="minibtn" href="./records.html">📊 記録</a><button class="minibtn" data-action="history">📖 履歴</button><a class="minibtn accent" href="./lab.html">🔬 1on1研究</a><a class="minibtn accent" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a></div>
 </header>
+<nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html" aria-current="page">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html">💾 データ管理</a><a href="./records.html">📊 記録と履歴</a></nav>
 <div class="meeting-strip">
  <div class="meeting-label" id="meetingLabel">📅 大会未設定</div>
  <div class="meeting-record" id="meetingRecord">🏆 最長連勝：記録なし</div>
