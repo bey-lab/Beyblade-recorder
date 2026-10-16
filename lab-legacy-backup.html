@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1424"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BEY LAB RESEARCH">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-180.png">
+<title>BEY LAB | 1on1研究室</title>
+<style>
+:root{color-scheme:dark;--bg:#08121f;--panel:#111f32;--border:#3a4d68;--text:#f2f6ff;--muted:#a4b6cf;--gold:#dfba6a;--red:#ed706b;--blue:#6caaff}
+*{box-sizing:border-box}html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--text);font:14px/1.48 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:radial-gradient(circle at 12% 5%,#622b3540,transparent 31%),radial-gradient(circle at 90% 14%,#23538b3d,transparent 34%),#08121f;min-height:100dvh}
+button,input,select{font:inherit}button{color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.97)}a{color:#d9e8ff;text-decoration:none}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.wrap{max-width:1370px;margin:auto;padding:16px max(13px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(13px,env(safe-area-inset-left))}
+@media(display-mode:standalone){.wrap{padding-top:max(46px,calc(env(safe-area-inset-top) + 12px))}}
+header{display:flex;align-items:center;gap:13px;justify-content:space-between;flex-wrap:wrap;border-bottom:1px solid #354966;padding-bottom:12px}
+.brand strong{display:block;font-size:26px;font-weight:950;letter-spacing:.09em;line-height:1.1}.brand small{color:var(--gold);letter-spacing:.19em;font-size:10px;font-weight:900}
+nav,.toolrow{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid #5b7390;border-radius:10px;background:#182b43;padding:9px 12px;min-height:40px;font-weight:800;font-size:12px}
+.btn.gold{border-color:#a78a54;color:#fbe1a2;background:#413329}.btn.primary{background:linear-gradient(110deg,#575039,#24364c);color:#fff4d8;border-color:#cfab65}
+h1,h2,h3,p{margin:0}h1{font-size:clamp(21px,3.2vw,37px);line-height:1.1;letter-spacing:.07em}h2{font-size:21px;margin-bottom:12px}h3{font-size:16px}
+.subtitle{font-size:12px;letter-spacing:.1em;color:#c7d9f1;margin:6px 0 0}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:19px 0}
+.kicker{font-size:10px;letter-spacing:.22em;font-weight:950;color:var(--gold)}
+.hint{color:#a8bbd2;font-size:12px;line-height:1.55}
+.versus{display:grid;grid-template-columns:minmax(0,1fr) 110px minmax(0,1fr);align-items:stretch;gap:12px}
+.fighter{--accent:var(--red);border:1px solid color-mix(in srgb,var(--accent) 60%,#475268);border-radius:17px;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 13%,#15253b),#101d30 60%);padding:17px;min-width:0;box-shadow:0 8px 28px #0003}
+.fighter.x{--accent:var(--blue)}.sidehead{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ffffff21;padding-bottom:11px;margin-bottom:10px}
+.sidehead strong{font-size:24px;font-weight:950;font-style:italic;color:var(--accent)}.sidehead small{color:var(--muted);font-size:10px;letter-spacing:.15em}
+.field{display:block;margin:8px 0}.field span{display:block;color:#b9cce4;font-size:11px;font-weight:800;margin:0 0 4px}.field select,.field input{display:block;min-height:44px;width:100%;background:#09182c;border:1px solid #56708e;border-radius:9px;color:#fff;padding:9px;font-size:14px;font-weight:800}
+.pieces{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.build{margin-top:13px;border:1px solid color-mix(in srgb,var(--accent) 43%,#435066);border-radius:10px;padding:12px;min-height:78px;background:#09182c8c}
+.build small{display:block;color:#adbbcd;letter-spacing:.14em;font-size:10px}.build strong{display:block;overflow-wrap:anywhere;font-size:clamp(15px,1.8vw,24px);line-height:1.25;margin-top:5px;color:#fff}
+.vs{display:grid;place-items:center;font-size:clamp(29px,4.5vw,57px);font-weight:1000;font-style:italic;color:var(--gold);text-shadow:0 0 24px #ddbb6d50}
+.battle{margin-top:16px;border-radius:17px;padding:16px;background:linear-gradient(#182c45,#101e33);border:1px solid #526781}
+.battlehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:12px}
+.battlehead b{font-size:18px}.finishgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.winnerline{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.winnerline strong{text-align:center;padding:8px;background:#26374e;border-radius:7px;color:#ebebed;font-size:13px}
+.finishbtn{--accent:#e7716c;position:relative;isolation:isolate;border:1px solid color-mix(in srgb,var(--accent) 70%,#344a62);border-radius:9px;background:linear-gradient(130deg,color-mix(in srgb,var(--accent) 33%,#1b2c41),#101b2c);min-height:58px;padding:8px 9px;overflow:hidden;font-weight:950;font-size:clamp(14px,1.7vw,19px);display:flex;align-items:center;justify-content:space-between;gap:6px;letter-spacing:.03em}
+.finishbtn.x{--accent:#69a9ff}.finishbtn:before{content:"";position:absolute;z-index:-1;inset:-1px auto -1px -100%;width:85%;background:linear-gradient(98deg,transparent,#fff0,#ffffff88,#fff0,transparent);transform:skewX(-24deg);transition:none;pointer-events:none}
+.finishbtn:active:before{animation:slash .35s ease-out 1}@keyframes slash{to{left:150%}}
+.finishbtn small{font-size:12px;white-space:nowrap;color:#e8ebf5}
+.after{margin-top:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px}
+.notice{font-size:14px;color:#f3d695;font-weight:850;min-height:20px}
+.toolrow{margin-top:13px}.twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:15px;margin-top:16px}
+.card{background:#111f32;border:1px solid #3c526f;border-radius:15px;padding:18px;min-width:0}
+.info{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}.info small{color:#b7c8da;font-size:11px}
+.bigstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.metric{background:#192a40;border-radius:10px;padding:10px;min-width:0}.metric small{font-size:10px;color:#b2c5de;display:block}.metric strong{font-size:clamp(20px,2.9vw,32px);font-variant-numeric:tabular-nums}
+.barchart{margin-top:14px}.barline{margin:10px 0}.barlabels{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:4px}.track{background:#253950;height:10px;border-radius:10px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#bd765e,#f1c778);border-radius:10px}.fill.loss{background:linear-gradient(90deg,#41769f,#6da9f2)}
+table{border-collapse:collapse;width:100%;font-size:12px}th{text-align:left;color:#c5d5e9;font-weight:900;background:#24334a}th,td{padding:9px 7px;border-bottom:1px solid #31455c;overflow-wrap:anywhere}td:last-child,th:last-child{text-align:right}
+.scope{min-height:38px;background:#182d45;color:#fff;border:1px solid #59718d;border-radius:8px;padding:6px;max-width:100%;font-weight:750}
+.empty{padding:20px 7px;color:#acbfd7;font-size:13px}
+.series{border:1px solid #3a4e66;border-radius:11px;margin:9px 0;overflow:hidden}.series summary{cursor:pointer;background:#1b2c42;padding:13px;font-size:13px;font-weight:900;touch-action:manipulation}.series-inner{padding:8px}.record{display:flex;justify-content:space-between;gap:12px;padding:10px 3px;border-bottom:1px solid #263951;font-size:12px}.record:last-child{border:0}.record strong{color:#f3d48a}.record small{color:#a8bdd3;display:block;margin-top:2px}
+.backups{margin-top:16px;padding:15px;border:1px solid #465e7b;border-radius:13px;background:#0d1b2c}.backups p{margin:6px 0 12px}
+input[type=file]{display:none}
+.flash{animation:arrival .32s cubic-bezier(.2,.75,.35,1)}@keyframes arrival{0%{box-shadow:0 0 0 8px #fff4;filter:brightness(1.6)}100%{box-shadow:none;filter:brightness(1)}}
+
+/* Match-first 1on1 battle deck: giant series score, instant build changes, analysis below. */
+.topbar{padding:12px 0 13px}
+.duel-score{position:relative;overflow:hidden;border:1px solid #62718a;border-radius:18px;padding:11px 18px 14px;margin-bottom:12px;background:linear-gradient(100deg,#39212b 0%,#192b42 35%,#152a46 65%,#16273e 100%);box-shadow:inset 0 1px #ffffff1c,0 14px 28px #0004}
+.duel-score:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,#edc2751b,transparent 52%)}
+.duel-caption{position:relative;text-align:center;font-size:10px;font-weight:950;letter-spacing:.23em;color:#e7c88a}
+.duel-scoreline{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,.45fr) minmax(0,1fr);align-items:center;text-align:center;min-height:110px}
+.duel-side{display:flex;flex-direction:column;align-items:center;min-width:0}
+.duel-side span{font-size:11px;letter-spacing:.16em;color:#f0cfca;font-weight:950}.duel-side.x span{color:#c9deff}
+.duel-side strong{font-size:clamp(58px,8.2vw,111px);line-height:.93;font-weight:1000;font-variant-numeric:tabular-nums;color:#ff8178;text-shadow:0 0 28px #fa5c6a4a}
+.duel-side.x strong{color:#73b3ff;text-shadow:0 0 28px #549ef955}
+.duel-middle{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.duel-middle strong{font-size:clamp(24px,3.7vw,47px);font-style:italic;letter-spacing:.05em;color:#f7d58a;line-height:1}
+.duel-middle span{font-weight:900;font-size:clamp(10px,1.2vw,14px);color:#e2ecfa;white-space:nowrap}
+.duel-middle small{font-size:9px;letter-spacing:.1em;color:#afc3db}
+.duel-status{position:relative;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid #8392aa3c;padding-top:8px;font-size:12px;color:#d9e9ff;font-weight:750}.duel-status strong{color:#f6d692}.duel-status span{font-size:11px;color:#c6d8ef}.duel-score.champion{border-color:#f1c977;box-shadow:0 0 0 1px #b69352,inset 0 1px #ffffff28,0 0 28px #f3c76a2b}.finishbtn:disabled{opacity:.4;cursor:default;transform:none}.legacy-note{color:#f1cc89;font-size:10px}
+.duel-scoreline.pulse-b .duel-side:not(.x) strong{animation:scorePunch .48s ease-out}
+.duel-scoreline.pulse-x .duel-side.x strong{animation:scorePunch .48s ease-out}
+@keyframes scorePunch{0%{transform:scale(1);filter:brightness(1)}36%{transform:scale(1.2);filter:brightness(1.75)}100%{transform:scale(1);filter:brightness(1)}}
+.versus{grid-template-columns:minmax(0,1fr) 65px minmax(0,1fr);gap:9px}
+.fighter{padding:13px 15px}
+.sidehead{padding-bottom:6px;margin-bottom:7px}
+.field{margin:6px 0}.field span{margin-bottom:3px}
+.partpick-main{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;min-height:41px;gap:8px;padding:7px 11px;border:1px solid #647c9b;border-radius:9px;background:#0a192e;font-weight:900}
+.partpick-main .current-text{font-size:clamp(13px,1.6vw,17px);text-overflow:ellipsis;overflow:hidden;white-space:nowrap;min-width:0}
+.partpick-main small{color:var(--accent);font-size:10px;flex:none;font-weight:850}
+.partsection{min-width:0}
+.quickrow{display:flex;flex-wrap:wrap;align-content:start;gap:5px;margin:5px 0 4px;min-height:30px}
+.quickchip{min-height:30px;max-width:100%;font-weight:800;font-size:11px;border:1px solid #425c78;border-radius:7px;background:#1b304a;padding:5px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quickchip.on{color:#fff;background:color-mix(in srgb,var(--accent) 25%,#1b304a);border-color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent)}
+.build{margin-top:7px;min-height:57px;padding:8px 11px}.build strong{font-size:clamp(14px,1.75vw,20px);margin-top:2px}
+
+/* BLADE ENTRY / metallic slash. Visual-only; never blocks the next tap. */
+.build,.partpick-main{position:relative;isolation:isolate;overflow:hidden;transform:translateZ(0)}
+.build small,.build strong,.partpick-main .current-text,.partpick-main small{position:relative;z-index:1}
+.build::before,.partpick-main::before{
+ content:"";pointer-events:none;position:absolute;z-index:3;opacity:0;
+ top:-65%;left:-42%;width:38%;height:230%;
+ background:linear-gradient(90deg,
+  transparent 0%,rgba(211,229,247,.02) 12%,rgba(211,229,247,.22) 32%,
+  rgba(249,253,255,.94) 47%,rgba(255,232,181,.99) 51%,
+  rgba(236,246,255,.45) 57%,rgba(255,211,131,.09) 75%,transparent 100%);
+ transform:skewX(-25deg) translateX(0);
+}
+.build::after,.partpick-main::after{
+ content:"";pointer-events:none;position:absolute;z-index:4;opacity:0;
+ top:-70%;left:-35%;width:2px;height:240%;
+ transform:rotate(24deg);
+ background:linear-gradient(to bottom,transparent 4%,#eff8ff 23%,#fff 43%,#ffe1a5 52%,#fdfaff 68%,transparent 95%);
+ box-shadow:0 0 8px 1px #f5f5ec55;
+}
+.build.entry-slash,.partpick-main.entry-slash{
+ animation:metalLock .42s cubic-bezier(.16,.72,.28,1) both;
+}
+.build.entry-slash::before,.partpick-main.entry-slash::before{
+ animation:metalSweep .38s cubic-bezier(.12,.66,.26,1) both;
+}
+.build.entry-slash::after,.partpick-main.entry-slash::after{
+ animation:bladeCut .33s cubic-bezier(.12,.66,.26,1) both;
+}
+.build.entry-slash strong{animation:engravedName .42s ease-out both}
+@keyframes metalSweep{
+ 0%{opacity:0;transform:skewX(-25deg) translateX(-18%)}
+ 13%{opacity:1}
+ 75%{opacity:1}
+ 100%{opacity:0;transform:skewX(-25deg) translateX(600%)}
+}
+@keyframes bladeCut{
+ 0%{left:-35%;opacity:0}
+ 12%{opacity:1}
+ 73%{opacity:.95}
+ 100%{left:130%;opacity:0}
+}
+@keyframes metalLock{
+ 0%{border-color:#7e8b9e;box-shadow:inset 0 0 0 0 #f4cf8566;filter:brightness(1)}
+ 32%{border-color:#f6dea6;box-shadow:inset 0 0 0 1px #ffeac582,0 0 12px #dec58b40;filter:brightness(1.15)}
+ 100%{box-shadow:none;filter:brightness(1)}
+}
+@keyframes engravedName{
+ 0%{color:#fff;text-shadow:none}
+ 35%{color:#fff0ce;text-shadow:0 0 12px #f5d79b92}
+ 100%{color:#fff;text-shadow:none}
+}
+
+.vs{font-size:clamp(22px,3vw,39px)}
+.battle{margin-top:12px;padding:12px 15px}.battlehead{padding-bottom:9px}.battlehead b{font-size:16px}
+.finishbtn{min-height:53px}.after{margin-top:9px}
+.scroll-cue{display:flex;justify-content:center;align-items:center;gap:8px;margin:9px 0 3px;color:#a7bdd9;font-size:11px;letter-spacing:.1em;font-weight:850}
+.scroll-cue a{color:#d1bb86;text-decoration:none}
+.picker-overlay{display:none;position:fixed;inset:0;z-index:120;background:#030811d9;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.picker-overlay.show{display:flex}
+.picker-card{--accent:#ff847c;width:min(680px,100%);max-height:91dvh;display:flex;flex-direction:column;min-height:0;background:linear-gradient(135deg,#1c2c43,#09182a);border:2px solid var(--accent);border-radius:16px;padding:16px;box-shadow:0 24px 75px #0009}
+.picker-card.x{--accent:#78b5ff}
+.picker-head{display:flex;gap:9px;align-items:center;justify-content:space-between;margin-bottom:12px}.picker-head strong{font-size:clamp(18px,2.3vw,26px);color:var(--accent)}
+.picker-search{min-height:44px;background:#071526;color:#fff;border-radius:9px;border:1px solid #5c7897;padding:9px 11px;font-size:15px;margin-bottom:10px}
+.picker-grid{overflow-y:auto;min-height:45px;flex:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));grid-auto-rows:minmax(45px,max-content);gap:8px;align-content:start;padding:3px 1px 10px;overscroll-behavior:contain}
+.picker-option{min-height:45px;border:1px solid #596c89;background:#1c2f47;border-radius:9px;padding:8px 10px;font-size:14px;font-weight:850;text-align:left;overflow-wrap:anywhere}
+.picker-option.on{border-color:var(--accent);color:#fff;background:color-mix(in srgb,var(--accent) 27%,#1b2d43)}
+
+/* Fixed-position selection and an explicit, touch-friendly separate ordering mode. */
+.partpick-main.has-selection{border-color:color-mix(in srgb,var(--accent) 65%,#647c9b);box-shadow:inset 3px 0 color-mix(in srgb,var(--accent) 85%,#fff)}
+.partpick-main.has-selection .current-text{color:#f6f9ff}
+.quickchip.on{position:relative;box-shadow:inset 0 0 0 1px var(--accent),0 0 0 1px color-mix(in srgb,var(--accent) 20%,transparent)}
+.picker-order-note{color:#cad8ea;font-size:12px;margin:0 0 9px;line-height:1.55}
+.picker-order-note strong{color:#f1d59b}
+.picker-grid.sorting{display:flex;flex-direction:column;gap:7px;grid-auto-rows:auto}
+.picker-order-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid #49617e;border-radius:10px;background:#12243a;min-height:54px}
+.picker-order-row.pinned{border-color:#937e5b;background:linear-gradient(95deg,#343126,#12253c 75%)}
+.picker-order-name{flex:1;min-width:0;overflow-wrap:anywhere;font-size:14px;font-weight:850}
+.picker-order-name small{display:block;color:#e9c98b;font-size:10px;line-height:1.3;margin-top:2px}
+.picker-order-tool{font-size:13px;font-weight:900;padding:7px 8px;min-height:41px;min-width:39px;border:1px solid #7184a1;border-radius:8px;background:#243850}
+.picker-order-tool:disabled{opacity:.3;cursor:default}
+.picker-order-tool.pin{font-size:11px;color:#f9dd9c;border-color:#ae8e4b;background:#342b2a;min-width:75px}
+.picker-head .btn.is-editing{background:#4b3b26;color:#ffe5a8;border-color:#c9a362}
+@media(max-width:480px){.picker-order-row{padding:5px}.picker-order-tool{min-width:36px;padding:7px 6px}.picker-order-tool.pin{min-width:68px;font-size:10px}}
+
+.picker-add{display:flex;flex-wrap:wrap;gap:8px;padding-top:11px;margin-top:7px;border-top:1px solid #52637b}
+.picker-add input{min-width:150px;flex:1;min-height:44px;border:1px solid #607895;border-radius:9px;background:#071526;color:#fff;padding:9px 11px;font-size:14px}
+.picker-add button{min-height:44px}
+@media(max-width:740px){.duel-score{padding:11px}.duel-scoreline{min-height:92px;grid-template-columns:1fr 94px 1fr}.duel-side strong{font-size:64px}.duel-middle strong{font-size:30px}.versus{grid-template-columns:minmax(0,1fr);gap:7px}.vs{min-height:29px;font-size:24px}.picker-card{max-height:89dvh}.picker-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))}}
+@media(prefers-reduced-motion:reduce){.duel-scoreline.pulse-b .duel-side:not(.x) strong,.duel-scoreline.pulse-x .duel-side.x strong{animation:none!important}}
+@media(max-width:740px){.versus{grid-template-columns:minmax(0,1fr);gap:8px}.vs{min-height:37px;font-size:28px}.fighter{padding:12px}.twocol{grid-template-columns:1fr}.finishbtn{min-height:54px}.wrap{padding-top:max(13px,env(safe-area-inset-top))}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.env-indicator{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #e1b86b;border-radius:9px;background:#382e25;color:#ffe1a0;font-size:12px;font-weight:900}.env-indicator.official{border-color:#75b5ed;background:#1c3550;color:#cbeaff}.score-controls{position:relative;margin-top:10px;border-top:1px solid #ffffff27;padding-top:10px}.score-controls-head{display:grid;grid-template-columns:1fr 1fr;text-align:center;gap:8px;font-size:11px;font-weight:950;color:#d7e5fa;margin-bottom:7px}.score-controls-head span:first-child{color:#ffaaa4}.score-controls-head span:last-child{color:#a6d4ff}.score-controls .finishgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 9px}.score-controls .finishbtn{min-height:48px;padding:8px 10px;font-size:clamp(12px,1.5vw,16px);display:flex;align-items:center;justify-content:space-between;gap:5px;touch-action:manipulation}.score-controls .finishbtn small{font-size:10px}.score-controls .finishbtn span{white-space:nowrap}.part-lock-note{font-size:11px;color:#ffd79a;margin-top:7px;font-weight:800}.quickchip{touch-action:manipulation;min-height:36px}@media(max-width:600px){.score-controls .finishbtn{padding:7px 5px;font-size:12px}.score-controls .finishbtn small{font-size:9px}}.match-lock-banner{position:relative;margin:9px 0;padding:8px 11px;border:1px solid #5a8c78;border-radius:9px;background:#15392e;color:#c5f2d9;font-size:12px;font-weight:900}.match-lock-banner.locked{border-color:#e0b36e;background:#493324;color:#ffe0a7}.victory-banner:not([hidden]){position:relative;display:block;margin:12px 0 5px;padding:17px 12px;border:2px solid #f2c77d;border-radius:13px;text-align:center;background:linear-gradient(110deg,#74462e,#4a343e,#294263);color:#fff3c8;font-size:clamp(18px,3vw,30px);font-weight:1000;box-shadow:0 0 24px #edc37545;animation:victoryArrive .5s cubic-bezier(.2,.8,.2,1)}.victory-banner.victory-x{background:linear-gradient(110deg,#234d79,#315b8e,#62523a);border-color:#a3d4ff}.victory-banner.victory-b{background:linear-gradient(110deg,#76383d,#a45546,#584a33)}@keyframes victoryArrive{from{opacity:.4;transform:scale(.96);filter:brightness(1.8)}to{opacity:1;transform:scale(1);filter:brightness(1)}}.bey-hand-link{display:inline-block;margin:6px 0 0;color:#f2d08b;font-size:12px;font-weight:850;text-decoration:none}.bey-hand-link:hover{text-decoration:underline}.next-match-primary:not([hidden]){position:relative;display:flex;flex-direction:column;gap:9px;margin:12px 0 4px}.next-match-hero{width:100%;min-height:76px;border:2px solid #ffe0a1;border-radius:14px;background:linear-gradient(115deg,#ac7428,#e4b954,#a86b22);color:#161d2b;font-size:clamp(21px,2.3vw,30px);font-weight:1000;letter-spacing:.03em;box-shadow:0 7px 25px #e6b14c3b;cursor:pointer;touch-action:manipulation}.next-match-hero small{display:block;margin-top:4px;font-size:12px;letter-spacing:0}.next-match-undo{align-self:center;border:1px solid #61718a;border-radius:9px;padding:9px 16px;background:#1a2a42;color:#d9e7f9;font-weight:750;cursor:pointer;touch-action:manipulation}.score-controls[hidden]{display:none!important}@media(max-width:700px){.next-match-hero{min-height:70px}}.quick-finish.finish-edge-flash,.finishbtn.finish-edge-flash{position:relative;isolation:isolate;animation:finishEdgeFlash .22s ease-out both;--edge-flash:#76bdff}.quick-finish.b.finish-edge-flash,.finishbtn:not(.x).finish-edge-flash{--edge-flash:#ff827c}.quick-finish.finish-edge-flash::after,.finishbtn.finish-edge-flash::after{content:"";position:absolute;inset:-1px;border:2px solid var(--edge-flash);border-radius:inherit;pointer-events:none;box-shadow:0 0 8px var(--edge-flash),inset 0 0 5px var(--edge-flash);animation:finishEdgeOutline .22s ease-out both}@keyframes finishEdgeFlash{0%{filter:brightness(1.45)}100%{filter:brightness(1)}}@keyframes finishEdgeOutline{0%{opacity:1;transform:scale(.985)}100%{opacity:0;transform:scale(1.015)}}@media(prefers-reduced-motion:reduce){.quick-finish.finish-edge-flash,.finishbtn.finish-edge-flash,.quick-finish.finish-edge-flash::after,.finishbtn.finish-edge-flash::after{animation:none}}.picker-order-row.just-moved{border-color:#f6ce78;background:linear-gradient(90deg,#4b412b,#14263c);animation:orderPulse .32s ease-out}.favorite-star{min-width:40px;min-height:40px;border:1px solid #536a86;border-radius:8px;background:#203149;color:#a8b7cb;font-size:22px}.favorite-star.on{color:#ffe09a;border-color:#d3ac61;background:#4c3c27}@keyframes orderPulse{from{box-shadow:0 0 0 3px #f6d17a,0 0 20px #f6d17a99}to{box-shadow:none}}@media(prefers-reduced-motion:reduce){.picker-order-row.just-moved{animation:none}}
+.preset-bar{display:flex;gap:7px;margin:10px 0}.preset-bar button{flex:1;min-height:46px;background:#293e59;color:#ffe2a4;border:1px solid #a88d5c;border-radius:8px;font-weight:800}@media(max-width:650px){.preset-bar{flex-direction:column}}</style><link rel="stylesheet" href="./bey-universal.css"><script>
+/* Shared mode preference. Legacy storage is never modified by this switch. */
+(function(){
+ const setting="bey-lab-environment-v1";
+ let env="test";
+ try{if(localStorage.getItem(setting)==="official")env="official"}catch(e){}
+ window.BEY_ENV=env;
+ document.documentElement.dataset.beyEnv=env;
+})();
+</script><script src="./bey-hands.js"></script></head><body data-bey-mode="lab">
+<div class="wrap">
+<header><div class="brand"><strong>BEY LAB</strong><small>DEEP RESEARCH · 1ON1</small></div>
+<nav><span class="env-indicator" id="environmentBadge"></span><a class="btn" href="./records.html">📊 記録</a><a class="btn" href="#history">📖 履歴</a><a class="btn" href="./arena.html">👑 勝ち抜きアリーナ</a><a class="btn" href="./index.html?home=1" aria-label="ホーム画面に戻る">⌂ ホームへ戻る</a><span id="saveState" class="hint">端末内保存</span></nav></header>
+<div class="topbar">
+ <div><div class="kicker">RESEARCH PROTOCOL / 001</div><h1>🔬 1on1 研究室</h1><p class="subtitle">ONE BLADE · FIRST TO 4 POINTS · DEEP RESEARCH</p></div>
+ <div><label class="field" style="margin:0"><span>研究テーマ・任意</span><input id="seriesTitle" maxlength="70" placeholder="例：対ロッド・ラチェット比較"></label></div>
+</div>
+<section class="duel-score" aria-label="今回の研究の試合勝利数">
+  <div class="duel-caption">BEY LAB · LIVE 1ON1 SCORE / FIRST TO 4</div>
+  <div class="duel-scoreline" id="duelScore">
+    <div class="duel-side"><span>B-SIDE POINTS</span><strong id="winsB">0</strong></div>
+    <div class="duel-middle"><strong>VS</strong><span id="duelRound">MATCH 01</span><small>FIRST TO 4 PTS</small></div>
+    <div class="duel-side x"><span>X-SIDE POINTS</span><strong id="winsX">0</strong></div>
+  </div>
+<div id="matchLockBanner" class="match-lock-banner" aria-live="polite">🔓 カスタム変更可能 · 得点が入ると試合終了まで固定</div><div class="duel-status"><strong id="duelStatus">4点先取で勝利！</strong><span id="duelSeries">研究戦績 B 0勝 · X 0勝</span></div>
+<div id="victoryBanner" class="victory-banner" role="status" aria-live="polite" hidden></div><div id="nextMatchPrimary" class="next-match-primary" hidden><button type="button" data-action="next-match" class="next-match-hero">▶ 次の試合へ <small>結果を保存して次のバトルを開始</small></button><button type="button" data-action="undo" class="next-match-undo">↶ 最後の得点を取り消す</button></div><div class="score-controls"><div class="score-controls-head"><span>🔴 B-SIDE · 得点</span><span>🔵 X-SIDE · 得点</span></div><div class="finishgrid" id="finishGrid"></div></div>
+</section>
+<div class="versus">
+ <section class="fighter"><div class="sidehead"><strong>B-SIDE</strong><small>TEST UNIT / 01</small></div>
+  <label class="field"><span>プレイヤー</span><select id="playerB" data-field="player" data-side="B"></select></label>
+  <div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="blade"><span class="current-text" id="bladeB">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeB"></div></div>
+  <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="ratchet"><span class="current-text" id="ratchetB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetB"></div></div>
+  <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="B" data-part="bit"><span class="current-text" id="bitB">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitB"></div></div></div>
+  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildB">—</strong></div><div class="preset-bar"><button data-action="preset-load" data-side="B">⚡ 一式を呼び出す</button><button data-action="preset-save" data-side="B">＋ 一式を共通保存</button></div>
+ </section>
+ <div class="vs">VS</div>
+ <section class="fighter x"><div class="sidehead"><strong>X-SIDE</strong><small>TEST UNIT / 02</small></div>
+  <label class="field"><span>プレイヤー</span><select id="playerX" data-field="player" data-side="X"></select></label>
+  <div class="field"><span>ブレード</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="blade"><span class="current-text" id="bladeX">—</span><small>▦ 一覧</small></button><div class="quickrow" id="quickBladeX"></div></div>
+  <div class="pieces"><div class="field partsection"><span>ラチェット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="ratchet"><span class="current-text" id="ratchetX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickRatchetX"></div></div>
+  <div class="field partsection"><span>ビット</span><button type="button" class="partpick-main" data-action="open-picker" data-side="X" data-part="bit"><span class="current-text" id="bitX">未設定</span><small>▦ 変更</small></button><div class="quickrow" id="quickBitX"></div></div></div>
+  <div class="build"><small>CURRENT CUSTOM</small><strong id="buildX">—</strong></div><div class="preset-bar"><button data-action="preset-load" data-side="X">⚡ 一式を呼び出す</button><button data-action="preset-save" data-side="X">＋ 一式を共通保存</button></div>
+ </section>
+</div>
+<datalist id="ratchets"><option value="1-60"><option value="3-60"><option value="5-60"><option value="9-60"><option value="1-70"><option value="3-70"><option value="5-70"><option value="9-70"><option value="1-80"><option value="3-80"><option value="5-80"></datalist>
+<datalist id="bits"><option value="R"><option value="F"><option value="B"><option value="T"><option value="H"><option value="C"><option value="A"><option value="GF"><option value="FB"><option value="LR"><option value="N"><option value="P"><option value="LF"></datalist>
+<section class="battle" aria-label="1on1の4点先取スコア入力">
+ <div class="battlehead"><div><div class="kicker">BATTLE INPUT · FIRST TO FOUR POINTS</div><b>勝った側のフィニッシュをタップ！ 4点先取で勝利</b></div><small class="hint">途中スコアは自動保存 · 決着後に1試合として戦績確定</small></div>
+ <div class="winnerline"><strong style="color:#ffaca7">B 勝利</strong><strong style="color:#a4cdff">X 勝利</strong></div>
+ <p class="hint">得点操作は画面上部のスコアボードに移動しました。</p>
+ <div class="after"><div id="lastNotice" class="notice" aria-live="polite">1機で4点取るまで戦え！</div><div class="toolrow"><button class="btn primary" id="nextMatch" data-action="next-match" style="display:none">▶ 次の試合へ</button><button class="btn" data-action="undo">↶ 直前の得点を取り消す</button><button class="btn" data-action="reset-match">⟲ 試合をやり直す</button></div></div>
+</section>
+<div class="toolrow"><button class="btn gold" data-action="new-series">＋ 新しい研究テーマ</button><button class="btn" data-action="sync-roster">↻ アリーナ名簿を取り込む</button><span id="seriesLine" class="hint"></span></div>
+<div class="scroll-cue"><a href="#analysis">↓ SWIPE TO ANALYSIS · 下へスクロールして研究結果を見る</a></div>
+<div class="twocol" id="analysis">
+<section class="card">
+ <div class="info"><h2>📈 性能カルテ</h2><select id="scope" class="scope" aria-label="分析対象の研究期間"><option value="all">全期間</option><option value="series">今回の研究のみ</option></select></div>
+ <label class="field"><span>分析したいカスタム</span><select id="focus" class="scope" style="width:100%"></select></label>
+ <div id="analysisBody"></div>
+</section>
+<section class="card">
+ <div class="info"><h2>⚔️ 対戦相性</h2><small>相手別の勝敗・得意不得意</small></div>
+ <div id="matchups"></div>
+ <h3 style="margin:20px 0 7px">同じブレードのカスタム比較</h3><div id="comparisons"></div>
+</section>
+</div>
+<section class="card" style="margin-top:16px">
+ <div class="info"><h2>📚 研究ログ</h2><small>フィニッシュと構成を完全保存</small></div>
+ <div id="history"></div>
+</section>
+<section class="backups"><h3>💾 データの保存・復元</h3><p class="hint">1on1研究室の記録は、勝ち抜きアリーナとは別に保存されます。JSONで研究テーマ・カスタム・全対戦をバックアップできます。復元時は現在の1on1記録と入れ替わるため、事前に保存してください。</p>
+<div class="toolrow"><button class="btn primary" data-action="export-json">⬇ 研究JSON保存</button><button class="btn" data-action="import-json">⬆ 研究JSON復元</button><button class="btn" data-action="export-csv">⬇ CSV保存</button></div>
+<input id="importFile" type="file" accept=".json,application/json"></section>
+<p class="hint" style="margin-top:17px">BEY LAB · DEEP RESEARCH β版 / 1機を固定して4点先取の1on1。獲得ポイントはスピン1、オーバー2、バースト2、エクストリーム3。4点以上に達したら1試合の勝敗が確定します。途中の得点とフィニッシュも自動保存。</p>
+</div>
+<div class="picker-overlay" id="pickerOverlay" role="dialog" aria-modal="true" aria-label="機体・パーツの選択">
+<section class="picker-card" id="pickerCard">
+  <div class="picker-head"><strong id="pickerHeading">SELECT YOUR GEAR</strong><div class="toolrow" style="margin-top:0"><button type="button" class="btn" id="orderToggle" data-action="toggle-picker-order">⚙ 並び替え</button><button type="button" class="btn" data-action="close-picker">✕ 戻る</button></div></div>
+  <p class="picker-order-note" id="pickerOrderNote">パーツを選んでも配置は動きません。</p>
+  <input id="pickerSearch" type="search" class="picker-search" placeholder="候補を絞り込み" autocomplete="off" autocorrect="off" spellcheck="false">
+  <div class="picker-grid" id="pickerGrid"></div>
+  <form class="picker-add" id="pickerAdd"><input id="pickerNew" maxlength="70" placeholder="一覧にないパーツを入力" autocomplete="off" autocorrect="off" spellcheck="false"><button class="btn gold" type="submit" id="pickerAddButton">＋ 登録・選択</button></form>
+</section>
+</div>
+<script>
+(function(){
+"use strict";
+const KEY="bey-lab-1on1-v1-"+window.BEY_ENV, ARENA_KEY="bey-lab-arena-v1-"+window.BEY_ENV;
+const FIN=[["spin","スピン",1,"◉"],["over","オーバー",2,"↗"],["burst","バースト",2,"✦"],["extreme","エクストリーム",3,"⚡"]];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clean=(s,max=70)=>typeof s==="string"?s.trim().slice(0,max):"";
+const day=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const uid=()=>typeof crypto!=="undefined"&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const baseRoster=()=>({players:["プレイヤー1","プレイヤー2","プレイヤー3"],blades:["ドランソード","ヘルズサイズ","ウィザードアロー","ナイトシールド"]});
+function arenaRoster(){try{const a=JSON.parse(localStorage.getItem(ARENA_KEY));if(a&&Array.isArray(a.players)&&Array.isArray(a.blades))return {players:a.players.filter(x=>typeof x==="string").slice(0,200),blades:a.blades.filter(x=>typeof x==="string").slice(0,200)}}catch(e){}return null}
+function initial(){
+ const r=arenaRoster()||baseRoster(),players=r.players.length?r.players:baseRoster().players,blades=r.blades.length?r.blades:baseRoster().blades;
+ return {version:2,players:clone(players),blades:clone(blades),
+ slots:{B:{player:players[0],blade:blades[0],ratchet:"",bit:""},
+ X:{player:players[Math.min(1,players.length-1)],blade:blades[Math.min(1,blades.length-1)],ratchet:"",bit:""}},
+ sessions:[],activeId:null,activeMatch:null};
+}
+function valid(s){
+ if(!s||typeof s!=="object"||![1,2].includes(s.version)||!Array.isArray(s.players)||!Array.isArray(s.blades)||!s.slots||!Array.isArray(s.sessions))return false;
+ if(!s.players.length||s.players.length>200||!s.blades.length||s.blades.length>200||s.sessions.length>10000)return false;
+ const names=a=>a.every(x=>typeof x==="string"&&x.trim()&&x.length<=70);
+ const slot=x=>x&&["player","blade","ratchet","bit"].every(k=>typeof x[k]==="string"&&x[k].length<=70);
+ const sides=x=>x&&slot(x.B)&&slot(x.X);
+ if(!names(s.players)||!names(s.blades)||!sides(s.slots))return false;
+ for(const side of ["B","X"]){
+  if(!s.players.includes(s.slots[side].player)||!s.blades.includes(s.slots[side].blade))return false;
+  if(s.slots[side].ratchet.length>22||s.slots[side].bit.length>22)return false;
+ }
+ if(!(s.activeId===null||typeof s.activeId==="string"))return false;
+ const validLegacy=r=>r&&typeof r.id==="string"&&["B","X"].includes(r.winnerSide)&&FIN.some(f=>f[0]===r.finish&&f[2]===r.points)&&sides(r.slots);
+ const validMatch=m=>{
+  if(!m||typeof m.id!=="string"||!sides(m.slots)||!m.scores||!Number.isFinite(m.scores.B)||!Number.isFinite(m.scores.X))return false;
+  if(!Array.isArray(m.events)||m.events.length>10000||!m.events.every(e=>e&&["B","X"].includes(e.side)&&FIN.some(f=>f[0]===e.finish&&f[2]===e.points)&&typeof e.time==="string"))return false;
+  const sum={B:0,X:0};
+  for(const e of m.events)sum[e.side]+=e.points;
+  if(sum.B!==m.scores.B||sum.X!==m.scores.X)return false;
+  if(!(m.winnerSide===null||["B","X"].includes(m.winnerSide)))return false;
+  if(m.winnerSide&&m.scores[m.winnerSide]<4)return false;
+  if(!m.winnerSide&&(sum.B>=4||sum.X>=4))return false;
+  return true;
+ };
+ if(!s.sessions.every(v=>v&&typeof v.id==="string"&&typeof v.date==="string"&&typeof v.title==="string"&&v.title.length<=70&&Array.isArray(v.records)&&v.records.length<=50000&&v.records.every(validLegacy)))return false;
+ if(s.version===1)return true;
+ if(!s.sessions.every(v=>Array.isArray(v.matches)&&v.matches.length<=50000&&v.matches.every(m=>validMatch(m)&&m.winnerSide)))return false;
+ if(!(s.activeMatch===null||validMatch(s.activeMatch)))return false;
+ return true;
+}
+function migrate(s){
+ if(s.version===2)return s;
+ const updated=clone(s);
+ updated.version=2;
+ updated.activeMatch=null;
+ for(const sess of updated.sessions)sess.matches=[];
+ return updated;
+}
+let data=initial();
+try{const old=JSON.parse(localStorage.getItem(KEY));if(valid(old))data=migrate(old);}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));$("saveState").textContent="✓ 端末内保存済み";return true}catch(e){$("saveState").textContent="⚠ 保存失敗";alert("端末への保存に失敗しました。JSONバックアップを試してください。");return false;}}
+function getSession(){return data.sessions.find(x=>x.id===data.activeId)||null}
+function archiveActiveMatch(){
+ const s=getSession(),m=data.activeMatch;
+ if(!s||!m||!m.winnerSide)return false;
+ s.matches.push(clone(m));data.activeMatch=null;return true;
+}
+function ensureSession(){
+ let s=getSession();
+ if(s&&s.date===day())return s;
+ // Do not abandon an unfinished test just because midnight passed.
+ if(s&&data.activeMatch?.events?.length&&!data.activeMatch.winnerSide)return s;
+ if(s&&data.activeMatch?.winnerSide)archiveActiveMatch();
+ s={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[],matches:[]};
+ data.sessions.push(s);data.activeId=s.id;return s;
+}
+ensureSession();save();
+const combo=x=>[x.blade,x.ratchet,x.bit].filter(Boolean).join(" ");
+const key=x=>JSON.stringify([x.blade,x.ratchet,x.bit]);
+const keyName=k=>{try{return JSON.parse(k).filter(Boolean).join(" ")}catch(e){return k}};
+function options(list,current){const all=list.includes(current)?list:[current,...list];return all.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("")}
+function rosterSync(notify){
+ const a=arenaRoster();if(!a){if(notify)$("lastNotice").textContent="アリーナ名簿が見つかりません。";return false;}
+ const before=data.players.length+data.blades.length;
+ for(const k of ["players","blades"]){for(const n of a[k])if(clean(n)&&!data[k].includes(n)&&data[k].length<200)data[k].push(n)}
+ const added=data.players.length+data.blades.length-before;$("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";$("environmentBadge").classList.toggle("official",window.BEY_ENV==="official");syncPartOrders();save();render();
+ if(notify)$("lastNotice").textContent="✓ 名簿同期完了："+added+"件追加（研究記録はそのまま）";
+ return true;
+}
+
+const PRESETS={
+ ratchet:["1-60","3-60","5-60","9-60","1-70","3-70","5-70","9-70","1-80","3-80","5-80"],
+ bit:["R","F","B","T","H","C","A","GF","FB","LR","N","P","LF"]
+};
+const PICKER_NAMES={blade:"ブレード",ratchet:"ラチェット",bit:"ビット"};
+let pickerSide=null,pickerPart=null,pickerEditing=false;
+// Stable quick-slot order: choices never jump to the first position upon selection.
+// Orders are user-editable, shared between B and X, and included in the JSON backup.
+const DEFAULT_ORDER={
+ ratchet:[...PRESETS.ratchet],
+ bit:["R","B","F","T",...PRESETS.bit]
+};
+const FAV_KEY="bey-lab-part-favorites-v1-"+window.BEY_ENV;
+let favorites={blade:[],ratchet:[],bit:[]};
+try{const saved=JSON.parse(localStorage.getItem(FAV_KEY));for(const p of Object.keys(favorites))if(Array.isArray(saved?.[p]))favorites[p]=saved[p].filter(v=>typeof v==="string").slice(0,100)}catch(e){}
+const ratchetOrder=(a,b)=>{const m=x=>/^(\d+)-(\d+)$/.exec(x);const x=m(a),y=m(b);return x&&y?Number(x[2])-Number(y[2])||Number(x[1])-Number(y[1]):x?-1:y?1:a.localeCompare(b,"ja")};
+function toggleFavorite(part,value){if(!favorites[part])return;const a=favorites[part];favorites[part]=a.includes(value)?a.filter(v=>v!==value):[...a,value];try{localStorage.setItem(FAV_KEY,JSON.stringify(favorites))}catch(e){}render();drawPicker()}
+let lastMovedPart=null;
+const QUICK_COUNT={blade:3,ratchet:4,bit:null}; // null = show all bits in the quick area; never reorder on selection.
+function getPartHistory(part){
+ const found=new Set();
+ for(const r of records())for(const side of ["B","X"]){
+  const value=clean(r.slots[side][part],part==="blade"?70:22);
+  if(value)found.add(value);
+ }
+ return [...found];
+}
+function availablePartNames(part){
+ if(part==="blade")return [...new Set(data.blades.filter(Boolean))];
+ const list=[...DEFAULT_ORDER[part],...getPartHistory(part),
+  ...["B","X"].map(side=>data.slots[side][part])];
+ return [...new Set(list.map(x=>clean(x,22)).filter(Boolean))];
+}
+function syncPartOrders(){
+ const prior=data.partOrders&&typeof data.partOrders==="object"&&!Array.isArray(data.partOrders)?data.partOrders:{};
+ const next={};
+ for(const part of ["blade","ratchet","bit"]){
+  const known=availablePartNames(part),knownSet=new Set(known);
+  const saved=Array.isArray(prior[part])?prior[part]:[];
+  const validSaved=saved.filter(x=>typeof x==="string"&&x&&x.length<=(part==="blade"?70:22)&&knownSet.has(x));
+  // Upgrade the legacy scrambled ratchet default once; preserve later manual edits.
+  if(part==="ratchet"&&!data.ratchetSortedV1){validSaved.sort(ratchetOrder);data.ratchetSortedV1=true;}
+  next[part]=[...new Set([...validSaved,...(part==="ratchet"?known.sort(ratchetOrder):known)])].slice(0,500);
+ }
+ const different=JSON.stringify(prior)!==JSON.stringify(next);
+ data.partOrders=next;
+ return different;
+}
+function partOptions(part){
+ if(!["blade","ratchet","bit"].includes(part))return [];
+ syncPartOrders();
+ return data.partOrders[part].slice();
+}
+function quickLimit(part,all){
+ // Keep blades/ratchets as compact shortcuts, but show every registered bit immediately.
+ return QUICK_COUNT[part]==null?all.length:QUICK_COUNT[part];
+}
+function syncHandsIntoRoster(){
+ const hands=window.BEY_HANDS;if(!hands)return false;
+ let changed=false;
+ for(const player of hands.players()){
+  if(!data.players.includes(player)&&data.players.length<200){data.players.push(player);changed=true;}
+ }
+ for(const player of data.players)for(const blade of hands.get(player,"blade")){
+  if(!data.blades.includes(blade)&&data.blades.length<200){data.blades.push(blade);changed=true;}
+ }
+ if(changed){syncPartOrders();save();}
+ return changed;
+}
+function quickOptions(part,side){
+ const ordered=partOptions(part),fav=favorites[part].filter(x=>ordered.includes(x));
+ const hand=window.BEY_HANDS?.get(data.slots[side].player,part)||[];
+ const preferred=[...new Set([...fav,...hand.filter(x=>ordered.includes(x)),...ordered])];
+ return preferred.slice(0,quickLimit(part,ordered));
+}
+function moveOrderedPart(part,value,direction){
+ if(!["blade","ratchet","bit"].includes(part)||!Number.isInteger(direction)||Math.abs(direction)!==1)return false;
+ syncPartOrders();
+ const list=data.partOrders[part],i=list.indexOf(value),j=i+direction;
+ if(i<0||j<0||j>=list.length)return false;
+ [list[i],list[j]]=[list[j],list[i]];
+ if(!save()){[list[i],list[j]]=[list[j],list[i]];return false;}
+ lastMovedPart={part,value,position:j+1};render();
+ return true;
+}
+function pinOrderedPart(part,value){
+ if(!["blade","ratchet","bit"].includes(part))return false;
+ syncPartOrders();
+ const list=data.partOrders[part],i=list.indexOf(value),n=quickLimit(part,list);
+ if(i<0||i<n)return false;
+ list.splice(i,1);list.splice(Math.min(n-1,list.length),0,value);
+ if(!save()){list.splice(list.indexOf(value),1);list.splice(i,0,value);return false;}
+ render();
+ return true;
+}
+function renderPartQuick(side,part){
+ const value=data.slots[side][part];
+ const quick=quickOptions(part,side);
+ const prefix=part[0].toUpperCase()+part.slice(1);
+ $("quick"+prefix+side).innerHTML=quick.map(item=>
+  '<button type="button" class="quickchip '+(item===value?"on":"")+
+  '" data-action="quick-part" data-side="'+side+'" data-part="'+part+'" data-value="'+esc(item)+'">'+esc(item)+'</button>'
+ ).join("");
+}
+function flashBuild(side,part){
+ const field=document.querySelector('.partpick-main[data-side="'+side+'"][data-part="'+part+'"]');
+ // The selected part and complete build receive the same quick, nonblocking slash.
+ // Restart synchronously when changing parts rapidly.
+ for(const el of [field,$("build"+side)]){
+  if(!el)continue;
+  el.classList.remove("entry-slash");
+  void el.offsetWidth;
+  el.classList.add("entry-slash");
+ }
+}
+function readyForBuildEdit(){
+ const match=data.activeMatch;
+ if(!match?.events?.length)return true;
+ if(!match.winnerSide){
+  $("lastNotice").textContent="⚠ 1試合は1機固定です。4点先取するか「試合をやり直す」で変更できます。";
+  return false;
+ }
+ // A finished match is immediately archived when selecting the next build.
+ archiveActiveMatch();save();render();
+ return true;
+}
+function changePart(side,part,value){
+ if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return false;
+ const v=clean(value,part==="blade"?70:22);
+ if(part==="blade"&&!data.blades.includes(v))return false;
+ if(data.slots[side][part]===v){if(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide)$("lastNotice").textContent="🔒 対戦中はカスタム固定。4点先取か試合リセット後に変更できます。";return true;}
+ if(!readyForBuildEdit())return false;
+ const prev=data.slots[side][part];
+ data.slots[side][part]=v;
+ syncPartOrders();
+ if(!save()){data.slots[side][part]=prev;syncPartOrders();return false}
+ render();flashBuild(side,part);
+ return true;
+}
+function drawPicker(){
+ if(!pickerSide||!pickerPart)return;
+ const part=pickerPart,active=data.slots[pickerSide][part];
+ const term=$("pickerSearch").value.trim().toLocaleLowerCase("ja");
+ const base=partOptions(part),hand=window.BEY_HANDS?.get(data.slots[pickerSide].player,part)||[];
+ const all=pickerEditing?base:[...hand.filter(v=>base.includes(v)),...base.filter(v=>!hand.includes(v))],vals=all.filter(v=>v.toLocaleLowerCase("ja").includes(term));
+ const n=quickLimit(part,all),grid=$("pickerGrid");
+ const scroll=grid.scrollTop;
+ grid.classList.toggle("sorting",pickerEditing);
+ $("pickerSearch").style.display=pickerEditing?"none":"";
+ $("pickerAdd").style.display=pickerEditing?"none":"";
+ $("pickerOrderNote").innerHTML=pickerEditing?
+  '<strong>配置編集モード</strong> · ↑↓で並び替え。ビットは全候補を即選択欄に表示。ブレード・ラチェットは「クイックへ」で先頭の枠に追加できます。配置はB・X両側で共有・保存されます。':
+  '選んだパーツは移動しません。並びを変えるときだけ「⚙ 並び替え」を押してください。';
+ $("orderToggle").textContent=pickerEditing?"✓ 編集完了":"⚙ 並び替え";
+ $("orderToggle").classList.toggle("is-editing",pickerEditing);
+ if(pickerEditing){
+  grid.innerHTML=all.map((value,i)=>{
+   const pinned=i<n;
+   const fav=favorites[part].includes(value),moved=lastMovedPart?.part===part&&lastMovedPart.value===value;
+   return '<div class="picker-order-row '+(pinned?"pinned ":"")+(moved?"just-moved":"")+'"><button type="button" class="favorite-star '+(fav?"on":"")+'" data-action="favorite-part" data-part="'+part+'" data-value="'+esc(value)+'" aria-label="'+esc(value)+'のお気に入りを切り替え">'+(fav?"★":"☆")+'</button><span class="picker-order-name">'+esc(value)+
+    (moved?'<small>✓ 移動完了 · '+(i+1)+'番目</small>':pinned?'<small>クイック '+(i+1)+' / '+n+'</small>':'')+'</span>'+
+    '<button type="button" class="picker-order-tool" data-action="move-part" data-part="'+part+'" data-value="'+esc(value)+'" data-dir="-1" '+(i===0?"disabled":"")+' aria-label="'+esc(value)+'を上へ移動">↑</button>'+
+    '<button type="button" class="picker-order-tool" data-action="move-part" data-part="'+part+'" data-value="'+esc(value)+'" data-dir="1" '+(i===all.length-1?"disabled":"")+' aria-label="'+esc(value)+'を下へ移動">↓</button></div>';
+  }).join("");
+ }else{
+  const list=part==="blade"?vals:["",...vals];
+  grid.innerHTML=list.map(value=>{
+   const label=value||"未設定";
+   return '<button type="button" class="picker-option '+(active===value?"on":"")+
+   '" data-action="select-part" data-side="'+pickerSide+'" data-part="'+part+'" data-value="'+esc(value)+'">'+
+   (active===value?"✓ ":"")+esc(label)+'</button>';
+  }).join("")||'<p class="empty">候補はありません。下の入力欄から追加できます。</p>';
+ }
+ grid.scrollTop=scroll;
+}
+function togglePickerOrder(){
+ if(!pickerSide||!pickerPart)return;
+ pickerEditing=!pickerEditing;
+ $("pickerSearch").value="";
+ $("pickerGrid").scrollTop=0;
+ drawPicker();
+}
+function openPicker(side,part){
+ if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return;
+ pickerSide=side;pickerPart=part;pickerEditing=false;
+ $("pickerHeading").textContent=side+"-SIDE · "+PICKER_NAMES[part]+"を選択";
+ $("pickerCard").className="picker-card"+(side==="X"?" x":"");
+ $("pickerSearch").value="";$("pickerNew").value="";
+ $("pickerNew").placeholder=part==="blade"?"新しいブレード名":part==="ratchet"?"例：9-60":"例：R / GF";
+ $("pickerNew").maxLength=part==="blade"?70:22;
+ $("pickerAddButton").textContent=part==="blade"?"＋ 名簿へ登録して選択":"✓ 入力したパーツを選択";
+ $("pickerGrid").scrollTop=0;
+ drawPicker();
+ $("pickerOverlay").classList.add("show");
+}
+function closePicker(){
+ $("pickerOverlay").classList.remove("show");
+ pickerSide=null;pickerPart=null;pickerEditing=false;
+}
+function submitPicker(value){
+ if(!pickerSide||!pickerPart)return false;
+ const side=pickerSide,part=pickerPart,v=clean(value,part==="blade"?70:22);
+ if(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide){readyForBuildEdit();return false;}
+ if(!v){$("lastNotice").textContent="パーツ名を入力してください。";return false}
+ if(part==="blade"&&!data.blades.includes(v)){
+  if(data.blades.length>=200){alert("ブレードの登録上限に達しています。");return false}
+  data.blades.push(v);
+  syncPartOrders();
+ }
+ const ok=changePart(side,part,v);
+ if(ok){closePicker();$("lastNotice").textContent="⚙ "+side+"-SIDE · "+combo(data.slots[side])+" に変更した！"}
+ return ok;
+}
+function renderSelectors(){
+ for(const side of ["B","X"]){
+  const x=data.slots[side];
+  $("player"+side).innerHTML=options(data.players,x.player);
+  $("player"+side).value=x.player;
+  $("blade"+side).textContent="✓ "+x.blade;
+  $("ratchet"+side).textContent=x.ratchet?"✓ "+x.ratchet:"未設定";
+  $("bit"+side).textContent=x.bit?"✓ "+x.bit:"未設定";
+  for(const part of ["blade","ratchet","bit"]){
+   const btn=document.querySelector('.partpick-main[data-side="'+side+'"][data-part="'+part+'"]');
+   if(btn)btn.classList.toggle("has-selection",Boolean(x[part]));
+  }
+  for(const part of ["blade","ratchet","bit"])renderPartQuick(side,part);
+  for(const btn of document.querySelectorAll('[data-action="quick-part"][data-side="'+side+'"]'))btn.setAttribute("aria-label",btn.textContent+"を選択"+(data.activeMatch?.events?.length&&!data.activeMatch?.winnerSide?"（対戦中は変更不可）":""));
+  $("build"+side).textContent=combo(x);
+  const handLink=$("player"+side).parentElement.querySelector(".bey-hand-link");
+  if(!handLink){const a=document.createElement("a");a.className="bey-hand-link";a.href="./hands.html?player="+encodeURIComponent(x.player);a.textContent="🃏 手札管理";$("player"+side).insertAdjacentElement("afterend",a)}else handLink.href="./hands.html?player="+encodeURIComponent(x.player);
+ }
+}
+function renderScore(){
+ const session=getSession(),m=data.activeMatch;
+ $("winsB").textContent=m?.scores?.B||0;
+ $("winsX").textContent=m?.scores?.X||0;
+ $("duelRound").textContent="MATCH "+String((session?.matches?.length||0)+1).padStart(2,"0");
+ const wins={B:0,X:0};
+ for(const game of (session?.matches||[]))if(wins[game.winnerSide]!=null)wins[game.winnerSide]++;
+ if(m?.winnerSide)wins[m.winnerSide]++;
+ $("duelSeries").textContent="研究戦績 B "+wins.B+"勝 · X "+wins.X+"勝";
+ $("duelStatus").textContent=m?.winnerSide?
+  "🏆 "+m.slots[m.winnerSide].player+" 勝利！ 次の試合へ":
+  m?.events?.length?"第"+(m.events.length+1)+"フィニッシュ · 4点先取を目指せ！":
+  "新しい試合 · 4点先取で勝利！";
+ const locked=Boolean(m?.events?.length&&!m?.winnerSide);
+ const lock=$("matchLockBanner");
+ lock.textContent=locked?"🔒 試合中 · ブレード／ラチェット／ビットは固定（試合リセットで解除）":m?.winnerSide?"🔓 決着済み · 次の試合でカスタム変更可能":"🔓 カスタム変更可能 · 得点が入ると試合終了まで固定";
+ lock.classList.toggle("locked",locked);
+ const victory=$("victoryBanner");
+ victory.hidden=!m?.winnerSide;
+ if(m?.winnerSide){
+  const side=m.winnerSide;
+  victory.className="victory-banner "+(side==="X"?"victory-x":"victory-b");
+  victory.textContent="🏆 "+side+"-SIDE WIN！ "+(m.slots?.[side]?.player||side)+" 勝利！　"+m.scores.B+" — "+m.scores.X;
+ }
+ $("nextMatch").style.display=m?.winnerSide?"":"none";
+ $("nextMatchPrimary").hidden=!m?.winnerSide;
+ document.querySelector(".score-controls").hidden=Boolean(m?.winnerSide);
+ $("duelScore").classList.toggle("champion",Boolean(m?.winnerSide));
+}
+function renderFinishes(){
+ const locked=Boolean(data.activeMatch?.winnerSide);
+ $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+
+ '" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" '+(locked?'disabled aria-disabled="true"':'')+
+ ' aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
+}
+function completedMatches(){
+ const all=data.sessions.flatMap(sess=>sess.matches.map(m=>({...m,sessionId:sess.id,date:sess.date,title:sess.title})));
+ if(data.activeMatch?.winnerSide){
+  const sess=getSession(),m=data.activeMatch;
+  all.push({...m,sessionId:sess?.id||"",date:sess?.date||day(),title:sess?.title||""});
+ }
+ return all;
+}
+function records(){
+ const all=[];
+ const addEvent=(e,m,s)=>all.push({id:e.id||m.id,time:e.time||m.started||"",slots:m.slots,sessionId:s.id,
+  winnerSide:e.side,finish:e.finish,points:e.points,matchId:m.id,legacy:false});
+ for(const sess of data.sessions){
+  for(const legacy of sess.records)all.push({...legacy,sessionId:sess.id,date:sess.date,title:sess.title,legacy:true});
+  for(const m of sess.matches)for(const e of m.events)addEvent(e,m,sess);
+ }
+ const active=data.activeMatch,current=getSession();
+ if(active&&current)for(const e of active.events)addEvent(e,active,current);
+ return all;
+}
+function selectedRecords(){return records().filter(r=>$("scope").value==="all"||r.sessionId===data.activeId)}
+function selectedMatches(){return completedMatches().filter(r=>$("scope").value==="all"||r.sessionId===data.activeId)}
+function availableFocus(){
+ const keys=new Set();
+ for(const r of selectedRecords())for(const side of ["B","X"])keys.add(key(r.slots[side]));
+ for(const side of ["B","X"])keys.add(key(data.slots[side]));
+ return [...keys].sort((a,b)=>keyName(a).localeCompare(keyName(b),"ja"));
+}
+function renderFocus(){
+ const el=$("focus"),previous=el.value;
+ const keys=availableFocus();
+ el.innerHTML=keys.map(k=>'<option value="'+esc(k)+'">'+esc(keyName(k))+'</option>').join("");
+ el.value=keys.includes(previous)?previous:key(data.slots.B);
+ if(!keys.includes(el.value))el.selectedIndex=0;
+}
+function statsFor(k,all){
+ let wins=0,losses=0,pointsFor=0,pointsAgainst=0;
+ let finishWon=0,finishLost=0,legacyCount=0;
+ const acquired={spin:0,over:0,burst:0,extreme:0},conceded={spin:0,over:0,burst:0,extreme:0},opponents=new Map();
+ // One 4-point match is one win/loss. Never count individual finishes as match wins.
+ for(const m of selectedMatches()){
+  for(const side of ["B","X"]){
+   if(key(m.slots[side])!==k)continue;
+   const other=m.slots[side==="B"?"X":"B"],isWin=m.winnerSide===side;
+   if(isWin)wins++;else losses++;
+   const opponent=key(other),entry=opponents.get(opponent)||{key:opponent,blade:other.blade,win:0,loss:0};
+   if(isWin)entry.win++;else entry.loss++;
+   opponents.set(opponent,entry);
+  }
+ }
+ // Every recorded finish (even a partial, unfinished match) contributes to the finish profile.
+ // Legacy v1 one-finish records are preserved here but do not count as confirmed 4-point matches.
+ for(const r of all){
+  for(const side of ["B","X"]){
+   if(key(r.slots[side])!==k)continue;
+   const isFinishWinner=r.winnerSide===side;
+   if(isFinishWinner){finishWon++;pointsFor+=r.points;acquired[r.finish]++}
+   else{finishLost++;pointsAgainst+=r.points;conceded[r.finish]++}
+   if(r.legacy)legacyCount++;
+  }
+ }
+ return {wins,losses,total:wins+losses,pointsFor,pointsAgainst,finishWon,finishLost,legacyCount,acquired,conceded,
+  opponents:[...opponents.values()].sort((a,b)=>(b.win+b.loss)-(a.win+a.loss))};
+}
+const pct=(a,b)=>b?(100*a/b).toFixed(1)+"%":"—";
+function bars(dataMap,total,loss){
+ return FIN.map(f=>'<div class="barline"><div class="barlabels"><span>'+f[1]+'</span><span>'+dataMap[f[0]]+'回 · '+pct(dataMap[f[0]],total)+'</span></div><div class="track"><div class="fill '+(loss?"loss":"")+'" style="width:'+(total?100*dataMap[f[0]]/total:0)+'%"></div></div></div>').join("");
+}
+function summary(){
+ const all=selectedRecords(),focus=$("focus").value;
+ const st=statsFor(focus,all);
+ $("analysisBody").innerHTML='<div class="bigstats"><div class="metric"><small>4点先取 試合勝率</small><strong>'+pct(st.wins,st.total)+'</strong></div><div class="metric"><small>試合勝敗</small><strong>'+st.wins+'-'+st.losses+'</strong></div><div class="metric"><small>獲得ポイント</small><strong>'+st.pointsFor+'</strong></div></div>'+
+ '<p class="hint" style="margin-top:9px">4点先取 '+st.total+'試合 / フィニッシュ獲得 '+st.finishWon+'回・被 '+st.finishLost+'回 / 被ポイント '+st.pointsAgainst+'点'+
+ (st.total<10?' · 試合数が少ないため勝率は参考値':'')+
+ (st.legacyCount?' · <span class="legacy-note">旧版の単発記録 '+st.legacyCount+'件はフィニッシュ集計のみ対象</span>':'')+'</p>'+
+ '<div class="barchart"><h3>⚔️ どう勝つ？　獲得フィニッシュ</h3>'+bars(st.acquired,st.finishWon,false)+'</div>'+
+ '<div class="barchart"><h3>🛡️ どう負ける？　被フィニッシュ</h3>'+bars(st.conceded,st.finishLost,true)+'</div>';
+ $("matchups").innerHTML=st.opponents.length?
+ '<table><thead><tr><th>相手カスタム</th><th>試合勝-敗</th><th>試合勝率</th></tr></thead><tbody>'+st.opponents.map(o=>'<tr><td>'+esc(keyName(o.key))+'</td><td>'+o.win+'-'+o.loss+'</td><td>'+pct(o.win,o.win+o.loss)+'</td></tr>').join("")+'</tbody></table>':
+ '<p class="empty">このカスタムの4点先取試合の成績はまだありません。まずは1試合！</p>';
+ let blade="";
+ try{blade=JSON.parse(focus)[0]}catch(e){}
+ const matching=availableFocus().filter(k=>{try{return JSON.parse(k)[0]===blade}catch(e){return false}});
+ $("comparisons").innerHTML=matching.length?
+ '<table><thead><tr><th>カスタム</th><th>試合数</th><th>勝率</th></tr></thead><tbody>'+matching.map(k=>{const a=statsFor(k,all);return '<tr><td>'+esc(keyName(k))+'</td><td>'+a.total+'</td><td>'+pct(a.wins,a.total)+'</td></tr>'}).join("")+'</tbody></table>':
+ '<p class="empty">同じブレードの別カスタムを記録すると比較できます。</p>';
+}
+function history(){
+ const scoreText=m=>'B '+m.scores.B+' — '+m.scores.X+' X';
+ const finishList=m=>m.events.map((e,i)=>'<div class="record"><div>'+String(i+1)+'. '+esc(e.side)+'側 · '+esc(FIN.find(f=>f[0]===e.finish)?.[1]||e.finish)+'</div><strong>+'+e.points+'点</strong></div>').join("");
+ const matchView=(m,i,live=false)=>{
+  const winning=m.winnerSide?m.slots[m.winnerSide]:null;
+  return '<div class="record"><div><strong>第'+i+'試合 · '+(winning?'🏆 '+esc(winning.player)+' 勝利':'試合進行中')+'</strong>'+
+   '<small>'+esc(combo(m.slots.B))+' VS '+esc(combo(m.slots.X))+'</small>'+
+   '<details><summary>'+ (live?'LIVE · ':'')+scoreText(m)+' · '+m.events.length+'フィニッシュ（詳細）</summary>'+
+   '<div style="padding:3px 9px">'+finishList(m)+'</div></details></div><span style="white-space:nowrap;color:#f2d38a">'+scoreText(m)+'</span></div>';
+ };
+ $("history").innerHTML=data.sessions.slice().reverse().map(s=>{
+  const active=s.id===data.activeId,live=active?data.activeMatch:null;
+  const matchCount=s.matches.length+(live?.winnerSide?1:0);
+  return '<details class="series" '+(active?'open':"")+'><summary>📅 '+esc(s.date)+' · '+esc(s.title||"無題の研究")+
+  '　('+matchCount+'試合'+(s.records.length?' / 旧記録'+s.records.length+'件':'')+')'+(active?' · 進行中':'')+'</summary><div class="series-inner">'+
+  s.matches.slice().reverse().map((m,i)=>matchView(m,s.matches.length-i)).join("")+
+  (live?matchView(live,s.matches.length+1,true):"")+
+  (s.records.length?'<details class="series"><summary>📦 旧版の単発フィニッシュ記録 · '+s.records.length+'件（4点先取の試合数に含めない）</summary><div class="series-inner">'+
+   s.records.slice().reverse().map(r=>{
+    const w=r.slots[r.winnerSide],l=r.slots[r.winnerSide==="B"?"X":"B"];
+    return '<div class="record"><div><strong>'+esc(w.player)+' · '+esc(combo(w))+'</strong><small>対 '+esc(l.player)+' · '+esc(combo(l))+'</small></div><span>'+esc(FIN.find(f=>f[0]===r.finish)?.[1]||r.finish)+' +'+r.points+'</span></div>';
+   }).join("")+'</div></details>':"")+
+  (!s.matches.length&&!live&&!s.records.length?'<p class="empty">まだ試合がありません。</p>':"")+'</div></details>';
+ }).join("")||'<p class="empty">研究ログはまだありません。</p>';
+}
+function render(){
+ syncHandsIntoRoster();renderSelectors();renderScore();renderFinishes();renderFocus();summary();history();
+ const session=getSession();
+ $("seriesTitle").value=session?.title||"";
+ $("seriesLine").textContent=(session?.date||day())+" · この研究 "+(session?.matches?.length||0)+"試合完了 / 総計 "+completedMatches().length+"試合・"+records().length+"フィニッシュ";
+}
+function flashFinishEdge(side,finish){const btn=document.querySelector('[data-action="finish"][data-side="'+side+'"][data-finish="'+finish+'"]');if(!btn)return;btn.classList.remove("finish-edge-flash");void btn.offsetWidth;btn.classList.add("finish-edge-flash");setTimeout(()=>btn.classList.remove("finish-edge-flash"),260)}
+function commitResult(side,finish){
+ const f=FIN.find(f=>f[0]===finish);
+ if(!f||!["B","X"].includes(side)||data.activeMatch?.winnerSide)return false;
+ ensureSession();
+ const previous=clone(data.activeMatch);
+ if(!data.activeMatch){
+  data.activeMatch={id:uid(),started:new Date().toISOString(),slots:clone(data.slots),
+   scores:{B:0,X:0},events:[],winnerSide:null,finished:null};
+ }
+ const m=data.activeMatch;
+ m.scores[side]+=f[2];
+ m.events.push({id:uid(),time:new Date().toISOString(),side,finish:f[0],points:f[2]});
+ if(m.scores[side]>=4){m.winnerSide=side;m.finished=new Date().toISOString();}
+ if(!save()){data.activeMatch=previous;return false}
+ render();if(!m.winnerSide)flashFinishEdge(side,finish);
+ $("lastNotice").textContent=m.winnerSide?
+  "🏆 "+m.slots[side].player+" · "+combo(m.slots[side])+"　"+m.scores.B+" — "+m.scores.X+"　勝利！":
+  "⚡ "+m.slots[side].player+" · "+combo(m.slots[side])+"　"+f[1]+" +"+f[2]+"点！";
+ const el=document.querySelector(".battle");
+ if(el){el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");}
+ const board=$("duelScore");
+ board.classList.remove("pulse-b","pulse-x");void board.offsetWidth;board.classList.add(side==="B"?"pulse-b":"pulse-x");
+ return true;
+}
+function nextMatch(){
+ if(!data.activeMatch?.winnerSide)return false;
+ archiveActiveMatch();save();render();
+ $("lastNotice").textContent="✓ 試合を保存した。次の4点先取バトル開始！ 機体変更もOK。";
+ return true;
+}
+function newSeries(){
+ const session=getSession();
+ if(data.activeMatch?.events?.length&&!data.activeMatch.winnerSide&&
+   !confirm("進行中の試合（"+data.activeMatch.scores.B+"対"+data.activeMatch.scores.X+"）を破棄して、新しい研究テーマを始めますか？"))return;
+ if(data.activeMatch?.winnerSide)archiveActiveMatch();
+ else data.activeMatch=null;
+ if(session&&session.matches.length===0&&session.records.length===0){
+  save();render();$("lastNotice").textContent="今の研究はまだ0試合です。研究名を変更して使ってね。";return;
+ }
+ const fresh={id:uid(),date:day(),title:"",created:new Date().toISOString(),records:[],matches:[]};
+ data.sessions.push(fresh);data.activeId=fresh.id;save();render();
+ $("lastNotice").textContent="🔬 新しい研究を開始！ 機体構成は引き継ぎました。";
+}
+function undoResult(){
+ const m=data.activeMatch;
+ if(!m?.events?.length){$("lastNotice").textContent="進行中の試合に取り消せるフィニッシュがありません。";return false;}
+ const backup=clone(m);
+ const removed=m.events.pop();
+ m.scores[removed.side]=Math.max(0,m.scores[removed.side]-removed.points);
+ m.winnerSide=null;m.finished=null;
+ if(!save()){data.activeMatch=backup;return false;}
+ render();$("lastNotice").textContent="↶ "+removed.side+"側の"+FIN.find(f=>f[0]===removed.finish)?.[1]+"を取り消しました。";
+ return true;
+}
+function resetMatch(){
+ const m=data.activeMatch;
+ if(!m?.events?.length){$("lastNotice").textContent="現在の試合は0—0です。";return;}
+ if(!confirm("今の試合の"+m.events.length+"フィニッシュ（"+m.scores.B+"対"+m.scores.X+"）を破棄して0—0からやり直しますか？\n研究テーマ内の過去の完了試合は消えません。"))return;
+ const before=m;data.activeMatch=null;
+ if(!save()){data.activeMatch=before;return;}
+ render();$("lastNotice").textContent="⟲ 今の試合を0—0に戻しました。";
+}
+function download(name,text,type){
+ const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+function exportCsv(){
+ const q=x=>{let s=String(x==null?"":x);if(/^[\s]*[=+@-]/.test(s))s="\u0027"+s;return '"'+s.replace(/"/g,'""')+'"'};
+ const rows=[["研究日","研究名","試合ID","記録種別","日時","B選手","Bブレード","Bラチェット","Bビット","X選手","Xブレード","Xラチェット","Xビット","フィニッシュ獲得側","フィニッシュ","得点","試合勝者サイド","試合最終B得点","試合最終X得点"]];
+ const write=(date,title,id,status,time,slots,side,finish,points,winner,scoreB,scoreX)=>{
+  rows.push([date,title,id,status,time,slots.B.player,slots.B.blade,slots.B.ratchet,slots.B.bit,
+   slots.X.player,slots.X.blade,slots.X.ratchet,slots.X.bit,side,
+   FIN.find(f=>f[0]===finish)?.[1]||finish,points,winner||"",scoreB??"",scoreX??""]);
+ };
+ for(const session of data.sessions){
+  for(const m of session.matches)for(const e of m.events)
+   write(session.date,session.title,m.id,"4点先取・完了",e.time,m.slots,e.side,e.finish,e.points,m.winnerSide,m.scores.B,m.scores.X);
+  if(session.id===data.activeId&&data.activeMatch){
+   const m=data.activeMatch;
+   for(const e of m.events)write(session.date,session.title,m.id,m.winnerSide?"4点先取・決着済み":"4点先取・途中",e.time,m.slots,e.side,e.finish,e.points,m.winnerSide,m.winnerSide?m.scores.B:"",m.winnerSide?m.scores.X:"");
+  }
+  for(const r of session.records)
+   write(session.date,session.title,r.id,"旧版・単発記録",r.time,r.slots,r.winnerSide,r.finish,r.points,"","","");
+ }
+ download("bey-lab-1on1.csv","\ufeff"+rows.map(row=>row.map(q).join(",")).join("\r\n"),"text/csv;charset=utf-8");
+}
+async function importJson(file){
+ if(!file)return false;
+ if(file.size>20*1024*1024){alert("20MB以内のファイルを選んでください。");return false;}
+ try{
+  const parsed=JSON.parse(await file.text());
+  if(!valid(parsed)){alert("これは1on1研究室の有効なバックアップではありません。今の記録はそのままです。");return false;}
+  const restored=migrate(parsed),oldN=completedMatches().length,newN=restored.sessions.reduce((n,s)=>n+s.matches.length,0)+(restored.activeMatch?.winnerSide?1:0);
+  const oldLegacy=data.sessions.reduce((n,s)=>n+s.records.length,0),legacyN=restored.sessions.reduce((n,s)=>n+s.records.length,0);
+  if(!confirm("1on1研究室をJSONから復元します。\n現在："+oldN+"試合（旧版"+oldLegacy+"件）\n復元データ："+newN+"試合（旧版"+legacyN+"件）\n\n研究テーマ・カスタム・履歴・途中スコアがすべて入れ替わります。\n現在の記録を残したい場合は先にJSON保存してください。\n\n復元しますか？"))return false;
+  localStorage.setItem(KEY,JSON.stringify(restored));
+  data=restored;ensureSession();save();render();
+  $("lastNotice").textContent="✓ JSONから研究記録 "+newN+"試合を復元しました。";
+  return true;
+ }catch(e){alert("復元できません。JSONファイルまたは端末の空き容量を確認してください。");return false;}
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ const action=b.dataset.action;
+ if(action==="preset-save"){const slot=data.slots[b.dataset.side];if(window.BEY_HANDS?.presetsSave(slot.player,slot))alert("共通保存庫に登録したぞ！");else alert("プレイヤーとブレードを選択してください。")}
+ else if(action==="preset-load"){const side=b.dataset.side,slot=data.slots[side],list=window.BEY_HANDS?.presetsGet(slot.player)||[];if(!list.length){alert("このプレイヤーには保存済みの一式がありません。");return}const choice=prompt("呼び出す番号を入力してください:\n"+list.map((p,i)=>(i+1)+". "+[p.blade,p.ratchet,p.bit].join(" · ")).join("\n"));const i=Number(choice)-1;if(!Number.isInteger(i)||!list[i])return;Object.assign(slot,list[i]);save();render()}
+ else if(action==="finish")commitResult(b.dataset.side,b.dataset.finish);
+ else if(action==="open-picker")openPicker(b.dataset.side,b.dataset.part);
+ else if(action==="close-picker")closePicker();
+ else if(action==="toggle-picker-order")togglePickerOrder();
+ else if(action==="move-part"){if(pickerEditing&&moveOrderedPart(b.dataset.part,b.dataset.value,Number(b.dataset.dir)))drawPicker();}
+ else if(action==="favorite-part"){toggleFavorite(b.dataset.part,b.dataset.value);}
+ else if(action==="pin-part"){if(pickerEditing&&pinOrderedPart(b.dataset.part,b.dataset.value))drawPicker();}
+ else if(action==="quick-part")changePart(b.dataset.side,b.dataset.part,b.dataset.value);
+ else if(action==="select-part"){if(changePart(b.dataset.side,b.dataset.part,b.dataset.value))closePicker();}
+ else if(action==="undo")undoResult();
+ else if(action==="next-match")nextMatch();
+ else if(action==="reset-match")resetMatch();
+ else if(action==="new-series")newSeries();
+ else if(action==="sync-roster")rosterSync(true);
+ else if(action==="export-json")download("bey-lab-1on1-backup.json",JSON.stringify(data,null,2),"application/json;charset=utf-8");
+ else if(action==="export-csv")exportCsv();
+ else if(action==="import-json"){$("importFile").value="";$("importFile").click();}
+});
+$("pickerSearch").addEventListener("input",drawPicker);
+$("pickerAdd").addEventListener("submit",e=>{e.preventDefault();submitPicker($("pickerNew").value);});
+$("pickerOverlay").addEventListener("click",e=>{if(e.target===$("pickerOverlay"))closePicker();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&pickerSide)closePicker();});
+document.addEventListener("change",e=>{
+ const target=e.target;
+ if(target.dataset?.field){
+  const side=target.dataset.side,field=target.dataset.field;if(!["B","X"].includes(side)||!["player","blade","ratchet","bit"].includes(field))return;
+  const v=clean(target.value,field==="ratchet"||field==="bit"?22:70);
+  if(field==="player"&&!data.players.includes(v)||field==="blade"&&!data.blades.includes(v))return;
+  if(field==="player"){
+   if(!readyForBuildEdit()){render();return;}
+   const prior=data.slots[side][field];data.slots[side][field]=v;
+   const handBlades=window.BEY_HANDS?.get(v,"blade")||[];
+   if(handBlades.length&&data.blades.includes(handBlades[0]))data.slots[side].blade=handBlades[0];
+   data.slots[side].ratchet="";data.slots[side].bit="";
+   if(!save()){data.slots[side][field]=prior;render();return;}
+   render();
+  }else changePart(side,field,v);
+ }
+ else if(target.id==="scope"){renderFocus();summary();}
+ else if(target.id==="focus"){summary();}
+ else if(target.id==="seriesTitle"){const s=getSession();if(s){s.title=clean(target.value);save();render();}}
+ else if(target.id==="importFile"){importJson(target.files?.[0]);}
+});
+syncPartOrders();save();render();
+})();
+</script><script src="./bey-universal.js"></script></body></html>
