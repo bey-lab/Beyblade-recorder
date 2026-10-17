@@ -231,6 +231,9 @@ input[type=file]{display:none}
 .score-controls .finish-pad-grid .finishbtn span{font-size:clamp(11px,1.3vw,15px);white-space:normal;line-height:1.2}
 .score-controls .finish-pad-grid .finishbtn small{font-size:10px}
 @media(max-width:700px){.score-controls .finishgrid{grid-template-columns:1fr;gap:12px}.score-controls .finish-pad-grid .finishbtn{height:68px;min-height:68px}.score-controls .finish-pad-grid .finishbtn span{font-size:clamp(10px,2.7vw,14px)}}
+/* Make deployed Bey builds readable at a glance; visual-only change. */
+.m17-compact>div>strong{font-size:clamp(18px,2vw,23px);line-height:1.3;overflow-wrap:anywhere}
+@media(max-width:600px){.m17-compact>div>strong{font-size:18px}}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
