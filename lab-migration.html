@@ -234,6 +234,11 @@ input[type=file]{display:none}
 /* Make deployed Bey builds readable at a glance; visual-only change. */
 .m17-compact>div>strong{font-size:clamp(18px,2vw,23px);line-height:1.3;overflow-wrap:anywhere}
 @media(max-width:600px){.m17-compact>div>strong{font-size:18px}}
+/* iPad landscape: enlarge deployed Bey name without growing the card. */
+@media (min-width:800px) and (orientation:landscape){
+ .m17-compact>div>strong{font-size:27px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
+ .m17-compact>div{flex:1;min-width:0}
+}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
