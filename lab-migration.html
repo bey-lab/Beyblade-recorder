@@ -1040,35 +1040,41 @@ syncPartOrders();save();render();
  const host=document.createElement("section");
  host.id="oneOnOneDiagnostics";
  host.style.cssText="margin:16px 0;padding:14px;border:1px solid #a68c50;border-radius:12px;background:#18283e;color:#e4edfa;font-size:12px";
- host.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><strong>🔬 操作診断 v1</strong><b style="color:#f2c879;letter-spacing:.13em">DIAG-01</b></div><p style="margin:5px 0 8px">操作すると TAP → STATE → SAVE → RENDER を記録。エラーも表示します。</p><div style="display:flex;gap:8px;margin-bottom:8px"><button type="button" id="diagCopy">ログをコピー</button><button type="button" id="diagClear">消去</button></div><pre id="diag1Output" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 monospace;max-height:190px;overflow:auto;color:#f2d18d">診断準備中</pre>';
+ host.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><strong>🔬 操作診断 v1</strong><b style="color:#f2c879;letter-spacing:.13em">DIAG-01</b></div><p style="margin:5px 0 8px">起動・操作・状態変更・保存・画面更新・エラーを自動記録します。</p><pre id="diag1Output" aria-live="polite" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 monospace;max-height:230px;overflow:auto;color:#f2d18d">診断起動中…</pre>';
  const parent=document.querySelector(".wrap")||document.body;
  const finish=document.querySelector('[data-action="finish"]');
  (finish?.closest("section")||finish?.parentElement||parent).before(host);
  const out=host.querySelector("#diag1Output"),entries=[];
  function log(type,message){
   entries.unshift(new Date().toLocaleTimeString()+" "+type+" "+String(message));
-  if(entries.length>90)entries.length=90;
+  if(entries.length>100)entries.length=100;
   out.textContent=entries.join("\n");
  }
- function state(){const m=data.activeMatch;return "B "+(m?.scores?.B??0)+" / X "+(m?.scores?.X??0)+" winner="+(m?.winnerSide||"-");}
+ function state(){const m=data.activeMatch;return "B "+(m?.scores?.B??0)+" / X "+(m?.scores?.X??0)+" winner="+(m?.winnerSide||"-")+" events="+(m?.events?.length||0);}
+ function health(){
+  let saved="unknown";
+  try{saved=localStorage.getItem(KEY)?"OK":"empty"}catch(e){saved="ERROR "+e.message}
+  return "state="+state()+" storage="+saved+" buttons="+document.querySelectorAll('[data-action="finish"]').length+" hands="+(window.BEY_HANDS?"OK":"missing");
+ }
  document.addEventListener("click",e=>{
   const b=e.target.closest?.("[data-action]");if(!b)return;
   const action=b.dataset.action,side=b.dataset.side||"",part=b.dataset.part||"",value=b.dataset.value||b.dataset.player||b.dataset.finish||"";
-  const label=[side,part,value].filter(Boolean).join(" ");
-  log("① TAP",action+" "+label);
+  log("① TAP",[action,side,part,value].filter(Boolean).join(" "));
   log("② STATE",state());
   setTimeout(()=>log("⑤ RESULT",action+" "+state()),0);
  },true);
- window.addEventListener("error",e=>log("✖ ERROR",(e.message||"unknown")+" "+(e.filename||"")+":"+e.lineno));
- window.addEventListener("unhandledrejection",e=>log("✖ REJECT",String(e.reason?.message||e.reason)));
- host.querySelector("#diagClear").addEventListener("click",()=>{entries.length=0;log("READY","ログ消去")});
- host.querySelector("#diagCopy").addEventListener("click",()=>{
-  const v=entries.join("\n");
-  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(v).then(()=>log("COPY","OK")).catch(()=>log("COPY","失敗：ログを長押ししてコピー"));
-  else log("COPY","ログを長押ししてコピー");
- });
+ window.addEventListener("error",e=>log("✖ ERROR",(e.message||"unknown")+" "+(e.filename||"")+":"+e.lineno+":"+e.colno));
+ window.addEventListener("unhandledrejection",e=>log("✖ REJECT",String(e.reason?.stack||e.reason?.message||e.reason)));
  window.__bey1on1Log=log;
- log("READY","1on1 診断開始 "+state());
+ log("READY","診断開始 / "+health());
+ // Continuous passive observation: records state transitions even without tapping this panel.
+ let last=health();
+ setInterval(()=>{
+  try{
+   const now=health();
+   if(now!==last){log("MONITOR",now);last=now}
+  }catch(e){log("✖ MONITOR ERROR",e.message)}
+ },1500);
 })();
 })();
 </script></body></html>
