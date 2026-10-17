@@ -1033,5 +1033,27 @@ m17EnvironmentSelect.addEventListener("change",()=>{
 });
 
 syncPartOrders();save();render();
+
+(function installOneOnOneDiagnostics(){
+ const host=document.createElement("section");
+ host.id="oneOnOneDiagnostics";
+ host.style.cssText="margin:24px 0;padding:16px;border:1px solid #627c9b;border-radius:14px;background:#101d30;color:#dce9f7;font-size:13px";
+ host.innerHTML='<details><summary style="cursor:pointer;font-weight:800;font-size:15px">🔧 1on1 動作診断（タップで開く）</summary><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><button type="button" id="diag1Tap" style="padding:12px;border-radius:9px">タップ反応テスト</button><button type="button" id="diag1Refresh" style="padding:12px;border-radius:9px">状態を再診断</button></div><pre id="diag1Output" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.7">診断待機中</pre></details>';
+ (document.querySelector(".wrap")||document.body).appendChild(host);
+ let taps=0;
+ const out=host.querySelector("#diag1Output");
+ function inspect(){
+  const m=data.activeMatch;
+  const storageKey=typeof KEY==="string"?KEY:"不明";
+  let storage="読み取り不可";
+  try{const raw=localStorage.getItem(storageKey);storage=raw?("保存あり / "+raw.length+"文字"):"保存なし"}catch(e){storage="読み取りエラー: "+e.message}
+  const finishButtons=[...document.querySelectorAll('[data-action="finish"]')];
+  const partButtons=[...document.querySelectorAll('[data-action="m17-part"],[data-action="quick-part"],[data-action="open-picker"]')];
+  out.textContent=["タップ反応: "+taps+"回","現在のモード: "+(window.BEY_ENV||"未設定"),"保存キー: "+storageKey,"保存状態: "+storage,"試合: "+(m?(m.winnerSide?"決着済み":m.events?.length?"進行中":"開始前"):"未開始"),"スコア: B "+(m?.scores?.B??0)+" / X "+(m?.scores?.X??0),"得点ボタン: "+finishButtons.length+"個 / 有効 "+finishButtons.filter(b=>!b.disabled).length+"個","パーツ選択ボタン: "+partButtons.length+"個","共通パーツ機能: "+(window.BEY_HANDS?"読込済み":"未読込"),"診断時刻: "+new Date().toLocaleTimeString()].join("\n");
+ }
+ host.querySelector("#diag1Tap").addEventListener("click",()=>{taps++;inspect()});
+ host.querySelector("#diag1Refresh").addEventListener("click",inspect);
+ inspect();
+})();
 })();
 </script></body></html>
