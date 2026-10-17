@@ -15,7 +15,7 @@
 const H=window.BEY_HANDS,ENV=localStorage.getItem("bey-lab-migration-environment-v1"),env=ENV==="official"?"official":"test",KEY="bey-lab-mickey17-arena-v1-"+env;
 const $=id=>document.getElementById(id),date=()=>{const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")},id=()=>crypto?.randomUUID?.()||Date.now()+"-"+Math.random().toString(36).slice(2),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),copy=o=>JSON.parse(JSON.stringify(o));
 const finishes=[["spin","スピン","◉"],["over","オーバー","↗"],["burst","バースト","✦"],["extreme","エクストリーム","⚡"]];
-const roster=()=>H?.players()||[],blades=p=>H?.get(p,"blade")||[],parts=(p,k)=>[...new Set([...(H?.get(p,k)||[]),...(H?.pool(k)||[])])],baseSlot=p=>({player:p||"",blade:blades(p)[0]||"",ratchet:"",bit:""});
+const roster=()=>H?.players()||[],blades=p=>[...new Set([...(H?.get(p,"blade")||[]),...(H?.pool("blade")||[])])],parts=(p,k)=>[...new Set([...(H?.get(p,k)||[]),...(H?.pool(k)||[])])],baseSlot=p=>({player:p||"",blade:blades(p)[0]||"",ratchet:"",bit:""});
 function init(){const p=roster();return {version:1,rooms:[],activeRoomId:null,slots:{B:baseSlot(p[0]),X:baseSlot(p[1]||p[0])},lastBuild:{}}}
 let state;try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!state||state.version!==1||!Array.isArray(state.rooms)||!state.slots)state=init();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state));return true}catch(e){$("notice").textContent="⚠ 保存できません。端末の空き容量を確認してください";return false}}
@@ -23,6 +23,8 @@ function room(){return state.rooms.find(r=>r.id===state.activeRoomId)}
 function newRoom(){const r={id:id(),date:date(),created:new Date().toISOString(),results:[]};state.rooms.push(r);state.activeRoomId=r.id;return r}
 function ensureRoom(){const r=room();if(!r){newRoom();save();return}if(r.date!==date()&&!r.manualResume){const same=state.rooms.find(x=>x.date===date()&&!x.manualResume);if(same)state.activeRoomId=same.id;else newRoom();save()}}
 ensureRoom();
+// Repair empty selections left by the first prototype; never touch shared 1on1 data.
+for(const side of ["B","X"]){const slot=state.slots[side];if(slot?.player&&!slot.blade){slot.blade=blades(slot.player)[0]||""}}save();
 function allPlayers(){return [...new Set([...roster(),...Object.values(state.slots).map(x=>x.player).filter(Boolean)])]}
 function slotSnapshot(s){return copy(state.slots[s])}
 function currentResults(){return room()?.results||[]}
