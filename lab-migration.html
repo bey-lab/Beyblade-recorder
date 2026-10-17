@@ -218,6 +218,12 @@ input[type=file]{display:none}
 .bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
 .bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
 .bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+/* Finish pads: override legacy score-controls layout (higher specificity). */
+.score-controls .finishgrid{grid-template-columns:1fr;gap:14px}
+.score-controls .finish-pad-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.score-controls .finish-pad-grid .finishbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;min-height:92px;aspect-ratio:1.5}
+.score-controls .finish-pad-grid .finishbtn span,.score-controls .finish-pad-grid .finishbtn small{display:block;width:100%;text-align:center;position:static}
+@media(min-width:740px){.score-controls .finishgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.score-controls .finish-pad-grid .finishbtn{aspect-ratio:1.3;min-height:85px}}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
