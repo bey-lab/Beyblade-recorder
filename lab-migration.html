@@ -385,7 +385,7 @@ function migrate(s){
 }
 let data=initial();
 try{const old=JSON.parse(localStorage.getItem(KEY));if(valid(old))data=migrate(old);}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(data));$("saveState").textContent="✓ 端末内保存済み";return true}catch(e){$("saveState").textContent="⚠ 保存失敗";alert("端末への保存に失敗しました。JSONバックアップを試してください。");return false;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));window.__bey1on1Log?.("③ SAVE","OK "+KEY);$("saveState").textContent="✓ 端末内保存済み";return true}catch(e){$("saveState").textContent="⚠ 保存失敗";alert("端末への保存に失敗しました。JSONバックアップを試してください。");return false;}}
 function getSession(){return data.sessions.find(x=>x.id===data.activeId)||null}
 function archiveActiveMatch(){
  const s=getSession(),m=data.activeMatch;
@@ -553,6 +553,7 @@ function checkIntegratedBuild(side,part,value){
  return true;
 }
 function changePart(side,part,value){
+ window.__bey1on1Log?.("ACTION","part "+side+" "+part+"="+value);
  if(!["B","X"].includes(side)||!["blade","ratchet","bit"].includes(part))return false;
  const v=clean(value,part==="blade"?70:22);
  if(part==="blade"&&!data.blades.includes(v))return false;
@@ -867,13 +868,14 @@ function history(){
  }).join("")||'<p class="empty">研究ログはまだありません。</p>';
 }
 function render(){
- syncHandsIntoRoster();renderSelectors();m17RenderSide("B");m17RenderSide("X");renderScore();renderFinishes();renderFocus();summary();history();
+ window.__bey1on1Log?.("④ RENDER","開始");syncHandsIntoRoster();renderSelectors();m17RenderSide("B");m17RenderSide("X");renderScore();renderFinishes();renderFocus();summary();history();
  const session=getSession();
  $("seriesTitle").value=session?.title||"";
  $("seriesLine").textContent=(session?.date||day())+" · この研究 "+(session?.matches?.length||0)+"試合完了 / 総計 "+completedMatches().length+"試合・"+records().length+"フィニッシュ";
 }
 function flashFinishEdge(side,finish){const btn=document.querySelector('[data-action="finish"][data-side="'+side+'"][data-finish="'+finish+'"]');if(!btn)return;btn.classList.remove("finish-edge-flash");void btn.offsetWidth;btn.classList.add("finish-edge-flash");setTimeout(()=>btn.classList.remove("finish-edge-flash"),260)}
 function commitResult(side,finish){
+ window.__bey1on1Log?.("ACTION","finish "+side+" "+finish);
  const f=FIN.find(f=>f[0]===finish);
  if(!f||!["B","X"].includes(side)||data.activeMatch?.winnerSide)return false;
  ensureSession();
@@ -1037,23 +1039,36 @@ syncPartOrders();save();render();
 (function installOneOnOneDiagnostics(){
  const host=document.createElement("section");
  host.id="oneOnOneDiagnostics";
- host.style.cssText="margin:24px 0;padding:16px;border:1px solid #627c9b;border-radius:14px;background:#101d30;color:#dce9f7;font-size:13px";
- host.innerHTML='<details><summary style="cursor:pointer;font-weight:800;font-size:15px">🔧 1on1 動作診断（タップで開く）</summary><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><button type="button" id="diag1Tap" style="padding:12px;border-radius:9px">タップ反応テスト</button><button type="button" id="diag1Refresh" style="padding:12px;border-radius:9px">状態を再診断</button></div><pre id="diag1Output" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.7">診断待機中</pre></details>';
- (document.querySelector(".wrap")||document.body).appendChild(host);
- let taps=0;
- const out=host.querySelector("#diag1Output");
- function inspect(){
-  const m=data.activeMatch;
-  const storageKey=typeof KEY==="string"?KEY:"不明";
-  let storage="読み取り不可";
-  try{const raw=localStorage.getItem(storageKey);storage=raw?("保存あり / "+raw.length+"文字"):"保存なし"}catch(e){storage="読み取りエラー: "+e.message}
-  const finishButtons=[...document.querySelectorAll('[data-action="finish"]')];
-  const partButtons=[...document.querySelectorAll('[data-action="m17-part"],[data-action="quick-part"],[data-action="open-picker"]')];
-  out.textContent=["タップ反応: "+taps+"回","現在のモード: "+(window.BEY_ENV||"未設定"),"保存キー: "+storageKey,"保存状態: "+storage,"試合: "+(m?(m.winnerSide?"決着済み":m.events?.length?"進行中":"開始前"):"未開始"),"スコア: B "+(m?.scores?.B??0)+" / X "+(m?.scores?.X??0),"得点ボタン: "+finishButtons.length+"個 / 有効 "+finishButtons.filter(b=>!b.disabled).length+"個","パーツ選択ボタン: "+partButtons.length+"個","共通パーツ機能: "+(window.BEY_HANDS?"読込済み":"未読込"),"診断時刻: "+new Date().toLocaleTimeString()].join("\n");
+ host.style.cssText="margin:16px 0;padding:14px;border:1px solid #a68c50;border-radius:12px;background:#18283e;color:#e4edfa;font-size:12px";
+ host.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><strong>🔬 操作診断 v1</strong><b style="color:#f2c879;letter-spacing:.13em">DIAG-01</b></div><p style="margin:5px 0 8px">操作すると TAP → STATE → SAVE → RENDER を記録。エラーも表示します。</p><div style="display:flex;gap:8px;margin-bottom:8px"><button type="button" id="diagCopy">ログをコピー</button><button type="button" id="diagClear">消去</button></div><pre id="diag1Output" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 monospace;max-height:190px;overflow:auto;color:#f2d18d">診断準備中</pre>';
+ const parent=document.querySelector(".wrap")||document.body;
+ const finish=document.querySelector('[data-action="finish"]');
+ (finish?.closest("section")||finish?.parentElement||parent).before(host);
+ const out=host.querySelector("#diag1Output"),entries=[];
+ function log(type,message){
+  entries.unshift(new Date().toLocaleTimeString()+" "+type+" "+String(message));
+  if(entries.length>90)entries.length=90;
+  out.textContent=entries.join("\n");
  }
- host.querySelector("#diag1Tap").addEventListener("click",()=>{taps++;inspect()});
- host.querySelector("#diag1Refresh").addEventListener("click",inspect);
- inspect();
+ function state(){const m=data.activeMatch;return "B "+(m?.scores?.B??0)+" / X "+(m?.scores?.X??0)+" winner="+(m?.winnerSide||"-");}
+ document.addEventListener("click",e=>{
+  const b=e.target.closest?.("[data-action]");if(!b)return;
+  const action=b.dataset.action,side=b.dataset.side||"",part=b.dataset.part||"",value=b.dataset.value||b.dataset.player||b.dataset.finish||"";
+  const label=[side,part,value].filter(Boolean).join(" ");
+  log("① TAP",action+" "+label);
+  log("② STATE",state());
+  setTimeout(()=>log("⑤ RESULT",action+" "+state()),0);
+ },true);
+ window.addEventListener("error",e=>log("✖ ERROR",(e.message||"unknown")+" "+(e.filename||"")+":"+e.lineno));
+ window.addEventListener("unhandledrejection",e=>log("✖ REJECT",String(e.reason?.message||e.reason)));
+ host.querySelector("#diagClear").addEventListener("click",()=>{entries.length=0;log("READY","ログ消去")});
+ host.querySelector("#diagCopy").addEventListener("click",()=>{
+  const v=entries.join("\n");
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(v).then(()=>log("COPY","OK")).catch(()=>log("COPY","失敗：ログを長押ししてコピー"));
+  else log("COPY","ログを長押ししてコピー");
+ });
+ window.__bey1on1Log=log;
+ log("READY","1on1 診断開始 "+state());
 })();
 })();
 </script></body></html>
