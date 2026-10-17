@@ -62,4 +62,5 @@ $("newRoom").addEventListener("click",()=>{if(!confirm("新しい大会を作成
 $("undo").addEventListener("click",undo);$("winUndo").addEventListener("click",undo);$("next").addEventListener("click",()=>{$("overlay").hidden=true;notice("次のバトルへ！")});
 window.addEventListener("bey-hands-updated",render);render();diag("READY / "+env+" / players="+roster().length+" / blades="+blades(state.slots.B.player).length+" / integrated="+typeof H?.integrated);if(!blades(state.slots.B.player).length||!blades(state.slots.X.player).length)notice("診断: ブレード一覧が空です。1on1の登録内容と手札を確認してください。");
 })();
-</script></body></html>
+</script><!-- BEY-LAB WRITE CHECK BUILD 02: no runtime changes -->
+</body></html>
