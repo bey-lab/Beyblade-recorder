@@ -1043,7 +1043,7 @@ syncPartOrders();save();render();
  host.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><strong>🔬 操作診断 v1</strong><b style="color:#f2c879;letter-spacing:.13em">DIAG-01</b></div><p style="margin:5px 0 8px">起動・操作・状態変更・保存・画面更新・エラーを自動記録します。</p><pre id="diag1Output" aria-live="polite" style="margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 monospace;max-height:230px;overflow:auto;color:#f2d18d">診断起動中…</pre>';
  const parent=document.querySelector(".wrap")||document.body;
  const finish=document.querySelector('[data-action="finish"]');
- (finish?.closest("section")||finish?.parentElement||parent).before(host);
+ parent.appendChild(host);
  const out=host.querySelector("#diag1Output"),entries=[];
  function log(type,message){
   entries.unshift(new Date().toLocaleTimeString()+" "+type+" "+String(message));
