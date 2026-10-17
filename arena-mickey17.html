@@ -7,9 +7,10 @@
 <div class="toolbar"><span class="tag">ONE FINISH · ONE WIN</span><div><button class="button" id="undo">↶ 直前の勝敗を取消</button> <button class="button" id="newRoom">＋ 新しい大会</button></div></div>
 <section class="room"><div class="between"><div><div class="tag">TOURNAMENT</div><h1 id="roomTitle">大会</h1><div class="muted mini" id="roomSub"></div></div><label>大会を選ぶ <select id="roomSelect"></select></label></div></section>
 <div class="streakboard" id="streakboard"></div><div class="versus"><section class="fighter" id="fighterB"></section><section class="fighter x" id="fighterX"></section></div>
-<section class="room" id="diagnostics" style="border-color:#c9a36e"><div class="between"><strong>🔬 操作診断 v1</strong><span class="tag" id="diagVersion">DIAG-01</span></div><div class="mini muted">ブレードを1回押すと、タップ検知・データ更新・保存・画面更新の順に表示します。</div><pre id="diagLog" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;margin:8px 0 0;color:#ffe0a3">診断準備中</pre></section>
+
 <section class="battle"><div class="between"><h2>⚔️ フィニッシュを記録</h2><span class="tag">勝者側をタップ</span></div><div class="finishgrid" id="finishgrid"></div><p class="notice" id="notice"></p></section>
 <div class="below"><section class="card"><h2>🏆 大会成績</h2><div id="stats"></div></section><section class="card"><h2>📋 大会履歴</h2><div id="history"></div></section></div>
+<section class="room" id="diagnostics" style="border-color:#c9a36e"><div class="between"><strong>🔬 操作診断 v1</strong><span class="tag" id="diagVersion">DIAG-01</span></div><div class="mini muted">ブレードを1回押すと、タップ検知・データ更新・保存・画面更新の順に表示します。</div><pre id="diagLog" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;margin:8px 0 0;color:#ffe0a3">診断準備中</pre></section>
 </div><div class="overlay" id="overlay" hidden><div class="victory"><div class="tag">VICTORY · BEY LAB</div><div class="winname" id="winName"></div><div id="winFinish" style="font-size:clamp(23px,5vw,38px);font-weight:1000;color:#ff9f90;margin:13px 0 7px;letter-spacing:.03em"></div><div class="big" id="winStreak"></div><div id="winBlade"></div><div class="quote" id="winQuote"></div><button class="next" id="next">次のバトルへ ›</button><button class="button" id="winUndo" style="margin-top:12px">↶ この勝敗を取り消す</button></div></div>
 <script src="./bey-hands.js?v=mickey17-20261017-02"></script><script>
 (function(){"use strict";
