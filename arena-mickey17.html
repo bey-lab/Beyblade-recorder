@@ -38,7 +38,7 @@ for(const side of ["B","X"]){const slot=state.slots[side];if(slot?.player&&!slot
 function allPlayers(){return [...new Set([...roster(),...Object.values(state.slots).map(x=>x.player).filter(Boolean)])]}
 function slotSnapshot(s){return copy(state.slots[s])}
 function currentResults(){return room()?.results||[]}
-function streak(player,blade){let p=0,b=0,started=false;for(const r of currentResults().slice().reverse()){if(r.winner.player!==player){if(started)break;continue}if(!started)started=true;p++;if(b===p-1&&r.winner.blade===blade)b++}return {player:p,blade:b}}
+function streak(player,blade){let p=0,b=0,bladeRunning=true;for(const r of currentResults().slice().reverse()){if(r.winner.player!==player)break;p++;if(bladeRunning&&r.winner.blade===blade)b++;else bladeRunning=false}return {player:p,blade:b}}
 function build(s){const v=state.slots[s];return [v.blade,v.ratchet,v.bit].filter(Boolean).join(" / ")||"ブレード未選択"}
 const expanded={B:false,X:false};
 function renderSide(s){const v=state.slots[s],players=allPlayers(),list=[...new Set([...blades(v.player),v.blade].filter(Boolean))],r=streak(v.player,v.blade);
