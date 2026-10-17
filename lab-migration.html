@@ -35,6 +35,16 @@ h1,h2,h3,p{margin:0}h1{font-size:clamp(21px,3.2vw,37px);line-height:1.1;letter-s
 .battle{margin-top:16px;border-radius:17px;padding:16px;background:linear-gradient(#182c45,#101e33);border:1px solid #526781}
 .battlehead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-bottom:12px}
 .battlehead b{font-size:18px}.finishgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* 2x2 finish pads: one large square-ish pad per finish, grouped by side. */
+.finishgrid{display:grid;grid-template-columns:1fr;gap:14px}
+.finish-side{min-width:0}
+.finish-side-title{font-size:12px;font-weight:900;letter-spacing:.06em;margin:0 0 7px;color:#f1b4b1}
+.finish-side.x .finish-side-title{color:#a8d0ff}
+.finish-pad-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.finish-pad-grid .finishbtn{width:100%;min-height:92px;aspect-ratio:1.5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;padding:10px 5px;touch-action:manipulation}
+.finish-pad-grid .finishbtn span{font-size:clamp(14px,3.7vw,19px);overflow-wrap:anywhere}
+.finish-pad-grid .finishbtn small{font-size:11px}
+@media(min-width:740px){.finishgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.finish-pad-grid .finishbtn{aspect-ratio:1.3;min-height:85px}.finish-pad-grid .finishbtn span{font-size:clamp(14px,1.7vw,19px)}}
 .winnerline{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .winnerline strong{text-align:center;padding:8px;background:#26374e;border-radius:7px;color:#ebebed;font-size:13px}
 .finishbtn{--accent:#e7716c;position:relative;isolation:isolate;border:1px solid color-mix(in srgb,var(--accent) 70%,#344a62);border-radius:9px;background:linear-gradient(130deg,color-mix(in srgb,var(--accent) 33%,#1b2c41),#101b2c);min-height:58px;padding:8px 9px;overflow:hidden;font-weight:950;font-size:clamp(14px,1.7vw,19px);display:flex;align-items:center;justify-content:space-between;gap:6px;letter-spacing:.03em}
@@ -719,9 +729,9 @@ function renderScore(){
 }
 function renderFinishes(){
  const locked=Boolean(data.activeMatch?.winnerSide);
- $("finishGrid").innerHTML=FIN.map(f=>["B","X"].map(side=>'<button class="finishbtn '+(side==="X"?"x":"")+
+ $("finishGrid").innerHTML=["B","X"].map(side=>'<section class="finish-side '+(side==="X"?"x":"")+'"><div class="finish-side-title">'+(side==="B"?"🔴 B-SIDE":"🔵 X-SIDE")+'</div><div class="finish-pad-grid">'+FIN.map(f=>'<button class="finishbtn '+(side==="X"?"x":"")+
  '" data-action="finish" data-side="'+side+'" data-finish="'+f[0]+'" '+(locked?'disabled aria-disabled="true"':'')+
- ' aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")).join("");
+ ' aria-label="'+side+'側 '+f[1]+' +'+f[2]+'点"><span>'+f[3]+' '+f[1]+'</span><small>+'+f[2]+' POINT</small></button>').join("")+'</div></section>').join("");
 }
 function completedMatches(){
  const all=data.sessions.flatMap(sess=>sess.matches.map(m=>({...m,sessionId:sess.id,date:sess.date,title:sess.title})));
