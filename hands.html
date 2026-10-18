@@ -35,7 +35,8 @@ function draw(){
  }).join("");
  document.querySelectorAll(".pool").forEach((x,i)=>{x.scrollTop=scrolls[i]||0});drawPresets();
 }
-$("savePreset").addEventListener("click",()=>{if(!current)return;const p={blade:$("presetBlade").value,ratchet:$("presetRatchet").value,bit:$("presetBit").value};if(!p.blade||!p.ratchet||!p.bit){$("notice").textContent="ブレード・ラチェット・ビットをすべて選んでください。";return}try{BEY_HANDS.presetsSave(current,p);$("notice").textContent=p.blade+" · "+p.ratchet+" · "+p.bit+" を保存しました！";drawPresets()}catch(err){$("notice").textContent="保存に失敗しました: "+err.message}});
+$("savePreset").addEventListener("click",()=>{if(!current)return;const p={blade:$("presetBlade").value,ratchet:$("presetRatchet").value,bit:$("presetBit").value};if(!p.blade||!p.ratchet||!p.bit){$("notice").textContent="ブレード・ラチェット・ビットをすべて選んでください。";return}try{if(editingPreset>=0){const result=BEY_HANDS.presetsReplace(current,editingPreset,p);if(!result.ok){$("notice").textContent=result.reason==="duplicate"?"同じ完成ベイが既に登録されています。":result.reason==="not_found"?"編集対象が見つかりません。再度選択してください。":"パーツをすべて選んでください。";return}$("notice").textContent="完成ベイを更新しました："+p.blade+" · "+p.ratchet+" · "+p.bit;cancelEdit()}else{BEY_HANDS.presetsSave(current,p);$("notice").textContent=p.blade+" · "+p.ratchet+" · "+p.bit+" を保存しました！"}drawPresets()}catch(err){$("notice").textContent="保存に失敗しました: "+err.message}});
+$("cancelPresetEdit").addEventListener("click",()=>{cancelEdit();drawPresets()});
 $("presetCards").addEventListener("click",e=>{const b=e.target.closest("[data-delete-preset]");if(!b)return;if(!confirm("この完成ベイを保存庫から削除しますか？"))return;BEY_HANDS.presetsRemove(current,Number(b.dataset.deletePreset));drawPresets()});
 $("player").addEventListener("change",e=>{cancelEdit();current=e.target.value;draw()});
 $("addPlayer").addEventListener("click",()=>{const name=$("newPlayer").value.trim().slice(0,70);if(!name)return;BEY_HANDS.set(name,"blade",BEY_HANDS.get(name,"blade"));$("newPlayer").value="";drawPlayers(name)});
