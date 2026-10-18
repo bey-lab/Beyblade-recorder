@@ -2,8 +2,22 @@
 
 スマホ・iPadで使える、ローカル保存のベイブレードX対戦記録アプリ。GitHub Pages 上で公開。
 
-- **従来版**: https://bey-lab.github.io/Beyblade-recorder/ (`index.html`)
-- **新・横画面アリーナ β版**: https://bey-lab.github.io/Beyblade-recorder/arena.html (`arena.html`)
+- **現行ホーム**: https://bey-lab.github.io/Beyblade-recorder/ (`index.html`)
+- **現行勝ち抜き**: https://bey-lab.github.io/Beyblade-recorder/arena.html (`arena.html`)
+
+## 現行版への入口（2026-10-18 整理）
+
+- ホーム: [index.html](./index.html)
+- 勝ち抜き: [arena.html](./arena.html)
+- 1on1: [lab-migration.html](./lab-migration.html)
+- 3on3: [league.html](./league.html)
+- パーツ管理: [hands.html](./hands.html)
+- 記録室: [records.html](./records.html)
+- データ管理室: [data.html](./data.html)
+- 戦闘傾向分析: [biological-report.html](./biological-report.html)
+
+保存環境はホームの TEST / OFFICIAL 切り替えで共有。過去の試作ページは現行ナビゲーションから外し、ロールバック用に保持しています。
+詳細は [全モード統合監査レポート](./docs/RELEASE-AUDIT-2026-10-18.md) を参照してください。
 
 ## 目指すもの
 
