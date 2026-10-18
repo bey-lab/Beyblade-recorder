@@ -50,7 +50,7 @@ function draw(){
  const leaguePlayers=new Map(),leagueBlades=new Map();
  for(const m of leagueMatches){const w=Number(m.scores[0])>Number(m.scores[1])?0:1;
  for(let i=0;i<2;i++){const n=m.players[i];if(!n)continue;const v=leaguePlayers.get(n)||{label:n,w:0,l:0};if(w===i)v.w++;else v.l++;leaguePlayers.set(n,v)}
- for(const e of arr(m.events)){const side=Number(e.side),slotIndex=arr(e.active)[side];const full=typeof slotIndex==="number"?m.slots?.[slotIndex]:"";const blade=String(full||"").split(/[ ·]/)[0]||"不明";const v=leagueBlades.get(blade)||{label:blade,points:0,count:0};v.points+=Number(e.points)||0;v.count++;leagueBlades.set(blade,v)}}
+ for(const e of arr(m.events)){const side=Number(e.side),slotIndex=arr(e.active)[side];const full=typeof slotIndex==="number"?m.slots?.[slotIndex]:"";const blade=String(full||"").split(" · ")[0]||"不明";const v=leagueBlades.get(blade)||{label:blade,points:0,count:0};v.points+=Number(e.points)||0;v.count++;leagueBlades.set(blade,v)}}
  const lr=[...leaguePlayers.values()].sort((a,b)=>b.w-a.w||a.label.localeCompare(b.label,"ja")).slice(0,10);rank("leagueRanks",lr.map(x=>({...x,bar:x.w/Math.max(1,...lr.map(y=>y.w))*100})),x=>x.w+"勝 "+x.l+"敗（3on3 V2）");
  const lb=[...leagueBlades.values()].sort((a,b)=>b.points-a.points||a.label.localeCompare(b.label,"ja")).slice(0,10);rank("leagueBlades",lb.map(x=>({...x,bar:x.points/Math.max(1,...lb.map(y=>y.points))*100})),x=>x.points+"点 · "+x.count+"フィニッシュ");
  recent("leagueRecent",leagueMatches.slice().reverse().map(m=>({title:"🏆 "+esc(m.players[Number(m.scores[0])>Number(m.scores[1])?0:1]||"勝者")+" 勝利",sub:(m.ended||"").slice(0,10)+" · "+m.scores.join("–")+" · "+arr(m.events).length+"フィニッシュ"})));
