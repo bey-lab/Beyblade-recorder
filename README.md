@@ -1,23 +1,22 @@
 # BEY LAB — Beyblade X battle recorder
 
-スマホ・iPadで使える、ローカル保存のベイブレードX対戦記録アプリ。GitHub Pages 上で公開。
+## 現行版（2026-10-18 現在）
 
-- **現行ホーム**: https://bey-lab.github.io/Beyblade-recorder/ (`index.html`)
-- **現行勝ち抜き**: https://bey-lab.github.io/Beyblade-recorder/arena.html (`arena.html`)
+- **ホーム**: `index.html`
+- **勝ち抜き**: `arena.html`（V2）
+- **1on1**: `lab-migration.html`（現行研究室）
+- **3on3**: `league.html`（V2正式版）
+- **パーツ管理**: `hands.html`（一体型ブレード・一体型ビットに対応）
+- **記録室**: `records.html`（3モードの現行データに対応）
+- **戦闘傾向分析**: `biological-report.html`（3モード合算）
+- **データ管理室**: `data.html`（現行3モード・全保存領域のバックアップと個別整理）
+- **お題箱**: `extra.html`
 
-## 現行版への入口（2026-10-18 整理）
+保存データは端末内の localStorage。ホームのTEST／OFFICIALに応じて試合記録を分離し、パーツ管理の手札・完成ベイ・一体型設定は共有する。**旧記録は自動移行・自動削除しない**。
 
-- ホーム: [index.html](./index.html)
-- 勝ち抜き: [arena.html](./arena.html)
-- 1on1: [lab-migration.html](./lab-migration.html)
-- 3on3: [league.html](./league.html)
-- パーツ管理: [hands.html](./hands.html)
-- 記録室: [records.html](./records.html)
-- データ管理室: [data.html](./data.html)
-- 戦闘傾向分析: [biological-report.html](./biological-report.html)
+旧版や試作ページ、退避方針と横断確認結果は [2026-10-18 保守監査](docs/MAINTENANCE-2026-10-18.md) を参照。
 
-保存環境はホームの TEST / OFFICIAL 切り替えで共有。過去の試作ページは現行ナビゲーションから外し、ロールバック用に保持しています。
-詳細は [全モード統合監査レポート](./docs/RELEASE-AUDIT-2026-10-18.md) を参照してください。
+---
 
 ## 目指すもの
 
