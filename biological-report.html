@@ -65,7 +65,7 @@ const affinities=profiles.map((p,i)=>{
 let h=2166136261;const absorb=value=>{for(const ch of String(value)){h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0}};
 absorb(date);for(const e of events){absorb(e.finish);absorb(e.time||'');absorb('|')}
 absorb(total);h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h=(h^(h>>>16))>>>0;
-const jitter=i=>{let x=(h^Math.imul(i+1,0x9e3779b9))>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d)>>>0;x^=x>>>15;return ((x>>>0)/4294967296-0.5)*0.85};
+const jitter=i=>{let x=(h^Math.imul(i+1,0x9e3779b9))>>>0;x^=x>>>16;x=Math.imul(x,0x7feb352d)>>>0;x^=x>>>15;return ((x>>>0)/4294967296-0.5)*1.9};
 let index=0,best=-Infinity;for(let i=0;i<affinities.length;i++){const score=affinities[i]+jitter(i);if(score>best){best=score;index=i}}
 const sp=species[index];$('silhouette').textContent=sp[1];$('animal').textContent=sp[0];$('number').textContent='CLASSIFICATION '+String(index+1).padStart(3,'0');$('comment').textContent=sp[2]}
 $('analyze').addEventListener('click',render);
