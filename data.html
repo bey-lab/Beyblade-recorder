@@ -8,67 +8,62 @@
 
 /* Hide unactivated static nav; shared header will activate and move it. */
 .bey-seven-nav:not(.bey-seven-active){display:none!important}
-</style><link rel="stylesheet" href="./bey-universal.css"></head><body data-bey-mode="data"><main class="wrap">
-<div class="top"><div><strong>BEY LAB</strong><div class="hint">DATA CONTROL ROOM</div></div></div><nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html" aria-current="page">💾 データ管理</a><a href="./records.html">📊 記録と履歴</a></nav><h1>💾 記録管理室</h1><p class="hint">本番・テスト・以前の記録を管理します。記録はこの端末のブラウザ内に保存され、別端末には自動同期されません。</p>
-<div class="card"><h2>保存先を選ぶ</h2><div class="row"><label for="mode">モード</label><select id="mode"><option value="arena">👑 勝ち抜き</option><option value="lab">⚗ 1on1研究</option></select><label for="env">環境</label><select id="env"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></div><p id="overview" class="hint"></p><button id="backup" class="primary">⬇ 選択中の環境をJSON保存</button></div>
-<div class="card"><h2>📦 以前の記録を引き継ぐ</h2><p id="legacyInfo" class="hint"></p><p class="warning">以前のデータは移行後も元の場所に残ります。現在の環境に記録がある場合、引き継ぎによって上書きされるため、両方のJSONバックアップを先に保存してください。</p><div class="row"><button id="legacyBackup">⬇ 旧データをJSON保存</button><button id="migrate" class="primary">↪ この環境に旧データをコピー</button></div></div>
-<div class="card"><h2>🗂 試合を個別に削除</h2><p class="hint">不要な試合は確認1回で削除できます。大事な記録は下のチェックを入れてから削除してください。</p><label class="backup-choice"><input type="checkbox" id="backupBeforeDelete"> 削除前にJSONバックアップを保存する</label><p class="hint">チェックなしの場合、削除後の復元はできません。チェックありの場合は保存確認後に削除します。</p><div id="matches"></div></div>
-<div class="card"><h2>📅 大会・研究テーマを削除</h2><p class="hint">勝ち抜きは大会単位、1on1は研究セッション単位。所属する保存済み試合もまとめて削除します。</p><div id="groups"></div></div>
-<div class="card"><h2>⚠ 一括削除</h2><p class="warning">選択中の環境の戦績・プレイヤー・機体設定をすべて消去します。別の環境や旧データには触れません。上のチェックでバックアップの有無を選べます。</p><button id="wipe" class="danger">選択中の環境を全消去</button></div>
-<div id="status" role="status" aria-live="polite"></div></main>
-<script>
+</style><link rel="stylesheet" href="./bey-universal.css"></head><body data-bey-mode="data"><main class="wrap"><div class="top"><div><strong>BEY LAB</strong><div class="hint">DATA CONTROL ROOM · V2</div></div></div><nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html" aria-current="page">💾 データ管理</a><a href="./records.html">📊 記録と履歴</a></nav>
+<h1>💾 記録管理室</h1><p class="hint">勝ち抜き・1on1・3on3の現行データを管理。データはこの端末内に保存され、別端末には自動同期されません。</p>
+<div class="card"><h2>保存先を選ぶ</h2><div class="row"><label for="mode">モード</label><select id="mode"><option value="arena">👑 勝ち抜き</option><option value="lab">⚔️ 1on1</option><option value="league">🏆 3on3</option></select><label for="env">環境</label><select id="env"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></div><p class="hint" id="overview"></p><div class="row"><button id="backup" class="primary">⬇ 選択中の戦績をJSON保存</button><button id="backupAll">⬇ 全モード・全環境を一括保存</button></div></div>
+<div class="card"><h2>🗂 試合の個別整理</h2><p class="hint">完了した記録だけが対象。削除前は必ずバックアップをダウンロードして確認します。</p><div id="matches"></div></div>
+<div class="card"><h2>📅 大会・研究単位の整理</h2><p class="hint">勝ち抜きは大会、1on1は研究セッションごとに整理できます。3on3は試合単位で管理します。</p><div id="groups"></div></div>
+<div class="card"><h2>📦 旧バージョンの保管庫</h2><p id="legacyInfo" class="hint"></p><div class="row"><button id="legacyBackup">⬇ 旧データをまとめてJSON保存</button></div><p class="hint">旧データの自動移行・上書きは廃止。必要なときだけバックアップとして取り出せます。</p></div>
+<div class="card"><h2>⚠ 現在の保存環境を初期化</h2><p class="warning">選んだモード・環境だけを削除します。他モード、パーツ管理、旧版には触れません。事前バックアップと二重確認が必要です。</p><button id="wipe" class="danger">選択したモード・環境を全消去</button></div>
+<div id="status" role="status" aria-live="polite"></div></main><script>
 (function(){"use strict";
-const $=id=>document.getElementById(id),old={arena:"bey-lab-arena-v1",lab:"bey-lab-1on1-v1"},names={arena:"勝ち抜き",lab:"1on1研究"};
-const key=(mode,env)=>old[mode]+"-"+env;
-const current=()=>({mode:$("mode").value,env:$("env").value});
-const read=k=>{try{const raw=localStorage.getItem(k);return raw?JSON.parse(raw):null}catch(e){return null}};
+const $=id=>document.getElementById(id);
+const PREFIX={arena:"bey-lab-arena-v2-",lab:"bey-lab-migration-1on1-v1-",league:"bey-lab-3on3-v2-"};
+const OLD=["bey-lab-arena-v1","bey-lab-1on1-v1","bey-lab-arena-v1-test","bey-lab-arena-v1-official","bey-lab-migration-arena-v1-test","bey-lab-migration-arena-v1-official","bey-lab-3on3-v1-test","bey-lab-3on3-v1-official","bey-lab-3on3-v2-experimental-test","bey-lab-3on3-v2-experimental-official"];
+const key=(m,e)=>PREFIX[m]+e;
+const select=()=>({mode:$("mode").value,env:$("env").value});
+const read=k=>{try{const v=localStorage.getItem(k);return v===null?null:JSON.parse(v)}catch(e){return null}};
+const array=v=>Array.isArray(v)?v:[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const good=(mode,d)=>!!(d&&typeof d==="object"&&Array.isArray(d.players)&&Array.isArray(d.blades)&&d.slots&&Array.isArray(d.sessions)&&(mode==="lab"?Array.isArray(d.sessions)&&[1,2].includes(d.version):d.scores&&Array.isArray(d.events)));
+const valid=(mode,d)=>!!(d&&typeof d==="object"&&(mode==="arena"?Array.isArray(d.rooms)&&d.version===1:mode==="lab"?Array.isArray(d.sessions)&&[1,2].includes(d.version):Array.isArray(d.completed)&&d.version===2));
+const formatTime=s=>typeof s==="string"?s.slice(0,16).replace("T"," "):"";
+const stats=(mode,d)=>mode==="arena"?array(d.rooms).reduce((n,r)=>n+array(r.results).length,0):mode==="lab"?array(d.sessions).reduce((n,r)=>n+array(r.matches).length,0)+(d.activeMatch?.winnerSide?1:0):array(d.completed).length;
+function download(filename,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000)}
 const stamp=()=>new Date().toISOString().replace(/[:.]/g,"-");
-function download(filename,data){const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000)}
-function backup(k,d){download("bey-lab-"+k+"-"+stamp()+".json",d)}
-const say=msg=>$("status").textContent=msg;
-function save(k,d){try{localStorage.setItem(k,JSON.stringify(d));return true}catch(e){say("保存に失敗しました。データは変更していません。");return false}}
-function recordCount(mode,d){if(!d)return 0;return mode==="arena"?d.sessions.length:d.sessions.reduce((n,g)=>n+(g.matches?.length||0)+(g.records?.length||0),0)}
-function list(){const {mode,env}=current(),k=key(mode,env),d=read(k),legacy=read(old[mode]),valid=good(mode,d);
- $("overview").textContent=valid?"保存済み試合・記録："+recordCount(mode,d)+"件 / プレイヤー："+d.players.length+"人 / ブレード："+d.blades.length+"機":"この環境にはまだ記録がありません。";
- $("legacyInfo").textContent=good(mode,legacy)?"旧データを発見！ プレイヤー："+legacy.players.length+"人 / ブレード："+legacy.blades.length+"機 / 保存済み記録："+recordCount(mode,legacy)+"件":"旧データは見つかりませんでした。";
- $("backup").disabled=!valid;$("legacyBackup").disabled=!good(mode,legacy);$("migrate").disabled=!good(mode,legacy);
- $("wipe").disabled=!valid;
- const matches=valid?(mode==="arena"?d.sessions.map((m,i)=>({i,title:(m.meetingTitle||m.meetingDate||"大会未指定")+" / "+(m.winner?.player||"勝敗未確定"),subtitle:(m.finished||"日時不明")+" · "+(m.events?.length||0)+"フィニッシュ"})):d.sessions.flatMap((g,si)=>(g.matches||[]).map((m,mi)=>({si,mi,title:(g.title||g.date||"研究")+" / "+(m.winnerSide?m.slots?.[m.winnerSide]?.player||"勝者":"勝敗未確定"),subtitle:(m.created||g.date||"")+" · "+(m.events?.length||0)+"フィニッシュ"})))):[];
- $("matches").innerHTML=matches.length?matches.slice().reverse().map(m=>'<div class="record"><div><strong>'+esc(m.title)+'</strong><small>'+esc(m.subtitle)+'</small></div><button class="danger" data-delete-match="'+esc(mode==="arena"?m.i:m.si+":"+m.mi)+'">削除</button></div>').join(""):'<p class="hint">保存済み試合はありません。</p>';
- const groups=valid?(mode==="arena"?(d.meetings||[]).map((g,i)=>({i,title:(g.title||g.date||"大会"),n:d.sessions.filter(m=>m.meetingId===g.id).length})):d.sessions.map((g,i)=>({i,title:g.title||g.date||"研究",n:(g.matches?.length||0)+(g.records?.length||0)}))):[];
- $("groups").innerHTML=groups.length?groups.slice().reverse().map(g=>'<div class="record"><div><strong>'+esc(g.title)+'</strong><small>'+g.n+'件の保存済み記録</small></div><button class="danger" data-delete-group="'+g.i+'">テーマごと削除</button></div>').join(""):'<p class="hint">大会・研究テーマはありません。</p>';
-}
-function edit(kind,value){const {mode,env}=current(),k=key(mode,env),d=read(k);if(!good(mode,d))return;
- let title="";
- if(kind==="match"){if(mode==="arena"){const i=Number(value);if(!Number.isInteger(i)||!d.sessions[i])return;title="保存済み試合を1件削除";}else{const [si,mi]=value.split(":").map(Number);if(!d.sessions[si]?.matches?.[mi])return;title="1on1の保存済み試合を1件削除";}}
- else if(kind==="group"){const i=Number(value);if(!Number.isInteger(i)||(mode==="arena"?!d.meetings?.[i]:!d.sessions[i]))return;title=mode==="arena"?"大会と所属する保存済み試合を削除":"研究テーマと所属する記録を削除";}
- else if(kind==="wipe")title=names[mode]+"の"+(env==="test"?"テスト":"本番")+"環境を全消去";
- const withBackup=$("backupBeforeDelete").checked;
- if(!confirm(title+"しますか？"+(withBackup?"\nバックアップJSONをダウンロードします。":"\nバックアップなしで削除します。元には戻せません。")))return;
- if(withBackup){
-  backup(k+"-before-delete",d);
-  if(!confirm("バックアップJSONのダウンロードを開始しました。ファイルが保存されたことを確認できましたか？\n確認できていない場合はキャンセルしてください。"))return;
- }
- if(kind==="match"){if(mode==="arena")d.sessions.splice(Number(value),1);else{const [si,mi]=value.split(":").map(Number);d.sessions[si].matches.splice(mi,1);}}
- else if(kind==="group"){const i=Number(value);if(mode==="arena"){const [g]=d.meetings.splice(i,1);d.sessions=d.sessions.filter(m=>m.meetingId!==g.id);if(d.activeMeetingId===g.id){d.activeMeetingId=null;d.events=[];d.scores={B:0,X:0};d.winner=null;}}else{const [g]=d.sessions.splice(i,1);if(d.activeId===g.id){d.activeId=null;d.activeMatch=null;}}}
- else if(kind==="wipe"){try{localStorage.removeItem(k);say("選択した環境を全消去しました。"+(withBackup?"バックアップをダウンロードしました。":"バックアップは作成していません。"));list();return}catch(e){say("削除に失敗しました。");return}}
- if(save(k,d))say("削除しました。"+(withBackup?"バックアップをダウンロードしました。":"バックアップは作成していません。"));list();
-}
+function backup(k,d){download("BEY-LAB-"+k+"-"+stamp()+".json",{format:"BEY-LAB-ARCHIVE-1",created:new Date().toISOString(),records:{[k]:d}})}
+const say=t=>$("status").textContent=t;
+function getMatches(mode,d){if(mode==="arena")return array(d.rooms).flatMap((r,ri)=>array(r.results).map((v,mi)=>({key:ri+":"+mi,title:(v.winner?.player||"勝者不明")+" 勝利",sub:formatTime(v.time)+" · "+(v.finish||"") })));
+if(mode==="lab")return array(d.sessions).flatMap((r,ri)=>array(r.matches).map((v,mi)=>({key:ri+":"+mi,title:(r.title||r.date||"研究")+" · "+(v.slots?.[v.winnerSide]?.player||"試合"),sub:formatTime(v.finished||v.created)+" · "+array(v.events).length+"フィニッシュ"})));
+return array(d.completed).map((v,i)=>({key:String(i),title:(v.players?.[Number(v.scores?.[0])>Number(v.scores?.[1])?0:1]||"勝者不明")+" 勝利",sub:formatTime(v.ended)+" · "+array(v.scores).join("–")+" · "+array(v.events).length+"フィニッシュ"}))}
+function getGroups(mode,d){if(mode==="arena")return array(d.rooms).map((v,i)=>({key:String(i),title:v.date||"大会",n:array(v.results).length}));
+if(mode==="lab")return array(d.sessions).map((v,i)=>({key:String(i),title:v.title||v.date||"研究",n:array(v.matches).length+array(v.records).length}));
+return []}
+function list(){const {mode,env}=select(),k=key(mode,env),d=read(k),ok=valid(mode,d),matches=ok?getMatches(mode,d):[],groups=ok?getGroups(mode,d):[];
+$("overview").textContent=ok?"保存先："+k+" / 完了試合 "+stats(mode,d)+" 件":"保存先："+k+" / 現行データなし";
+$("backup").disabled=!ok;$("wipe").disabled=!ok;
+$("matches").innerHTML=matches.length?matches.slice().reverse().map(m=>'<div class="record"><div><strong>'+esc(m.title)+'</strong><small>'+esc(m.sub)+'</small></div><button class="danger" data-delete-match="'+esc(m.key)+'">削除</button></div>').join(""):'<p class="hint">保存済みの完了試合はありません。</p>';
+$("groups").innerHTML=groups.length?groups.slice().reverse().map(m=>'<div class="record"><div><strong>'+esc(m.title)+'</strong><small>'+m.n+' 件</small></div><button class="danger" data-delete-group="'+m.key+'">一括削除</button></div>').join(""):'<p class="hint">整理できる大会・研究セッションはありません。</p>';
+const found=OLD.filter(k=>localStorage.getItem(k)!==null);$("legacyInfo").textContent="旧版・開発版の保存領域："+found.length+" 件（現行記録とは別保管）";$("legacyBackup").disabled=!found.length}
+function safeDelete(kind,value){const {mode,env}=select(),k=key(mode,env),d=read(k);if(!valid(mode,d))return;
+const items=kind==="match"?getMatches(mode,d):getGroups(mode,d);
+if(kind!=="wipe"&&!items.some(x=>x.key===value))return;
+const label=kind==="wipe"?"選択環境全体":kind==="match"?"試合1件":"大会・研究セッション";
+if(!confirm(label+"を削除します。まずバックアップをダウンロードしますか？"))return;
+backup(k+"-before-delete",d);
+if(!confirm("バックアップJSONが端末に保存されたことを確認しましたか？\n未確認ならキャンセルしてください。"))return;
+if(!confirm(label+"を本当に削除しますか？この操作は元に戻せません。"))return;
+try{if(kind==="wipe"){localStorage.removeItem(k)}
+else if(kind==="match"){const [a,b]=value.split(":").map(Number);if(mode==="arena")d.rooms[a].results.splice(b,1);else if(mode==="lab")d.sessions[a].matches.splice(b,1);else d.completed.splice(Number(value),1);localStorage.setItem(k,JSON.stringify(d))}
+else{const i=Number(value);if(mode==="arena"){const removed=d.rooms.splice(i,1)[0];if(d.activeRoomId===removed.id)d.activeRoomId=null}else{const removed=d.sessions.splice(i,1)[0];if(d.activeId===removed.id){d.activeId=null;d.activeMatch=null}}localStorage.setItem(k,JSON.stringify(d))}
+say("整理しました。バトル画面を再読込すると反映されます。")}catch(e){say("削除失敗。記録は変更できませんでした："+e.message)}list()}
 $("mode").addEventListener("change",list);$("env").addEventListener("change",list);
-$("backup").addEventListener("click",()=>{const {mode,env}=current(),k=key(mode,env),d=read(k);if(good(mode,d))backup(k,d)});
-$("legacyBackup").addEventListener("click",()=>{const {mode}=current(),d=read(old[mode]);if(good(mode,d))backup(old[mode],d)});
-$("migrate").addEventListener("click",()=>{const {mode,env}=current(),source=read(old[mode]),targetKey=key(mode,env),target=read(targetKey);if(!good(mode,source))return;
- if(!confirm("以前の"+names[mode]+"の記録・プレイヤー・機体を、"+(env==="test"?"テスト":"本番")+"環境にコピーします。\n元の記録は残ります。現在の環境にデータがあれば上書きします。\n続けますか？"))return;
- backup(old[mode]+"-before-copy",source);if(good(mode,target))backup(targetKey+"-before-copy",target);
- if(!confirm("旧データと現在の環境のバックアップを保存できたことを確認しましたか？\n確認できた場合のみコピーします。"))return;
- if(save(targetKey,source))say("旧データをコピーしました。バトル画面を再読み込みすると反映されます。");list();
-});
-$("matches").addEventListener("click",e=>{const b=e.target.closest("[data-delete-match]");if(b)edit("match",b.dataset.deleteMatch)});
-$("groups").addEventListener("click",e=>{const b=e.target.closest("[data-delete-group]");if(b)edit("group",b.dataset.deleteGroup)});
-$("wipe").addEventListener("click",()=>edit("wipe",""));
-try{const env=localStorage.getItem("bey-lab-environment-v1");if(env==="official")$("env").value="official"}catch(e){}
+$("backup").addEventListener("click",()=>{const {mode,env}=select(),k=key(mode,env),d=read(k);if(valid(mode,d)){backup(k,d);say("JSONバックアップのダウンロードを開始しました。")}});
+$("backupAll").addEventListener("click",()=>{const data={};for(const mode of Object.keys(PREFIX))for(const env of ["test","official"]){const k=key(mode,env);if(localStorage.getItem(k)!==null)data[k]=read(k)}for(const k of ["bey-lab-migration-hands-v1","bey-lab-migration-presets-v1","bey-lab-migration-integrated-v1"]){if(localStorage.getItem(k)!==null)data[k]=read(k)}download("BEY-LAB-ALL-MODES-"+stamp()+".json",{format:"BEY-LAB-ARCHIVE-1",created:new Date().toISOString(),records:data});say("全モードのJSONバックアップを作成しました。")});
+$("legacyBackup").addEventListener("click",()=>{const data={};for(const k of OLD)if(localStorage.getItem(k)!==null)data[k]=read(k);download("BEY-LAB-LEGACY-"+stamp()+".json",{format:"BEY-LAB-ARCHIVE-1",records:data});say("旧版データをJSONで保存しました。")});
+$("matches").addEventListener("click",e=>{const b=e.target.closest("[data-delete-match]");if(b)safeDelete("match",b.dataset.deleteMatch)});
+$("groups").addEventListener("click",e=>{const b=e.target.closest("[data-delete-group]");if(b)safeDelete("group",b.dataset.deleteGroup)});
+$("wipe").addEventListener("click",()=>safeDelete("wipe",""));
+try{if(localStorage.getItem("bey-lab-environment-v1")==="official")$("env").value="official"}catch(e){}
 list();
 })();
 </script><script src="./bey-universal.js?v=9"></script></body></html>
