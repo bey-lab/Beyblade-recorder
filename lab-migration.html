@@ -986,7 +986,7 @@ document.addEventListener("click",e=>{
  else if(action==="m17-preset")m17LoadPreset(b.dataset.side,Number(b.dataset.index));
  else if(action==="m17-save-current")m17SaveCurrent(b.dataset.side);
  else if(action==="preset-save"){const slot=data.slots[b.dataset.side];if(window.BEY_HANDS?.presetsSave(slot.player,slot))alert("共通保存庫に登録したぞ！");else alert("プレイヤーとブレードを選択してください。")}
- else if(action==="preset-load"){const side=b.dataset.side,slot=data.slots[side],list=window.BEY_HANDS?.presetsGet(slot.player)||[];if(!list.length){alert("このプレイヤーには保存済みの一式がありません。");return}const choice=prompt("呼び出す番号を入力してください:\n"+list.map((p,i)=>(i+1)+". "+[p.blade,p.ratchet,p.bit].join(" · ")).join("\n"));const i=Number(choice)-1;if(!Number.isInteger(i)||!list[i])return;Object.assign(slot,list[i]);save();render()}
+ else if(action==="preset-load"){const side=b.dataset.side,slot=data.slots[side],list=window.BEY_HANDS?.presetsGet(slot.player)||[];if(!list.length){alert("このプレイヤーには保存済みの一式がありません。");return}const choice=prompt("呼び出す番号を入力してください:\n"+list.map((p,i)=>(i+1)+". "+[p.blade,p.ratchet,p.bit].join(" · ")).join("\n"));const i=Number(choice)-1;if(!Number.isInteger(i)||!list[i])return;if(!readyForBuildEdit())return;const item=list[i],status=window.BEY_HANDS?.ratchetStatus(item.blade,item.ratchet,item.bit);if(status==="conflict"||status==="missing"){alert("一体型パーツの組み合わせが正しくありません。");return}if(!data.blades.includes(item.blade)){data.blades.push(item.blade);syncPartOrders()}Object.assign(slot,item);if(status==="integrated_blade"||status==="integrated_bit")slot.ratchet="";save();render()}
  else if(action==="finish")commitResult(b.dataset.side,b.dataset.finish);
  else if(action==="open-picker")openPicker(b.dataset.side,b.dataset.part);
  else if(action==="close-picker")closePicker();
