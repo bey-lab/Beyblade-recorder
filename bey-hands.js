@@ -34,6 +34,18 @@ const PRESET_KEY="bey-lab-migration-presets-v1";
 function presetsRead(){try{const d=JSON.parse(localStorage.getItem(PRESET_KEY));return d&&typeof d==="object"&&!Array.isArray(d)?d:{}}catch(e){return {}}}
 function presetsGet(player){return (presetsRead()[clean(player)]||[]).filter(x=>x&&typeof x==="object"&&clean(x.blade)).map(x=>({blade:clean(x.blade),ratchet:clean(x.ratchet),bit:clean(x.bit)}))}
 function presetsSave(player,part){player=clean(player);if(!player||!clean(part?.blade))return false;const all=presetsRead(),item={blade:clean(part.blade),ratchet:clean(part.ratchet),bit:clean(part.bit)};all[player]??=[];if(!all[player].some(x=>x.blade===item.blade&&x.ratchet===item.ratchet&&x.bit===item.bit))all[player].unshift(item);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
+function presetsReplace(player,index,part){
+ player=clean(player);
+ const all=presetsRead(),items=all[player];
+ if(!player||!Array.isArray(items)||!Number.isInteger(index)||index<0||index>=items.length)return {ok:false,reason:"not_found"};
+ const item={blade:clean(part?.blade),ratchet:clean(part?.ratchet),bit:clean(part?.bit)};
+ if(!item.blade||!item.ratchet||!item.bit)return {ok:false,reason:"incomplete"};
+ if(items.some((x,i)=>i!==index&&clean(x.blade)===item.blade&&clean(x.ratchet)===item.ratchet&&clean(x.bit)===item.bit))return {ok:false,reason:"duplicate"};
+ items[index]=item;
+ localStorage.setItem(PRESET_KEY,JSON.stringify(all));
+ window.dispatchEvent(new Event("bey-hands-updated"));
+ return {ok:true};
+}
 function presetsRemove(player,index){const all=presetsRead();if(!Array.isArray(all[clean(player)])||index<0||index>=all[clean(player)].length)return false;all[clean(player)].splice(index,1);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
 // Player management updates active rosters and shared libraries, never historical match snapshots.
 function changePlayer(oldName,newName){
@@ -85,5 +97,5 @@ function ratchetStatus(blade,ratchet,bit){
  const b=integrated("blade",blade),t=integrated("bit",bit);
  return b&&t?"conflict":b?"integrated_blade":t?"integrated_bit":clean(ratchet)?"separate":"missing";
 }
-window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups,changePlayer,integrated,setIntegrated,ratchetStatus};
+window.BEY_HANDS={get,has,set,preferred,pool,players,read,presetsGet,presetsSave,presetsReplace,presetsRemove,ratchetGroup,ratchetHeight,ratchetSort,ratchetGroups,changePlayer,integrated,setIntegrated,ratchetStatus};
 })();
