@@ -33,13 +33,13 @@ return [...names].sort((a,b)=>a.localeCompare(b,"ja"))}
 const PRESET_KEY="bey-lab-migration-presets-v1";
 function presetsRead(){try{const d=JSON.parse(localStorage.getItem(PRESET_KEY));return d&&typeof d==="object"&&!Array.isArray(d)?d:{}}catch(e){return {}}}
 function presetsGet(player){return (presetsRead()[clean(player)]||[]).filter(x=>x&&typeof x==="object"&&clean(x.blade)).map(x=>({blade:clean(x.blade),ratchet:clean(x.ratchet),bit:clean(x.bit)}))}
-function presetsSave(player,part){player=clean(player);if(!player||!clean(part?.blade))return false;const all=presetsRead(),item={blade:clean(part.blade),ratchet:clean(part.ratchet),bit:clean(part.bit)};all[player]??=[];if(!all[player].some(x=>x.blade===item.blade&&x.ratchet===item.ratchet&&x.bit===item.bit))all[player].unshift(item);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
+function presetsSave(player,part){player=clean(player);if(!player||!clean(part?.blade)||!clean(part?.bit)||!['integrated_blade','integrated_bit','separate'].includes(ratchetStatus(part.blade,part.ratchet,part.bit)))return false;const all=presetsRead(),item={blade:clean(part.blade),ratchet:clean(part.ratchet),bit:clean(part.bit)};all[player]??=[];if(!all[player].some(x=>x.blade===item.blade&&x.ratchet===item.ratchet&&x.bit===item.bit))all[player].unshift(item);localStorage.setItem(PRESET_KEY,JSON.stringify(all));window.dispatchEvent(new Event("bey-hands-updated"));return true}
 function presetsReplace(player,index,part){
  player=clean(player);
  const all=presetsRead(),items=all[player];
  if(!player||!Array.isArray(items)||!Number.isInteger(index)||index<0||index>=items.length)return {ok:false,reason:"not_found"};
  const item={blade:clean(part?.blade),ratchet:clean(part?.ratchet),bit:clean(part?.bit)};
- if(!item.blade||!item.ratchet||!item.bit)return {ok:false,reason:"incomplete"};
+ if(!item.blade||!item.bit||!["integrated_blade","integrated_bit","separate"].includes(ratchetStatus(item.blade,item.ratchet,item.bit)))return {ok:false,reason:"incomplete"};
  if(items.some((x,i)=>i!==index&&clean(x.blade)===item.blade&&clean(x.ratchet)===item.ratchet&&clean(x.bit)===item.bit))return {ok:false,reason:"duplicate"};
  items[index]=item;
  localStorage.setItem(PRESET_KEY,JSON.stringify(all));
