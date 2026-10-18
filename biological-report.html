@@ -34,7 +34,7 @@ if(!events.length){$('silhouette').textContent='â—Œ';$('animal').textContent='åˆ
 // An avalanche mix prevents low-sample modulo patterns without adding reroll randomness.
 let h=2166136261;const absorb=value=>{for(const ch of String(value)){h=Math.imul(h^ch.charCodeAt(0),16777619)>>>0}};
 absorb(date);for(const e of events){absorb(e.finish);absorb(e.time||'');absorb('|')}
-absorb(events.length);h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;
+absorb(events.length);h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h=(h^(h>>>16))>>>0;
 const index=h%species.length,sp=species[index];$('silhouette').textContent=sp[1];$('animal').textContent=sp[0];$('number').textContent='CLASSIFICATION '+String(index+1).padStart(3,'0');$('comment').textContent=sp[2]}
 $('analyze').addEventListener('click',render);
 })();
