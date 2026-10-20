@@ -31,9 +31,9 @@ function draw(){
  const scrolls=[...document.querySelectorAll(".pool")].map(x=>x.scrollTop);
  if(!current){$("parts").innerHTML="<p>まずプレイヤーを選択してください。</p>";return}
  $("parts").innerHTML=Object.entries(labels).map(([part,label])=>{
-  const all=BEY_HANDS.pool(part),selected=BEY_HANDS.get(current,part);
+  const all=BEY_HANDS.pool(part),selected=BEY_HANDS.get(current,part);const sortedSelected=[...selected].sort(partNameCompare);
   return '<div class="part"><h3>'+label+' <span class="count">'+selected.length+'件</span></h3>'+
-   '<p class="hint">登録済みの手札（右の「外す」で解除）</p><div class="hand-selected">'+(selected.length?selected.map(v=>'<div class="hand-entry"><span>✓ '+esc(v)+'</span><button type="button" data-remove="'+part+'" data-value="'+esc(v)+'" aria-label="'+esc(v)+'を手札から外す">外す</button></div>').join(""):'<span class="hint">まだ登録されていません</span>')+'</div>'+
+   '<p class="hint">登録済みの手札（右の「外す」で解除）</p><div class="hand-selected">'+(sortedSelected.length?sortedSelected.map(v=>'<div class="hand-entry"><span>✓ '+esc(v)+'</span><button type="button" data-remove="'+part+'" data-value="'+esc(v)+'" aria-label="'+esc(v)+'を手札から外す">外す</button></div>').join(""):'<span class="hint">まだ登録されていません</span>')+'</div>'+
    '<p class="hint">共通プールから追加（登録済みは押しても消えません）</p><div class="pool">'+(part==="ratchet"?renderRatchetPool(all,selected):all.map(v=>partButton(part,v,selected)).join(""))+'</div>'+
    '<div class="row actions"><input data-new="'+part+'" placeholder="プールにないパーツを追加"><button data-add="'+part+'">＋ 追加</button></div>'+((part==="blade"||part==="bit")?'<div class="integrated-setting"><strong>⚙ ラチェット一体型の設定</strong><p class="hint">一体型のパーツを選び、構造を保存します。通常パーツは設定不要。</p><select data-structure-part="'+part+'"><option value="">パーツを選択</option>'+all.map(v=>'<option value="'+esc(v)+'">'+esc(v)+(BEY_HANDS.integrated(part,v)?"［一体型］":"")+'</option>').join("")+'</select><div class="row"><button type="button" data-structure-save="'+part+'" data-integrated="yes">一体型に設定</button><button type="button" data-structure-save="'+part+'" data-integrated="no">通常型に戻す</button></div></div>':'')+'</div>'
  }).join("");
