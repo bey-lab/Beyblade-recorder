@@ -1,0 +1,65 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0e1829"><title>BEY LAB | 記録室</title><style>
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#253b5c,#0c1626 67%);color:#f0f6ff;font-family:system-ui,-apple-system,sans-serif;line-height:1.5}.wrap{max-width:1100px;margin:auto;padding:calc(24px + env(safe-area-inset-top)) 16px 60px}.head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.brand{font-weight:1000;font-size:30px;letter-spacing:.06em}.sub{font-size:11px;letter-spacing:.18em;color:#d7bb81;font-weight:900}a{color:#f6d794;text-decoration:none}.nav{border:1px solid #aa8a51;padding:10px 14px;border-radius:10px;font-weight:850}.intro{margin:26px 0 15px}.intro h1{font-size:clamp(24px,5vw,38px);margin:0 0 7px}.hint{font-size:13px;color:#bacbe1}.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:17px 0}select{background:#233854;border:1px solid #6985a6;color:#f5f8ff;border-radius:9px;padding:11px;font:inherit;font-weight:800;min-height:44px}.pill{display:inline-block;background:#41372d;border:1px solid #bca06c;color:#ffe3aa;padding:8px 12px;border-radius:10px;font-weight:850;font-size:13px}.pill.official{background:#193a53;border-color:#75bce8;color:#cdeaff}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.metric{background:#172940;border:1px solid #4a6685;border-radius:15px;padding:19px 15px}.metric .number{font-size:clamp(23px,4vw,40px);font-weight:1000;line-height:1.1;color:#ffe0a0}.metric .label{font-size:12px;color:#b9cde5;margin-top:9px;font-weight:800}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}.card{background:#16253b;border:1px solid #4c6581;border-radius:15px;padding:19px}.card h2{font-size:20px;margin:0 0 14px}.rank{display:flex;gap:12px;align-items:center;border-top:1px solid #324862;padding:12px 0}.rank .pos{font-size:19px;font-weight:1000;color:#e4bf76;min-width:26px}.rank .detail{flex:1;min-width:0;overflow-wrap:anywhere}.rank strong{display:block}.rank small{display:block;color:#b9cce4;margin-top:3px}.bar{height:6px;background:#2b405b;border-radius:5px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#77b7ec,#f1d08c)}.empty{color:#9db1c9;font-size:13px;padding:14px 0}.foot{margin-top:18px;padding:15px;border-left:3px solid #dfbd79;background:#252a39;font-size:12px;color:#d6e1f1}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}.actions a{border:1px solid #8ba5c2;border-radius:10px;padding:11px 15px;background:#243a55;font-weight:850}@media(max-width:680px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.card{padding:16px}.metric{padding:14px}.head{align-items:flex-start}}
+
+/* Seven primary Bey-Lab pages: navigation only; no record data is changed. */
+.bey-seven-nav{box-sizing:border-box;display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:12px auto 18px;padding:10px;max-width:1160px;border:1px solid #435b76;border-radius:12px;background:#10243a;color:#fff;font:700 12px/1.4 system-ui,sans-serif}
+.bey-seven-nav a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#e2edff;padding:9px 11px;border:1px solid #4c6782;border-radius:9px;background:#1a344e;white-space:nowrap}
+.bey-seven-nav a[aria-current="page"]{background:#365d83;color:#fff;border-color:#8dbce6}
+.bey-seven-nav a:focus-visible{outline:3px solid #f4cb69;outline-offset:2px}
+
+/* Hide unactivated static nav; shared header will activate and move it. */
+.bey-seven-nav:not(.bey-seven-active){display:none!important}
+</style><link rel="stylesheet" href="./bey-universal.css"></head><body data-bey-mode="records"><main class="wrap"><header class="head"><div><div class="brand">BEY LAB</div><div class="sub">BATTLE RECORDS · INTELLIGENCE DIVISION</div></div><a class="nav" href="./index.html">⌂ ホームへ戻る</a></header>
+<nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./data.html">💾 データ管理</a><a href="./records.html" aria-current="page">📊 記録と履歴</a></nav>
+<div class="intro"><h1>📊 バトル記録室</h1><p class="hint">記録から強さを読み解く。勝ち抜き・1on1・3on3を、それぞれのルールで分析します。</p></div>
+<div style="margin:14px 0;padding:14px;border:1px solid #ac8850;border-radius:12px;background:#302a24"><strong>🔬 統合研究試作機 α</strong><p class="hint" style="margin:7px 0 12px">3モードの横断分析を試験中。記録データは読み取り専用です。</p><a href="./research-prototype.html" style="display:inline-block;padding:11px 15px;border:1px solid #d1a76c;border-radius:9px;background:#4b3929;color:#ffe6b7;font-weight:800;text-decoration:none">🔬 試作機を開く →</a></div>
+<div class="controls"><label for="env">保存環境</label><select id="env"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select><span id="envBadge" class="pill">🧪 テスト記録</span></div>
+<div class="metrics" id="metrics"></div>
+<div class="grid"><section class="card"><h2>👑 勝ち抜き・勝利ランキング</h2><div id="players"></div></section><section class="card"><h2>⚔️ 勝ち抜き・フィニッシュ傾向</h2><div id="arenaFinishes"></div></section><section class="card"><h2>⚗️ 1on1・カスタム勝率</h2><div id="combos"></div></section><section class="card"><h2>🛡️ 1on1・フィニッシュ傾向</h2><div id="labFinishes"></div></section></div>
+<div class="grid"><section class="card"><h2>🏆 3on3勝敗ランキング</h2><div id="leagueRanks"></div></section><section class="card"><h2>⚡ 3on3得点ブレード</h2><div id="leagueBlades"></div></section></div><div class="grid"><section class="card"><h2>📅 最近の3on3試合</h2><div id="leagueRecent"></div></section><section class="card"><h2>📅 最近の勝ち抜き試合</h2><div id="arenaRecent"></div></section><section class="card"><h2>📋 最近の1on1試合</h2><div id="labRecent"></div></section></div>
+<p class="foot">※ 勝ち抜きV2は1フィニッシュ＝1試合として勝者を集計します。3on3 V2は4点先取で完了した試合を集計します。勝ち抜き中のブレード変更を考慮し、ブレード単位の「試合勝率」は計算しません。1on1の勝率は完了した4点先取試合のみを使用。旧版の単発フィニッシュ記録は試合勝率に含めません。進行中の試合は完了試合数に含めません。</p>
+<div class="actions"><a href="./arena.html">👑 勝ち抜きへ</a><a href="./lab-migration.html?v=12#analysis">⚗️ 1on1詳細分析へ</a><a href="./league.html">🏆 3on3リーグへ</a><a href="./data.html">💾 データ管理室へ</a></div>
+</main><script>
+(function(){"use strict";
+const $=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),fin={spin:"スピン",over:"オーバー",burst:"バースト",extreme:"エクストリーム"};
+const read=k=>{try{const d=JSON.parse(localStorage.getItem(k));return d&&typeof d==="object"?d:null}catch(e){return null}};
+const pct=(n,d)=>d?Math.round(100*n/d)+"%":"—";
+const arr=v=>Array.isArray(v)?v:[];
+const name=s=>[s?.blade,s?.ratchet,s?.bit].filter(Boolean).join(" ")||"機体不明";
+function rank(el,items,fmt){$(el).innerHTML=items.length?items.map((item,i)=>'<div class="rank"><span class="pos">'+(i+1)+'</span><div class="detail"><strong>'+esc(item.label)+'</strong><small>'+esc(fmt(item))+'</small><div class="bar"><i style="width:'+Math.max(0,Math.min(100,item.bar||0))+'%"></i></div></div></div>').join(""):'<div class="empty">まだ記録がありません。</div>'}
+function recent(el,items){$(el).innerHTML=items.length?items.slice(0,8).map(item=>'<div class="rank"><div class="detail"><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></div></div>').join(""):'<div class="empty">完了した試合はありません。</div>'}
+function draw(){
+ const env=$("env").value,arena=read("bey-lab-arena-v2-"+env)||{},lab=read("bey-lab-migration-1on1-v1-"+env)||{},league=read("bey-lab-3on3-v2-"+env)||{};
+ $("envBadge").textContent=env==="official"?"🏆 本番記録":"🧪 テスト記録";$("envBadge").classList.toggle("official",env==="official");
+
+ const arenaMatches=arr(arena.rooms).flatMap(r=>arr(r?.results).filter(m=>m?.winner?.player&&m?.finish).map(m=>({...m,roomDate:r.date,roomId:r.id})));
+ const labMatches=arr(lab.sessions).flatMap(s=>arr(s?.matches).filter(m=>m?.winnerSide&&m.slots).map(m=>({...m,sessionDate:s.date,sessionTitle:s.title})));
+ if(lab.activeMatch?.winnerSide&&lab.activeMatch.slots)labMatches.push({...lab.activeMatch,sessionDate:arr(lab.sessions).find(s=>s.id===lab.activeId)?.date||"",sessionTitle:"現在の研究"});
+ const aEvents=arenaMatches.map(m=>({finish:m.finish,points:1})),
+ lEvents=arr(lab.sessions).flatMap(s=>arr(s?.matches).flatMap(m=>arr(m?.events))).concat(arr(lab.activeMatch?.events));
+ const leagueMatches=arr(league.completed).filter(m=>m&&Array.isArray(m.players)&&m.players.length===2&&Array.isArray(m.scores)&&m.scores.length===2&&arr(m.events).length>0);
+ const metrics=[["勝ち抜き完了試合",arenaMatches.length],["1on1完了試合",labMatches.length],["3on3完了試合",leagueMatches.length],["1on1フィニッシュ",lEvents.filter(e=>fin[e?.finish]).length]];
+ $("metrics").innerHTML=metrics.map(([label,num])=>'<div class="metric"><div class="number">'+num+'</div><div class="label">'+label+'</div></div>').join("");
+ const players=new Map();for(const m of arenaMatches){const n=m.winner.player;players.set(n,(players.get(n)||0)+1)}
+ const playerRanks=[...players].map(([label,n])=>({label,n,bar:n/Math.max(1,...players.values())*100})).sort((a,b)=>b.n-a.n||a.label.localeCompare(b.label,"ja"));rank("players",playerRanks,x=>x.n+"勝");
+ function finishRanks(events){const totals={spin:0,over:0,burst:0,extreme:0};for(const e of events){const type=typeof e?.finish==="string"?e.finish:"";if(fin[type]&&e.points>0)totals[type]++}const max=Math.max(1,...Object.values(totals));return Object.entries(totals).map(([k,n])=>({label:fin[k],n,bar:n/max*100})).sort((a,b)=>b.n-a.n)}
+ rank("arenaFinishes",finishRanks(aEvents),x=>x.n+"回");
+ rank("labFinishes",finishRanks(lEvents),x=>x.n+"回");
+ const combos=new Map();for(const m of labMatches){for(const side of ["B","X"]){const slot=m.slots[side];if(!slot)continue;const key=JSON.stringify([slot.blade,slot.ratchet,slot.bit]);const o=combos.get(key)||{label:name(slot),wins:0,total:0};o.total++;if(side===m.winnerSide)o.wins++;combos.set(key,o)}}
+ const comboRanks=[...combos.values()].map(x=>({...x,bar:x.wins/x.total*100})).sort((a,b)=>b.bar-a.bar||b.total-a.total||a.label.localeCompare(b.label,"ja"));rank("combos",comboRanks,x=>pct(x.wins,x.total)+" · "+x.wins+"勝 / "+x.total+"試合"+(x.total<10?" · 参考値":""));
+
+ const leaguePlayers=new Map(),leagueBlades=new Map();
+ for(const m of leagueMatches){const w=Number(m.scores[0])>Number(m.scores[1])?0:1;
+ for(let i=0;i<2;i++){const n=m.players[i];if(!n)continue;const v=leaguePlayers.get(n)||{label:n,w:0,l:0};if(w===i)v.w++;else v.l++;leaguePlayers.set(n,v)}
+ for(const e of arr(m.events)){const side=Number(e.side),slotIndex=arr(e.active)[side];const full=typeof slotIndex==="number"?m.slots?.[slotIndex]:"";const blade=String(full||"").split(" · ")[0]||"不明";const v=leagueBlades.get(blade)||{label:blade,points:0,count:0};v.points+=Number(e.points)||0;v.count++;leagueBlades.set(blade,v)}}
+ const lr=[...leaguePlayers.values()].sort((a,b)=>b.w-a.w||a.label.localeCompare(b.label,"ja")).slice(0,10);rank("leagueRanks",lr.map(x=>({...x,bar:x.w/Math.max(1,...lr.map(y=>y.w))*100})),x=>x.w+"勝 "+x.l+"敗（3on3 V2）");
+ const lb=[...leagueBlades.values()].sort((a,b)=>b.points-a.points||a.label.localeCompare(b.label,"ja")).slice(0,10);rank("leagueBlades",lb.map(x=>({...x,bar:x.points/Math.max(1,...lb.map(y=>y.points))*100})),x=>x.points+"点 · "+x.count+"フィニッシュ");
+ recent("leagueRecent",leagueMatches.slice().reverse().map(m=>({title:"🏆 "+esc(m.players[Number(m.scores[0])>Number(m.scores[1])?0:1]||"勝者")+" 勝利",sub:(m.ended||"").slice(0,10)+" · "+m.scores.join("–")+" · "+arr(m.events).length+"フィニッシュ"})));
+ recent("arenaRecent",arenaMatches.slice().reverse().map(m=>({title:"🏆 "+m.winner.player+" 勝利",sub:(m.roomDate||"")+" · "+String(m.finish||"")+"フィニッシュ"})));
+
+ recent("labRecent",labMatches.slice().reverse().map(m=>({title:"🏆 "+(m.slots[m.winnerSide]?.player||"勝者")+" · "+name(m.slots[m.winnerSide]),sub:(m.sessionTitle||m.sessionDate||"")+" · "+name(m.slots.B)+" VS "+name(m.slots.X)})));
+}
+try{if(localStorage.getItem("bey-lab-environment-v1")==="official")$("env").value="official"}catch(e){}
+$("env").addEventListener("change",draw);draw();
+})();
+</script><script src="./bey-universal.js?v=9"></script></body></html>
