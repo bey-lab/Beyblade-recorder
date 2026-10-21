@@ -662,7 +662,7 @@ function m17RenderSide(side){
  }).join("");
  const saveButton='<button type="button" data-action="m17-save-current" data-side="'+side+'" '+(!slot.blade||(!slot.ratchet&&!integratedSlot(slot))||!slot.bit?'disabled':'')+'>＋ 現在の機体を保存</button>';
  const help=presets.length?'':'<p class="m17-empty">保存済み完成ベイはまだありません。現在の機体を保存するか、パーツ管理で登録できます。</p>';
- host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div>'+help+'<div class="m17-row">'+saveButton+'</div></div>';
+ host.innerHTML=head+'<div class="m17-expanded">'+sections+'<small>保存済み完成ベイ / '+presets.length+'機</small><div class="m17-row">'+presets.map((x,i)=>({x,i})).sort((a,b)=>a.x.blade.localeCompare(b.x.blade,'ja')||a.x.ratchet.localeCompare(b.x.ratchet,'ja',{numeric:true})||a.x.bit.localeCompare(b.x.bit,'ja')||a.i-b.i).map(({x,i})=>'<button type="button" data-action="m17-preset" data-side="'+side+'" data-index="'+i+'">'+esc([x.blade,x.ratchet,x.bit].join(" · "))+'</button>').join("")+'</div>'+help+'<div class="m17-row">'+saveButton+'</div></div>';
 }
 function m17LoadPreset(side,index){
  const item=m17Presets(data.slots[side].player)[index];if(!item)return;
