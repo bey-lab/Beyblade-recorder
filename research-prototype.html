@@ -21,7 +21,7 @@ function ingestLeague(m,index){for(const [j,e] of arr(m.events).entries()){const
 arr(league.completed).forEach(ingestLeague);if(league.phase==='battle'&&arr(league.events).length)ingestLeague(league,'active');
 return {events:out,qa}}
 const state={events:[],qa:[]};function options(id,values,all){let sel=$(id),prev=sel.value;sel.innerHTML='<option value="">'+all+'</option>'+values.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');if(values.includes(prev))sel.value=prev;else if(id==='blade'&&values.length)sel.value=values[0]}
-function refreshOptions(){const bs=[...new Set(state.events.flatMap(e=>[e.winner.blade,e.loser.blade]))].sort((a,b)=>a.localeCompare(b,'ja'));options('blade',bs,'全ブレード');options('opponent',bs,'対戦相手を指定しない');const cs=[...new Set(state.events.flatMap(e=>[e.winner,e.loser]).filter(x=>!$('blade').value||x.blade===$('blade').value).map(key))];const old=$('custom').value;$('custom').innerHTML='<option value="">全カスタム</option>'+cs.map(k=>'<option value="'+esc(k)+'">'+esc(build(JSON.parse(k)))+'</option>').join('');if(cs.includes(old))$('custom').value=old}
+function refreshOptions(){const bs=[...new Set(state.events.flatMap(e=>[e.winner.blade,e.loser.blade]))].sort((a,b)=>a.localeCompare(b,'ja'));options('blade',bs,'全ブレード');options('opponent',bs,'対戦相手を指定しない');const cs=[...new Set(state.events.flatMap(e=>[e.winner,e.loser]).filter(x=>!$('blade').value||x.blade===$('blade').value).map(key))];const old=$('custom').value;$('custom').innerHTML='<option value="">全カスタム</option>'+cs.map(k=>'<option value="'+esc(k)+'">'+esc(build(partsFromKey(k)))+'</option>').join('');if(cs.includes(old))$('custom').value=old}
 function summarize(events,focus){let wins=0,loss=0,pts=0,against=0,fin={spin:0,over:0,burst:0,extreme:0};for(const e of events){const w=focus(e.winner),l=focus(e.loser);if(w&&!l){wins++;pts+=e.points;fin[e.finish]++}else if(l&&!w){loss++;against+=e.points}}return {wins,loss,pts,against,fin,total:wins+loss,rate:wins+loss?wins/(wins+loss):null}}
 const pct=n=>n==null?'—':Math.round(n*1000)/10+'%',card=(t,v,sub)=>'<div class="card"><small>'+t+'</small><strong>'+v+'</strong><small>'+sub+'</small></div>';
 function render(){renderToday();renderCompare();const subset=scopedEvents();const target=$('blade').value,custom=$('custom').value,opponent=$('opponent').value;const relevant=subset.filter(e=>(!target||e.winner.blade===target||e.loser.blade===target)&&(!opponent||e.winner.blade===opponent||e.loser.blade===opponent));const focused=relevant.filter(e=>{const w=(!target||e.winner.blade===target)&&(!custom||key(e.winner)===custom),l=(!target||e.loser.blade===target)&&(!custom||key(e.loser)===custom);return (w&&(!opponent||e.loser.blade===opponent))||(l&&(!opponent||e.winner.blade===opponent))});const predicate=p=>(!target||p.blade===target)&&(!custom||key(p)===custom);const s=summarize(focused,predicate);
@@ -43,10 +43,11 @@ function compareChoices(){
  const old=$('compareBlade').value;options('compareBlade',blades,'ブレードを選択');if(blades.includes(old))$('compareBlade').value=old;else if(blades.length)$('compareBlade').value=blades.includes('バハムートブリッツ')?'バハムートブリッツ':blades[0];
  updateCompareBuilds();
 }
+function partsFromKey(k){const [blade,ratchet,bit]=JSON.parse(k);return {blade,ratchet,bit}}
 function updateCompareBuilds(){
  const blade=$('compareBlade').value,builds=new Map();for(const e of state.events)for(const p of [e.winner,e.loser])if(p.blade===blade)builds.set(key(p),p);
- const ks=[...builds.keys()].sort((a,b)=>build(JSON.parse(a)).localeCompare(build(JSON.parse(b)),'ja',{numeric:true}));
- for(const id of ['compareA','compareB']){const prev=$(id).value;$(id).innerHTML='<option value="">選択してください</option>'+ks.map(k=>'<option value="'+esc(k)+'">'+esc(build(JSON.parse(k)))+'</option>').join('');if(ks.includes(prev))$(id).value=prev}
+ const ks=[...builds.keys()].sort((a,b)=>{const x=partsFromKey(a),y=partsFromKey(b);return Number(!!y.ratchet&&!!y.bit)-Number(!!x.ratchet&&!!x.bit)||build(x).localeCompare(build(y),'ja',{numeric:true})});
+ for(const id of ['compareA','compareB']){const prev=$(id).value;$(id).innerHTML='<option value="">選択してください</option>'+ks.map(k=>'<option value="'+esc(k)+'">'+esc(build(partsFromKey(k)))+'</option>').join('');if(ks.includes(prev))$(id).value=prev}
  if(!$('compareA').value&&ks.length)$('compareA').value=ks[0];if(!$('compareB').value&&ks.length>1)$('compareB').value=ks.find(k=>k!==$('compareA').value)||'';
  const others=[...new Set(state.events.flatMap(e=>[e.winner.blade,e.loser.blade]))].filter(b=>b!==blade).sort((a,b)=>a.localeCompare(b,'ja'));const prev=$('compareOpponent').value;options('compareOpponent',others,'相手を指定しない');if(others.includes(prev))$('compareOpponent').value=prev;renderCompare();
 }
@@ -55,7 +56,7 @@ function renderCompare(){
  if(!a||!b||a===b){$('comparison').innerHTML='<p class="muted">異なる2つのカスタムを選択すると、勝率・得点・対戦相性を比較できます。</p>';return}
  const events=scopedEvents(),calc=k=>summarize(events.filter(e=>(key(e.winner)===k&&(!opp||e.loser.blade===opp))||(key(e.loser)===k&&(!opp||e.winner.blade===opp))),p=>key(p)===k);
  const sa=calc(a),sb=calc(b),diff=sa.rate==null||sb.rate==null?null:(sb.rate-sa.rate)*100;
- $('comparison').innerHTML='<p>'+esc(blade)+' · '+(opp?'対 '+esc(opp):'全対戦相手')+'</p><table><thead><tr><th>指標</th><th>A '+esc(build(JSON.parse(a)))+'</th><th>B '+esc(build(JSON.parse(b)))+'</th></tr></thead><tbody>'+
+ $('comparison').innerHTML='<p>'+esc(blade)+' · '+(opp?'対 '+esc(opp):'全対戦相手')+'</p><table><thead><tr><th>指標</th><th>A '+esc(build(partsFromKey(a)))+'</th><th>B '+esc(build(partsFromKey(b)))+'</th></tr></thead><tbody>'+
  [['フィニッシュ',sa.total,sb.total],['勝敗',sa.wins+'-'+sa.loss,sb.wins+'-'+sb.loss],['勝率',pct(sa.rate),pct(sb.rate)],['獲得点',sa.pts,sb.pts],['失点',sa.against,sb.against],['得失点差',sa.pts-sa.against,sb.pts-sb.against],['平均獲得点',sa.total?(sa.pts/sa.total).toFixed(2):'—',sb.total?(sb.pts/sb.total).toFixed(2):'—']].map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>').join('')+'</tbody></table><p>'+(diff===null?'比較可能なフィニッシュ記録が不足しています。':'Bの勝率はAより '+(diff>=0?'+':'')+diff.toFixed(1)+'ポイント。')+(sa.total<10||sb.total<10?' どちらかの試行回数が10回未満のため参考値です。':'')+'</p><p class="muted">※ A/Bは同じ期間・モード・対戦相手条件で抽出しています。カスタム以外の条件差や偶然の影響は残ります。</p>';
 }
 
