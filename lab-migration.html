@@ -857,7 +857,8 @@ function history(){
   const matchCount=s.matches.length+(live?.winnerSide?1:0);
   return '<details class="series" '+(active?'open':"")+'><summary>📅 '+esc(s.date)+' · '+esc(s.title||"無題の研究")+
   '　('+matchCount+'試合'+(s.records.length?' / 旧記録'+s.records.length+'件':'')+')'+(active?' · 進行中':'')+'</summary><div class="series-inner">'+
-  s.matches.slice().reverse().map((m,i)=>matchView(m,s.matches.length-i)).join("")+
+  s.matches.slice().reverse().slice(0,10).map((m,i)=>matchView(m,s.matches.length-i)).join("")+
+  (s.matches.length>10?'<details class="series"><summary>▼ 残り'+(s.matches.length-10)+'試合をすべて表示</summary><div class="series-inner">'+s.matches.slice(0,-10).reverse().map((m,i)=>matchView(m,s.matches.length-10-i)).join("")+'</div></details>':"")+
   (live?matchView(live,s.matches.length+1,true):"")+
   (s.records.length?'<details class="series"><summary>📦 旧版の単発フィニッシュ記録 · '+s.records.length+'件（4点先取の試合数に含めない）</summary><div class="series-inner">'+
    s.records.slice().reverse().map(r=>{
