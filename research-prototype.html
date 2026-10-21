@@ -80,7 +80,7 @@ function updateCompareBuilds(){
 }
 function renderCompare(){
  const a=$('compareA').value,b=$('compareB').value,blade=$('compareBlade').value,opp=$('compareOpponent').value;
- if(!a||!b||a===b){$('comparison').innerHTML='<p class="muted">異なる2つのカスタムを選択すると、勝率・得点・対戦相性を比較できます。</p>';return}
+ if(!a||!b||a===b){$('comparison').innerHTML='<p class="muted">異なる2つのカスタムを選択すると、勝率・得点・対戦相性を比較できます。</p>';$('comparisonComment').textContent='比較する2つのカスタムを選択してください。';return}
  const events=scopedEvents(),calc=k=>summarize(events.filter(e=>(key(e.winner)===k&&(!opp||e.loser.blade===opp))||(key(e.loser)===k&&(!opp||e.winner.blade===opp))),p=>key(p)===k);
  const sa=calc(a),sb=calc(b),diff=sa.rate==null||sb.rate==null?null:(sb.rate-sa.rate)*100;
  $('comparison').innerHTML='<p>'+esc(blade)+' · '+(opp?'対 '+esc(opp):'全対戦相手')+'</p><table><thead><tr><th>指標</th><th>A '+esc(build(partsFromKey(a)))+'</th><th>B '+esc(build(partsFromKey(b)))+'</th></tr></thead><tbody>'+
