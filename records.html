@@ -73,7 +73,7 @@ let todayExpanded=false,todayRenderedDate='',todayPlayer='';
 function renderToday(){
  const today=$('date').value,all=state.events.filter(e=>e.date===today);
  if(todayRenderedDate!==today){todayExpanded=false;todayRenderedDate=today}
- const names=[...new Set(state.events.flatMap(e=>[e.winner.player,e.loser.player]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));
+ const names=[...new Set(state.events.flatMap(e=>[e.winner.player,e.loser.player]).filter(n=>n&&!/^プレイヤー[１２12]$/.test(n)))].sort((a,b)=>a.localeCompare(b,'ja'));
  if(todayPlayer&&!names.includes(todayPlayer))todayPlayer='';
  $('playerTabs').innerHTML=['',...names].map(n=>'<button type="button" data-research-player="'+esc(n)+'" class="'+(n===todayPlayer?'active':'')+'" aria-pressed="'+(n===todayPlayer)+'">'+esc(n||'🌐 全員')+'</button>').join('');
  const allEvents=todayPlayer?all.filter(e=>e.winner.player===todayPlayer||e.loser.player===todayPlayer):all;
