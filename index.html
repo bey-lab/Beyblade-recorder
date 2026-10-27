@@ -73,6 +73,7 @@ body.legacy #home{display:none!important}
 
 /* Hide unactivated static nav; shared header will activate and move it. */
 .bey-seven-nav:not(.bey-seven-active){display:none!important}
+.launch-guide{margin:15px 0;background:linear-gradient(145deg,#182e47,#101e31);border:1px solid #7996af;border-radius:16px;overflow:hidden}.launch-guide summary{list-style:none;cursor:pointer;padding:17px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:900;color:#f3f7ff}.launch-guide summary::-webkit-details-marker{display:none}.launch-guide summary small{display:block;font-size:10px;color:#9ebdd9;font-weight:750;letter-spacing:.07em;margin-top:4px}.launch-guide-arrow{font-size:12px;color:#f7ca51;flex-shrink:0}.launch-guide[open] .launch-guide-arrow{font-size:0}.launch-guide[open] .launch-guide-arrow::after{content:"閉じる ▴";font-size:12px}.launch-guide-body{padding:0 14px 15px}.launch-intro{color:#c6d9ec;font-size:13px;margin:0 2px 12px}.launch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.launch-tech{background:#17283e;border:1px solid #384f68;border-radius:12px;padding:13px;min-width:0}.launch-tag{display:block;color:#f1c978;font-size:10px;font-weight:900;margin-bottom:6px}.launch-tech strong{display:block;font-size:14px}.launch-tech p{color:#b9cde2;font-size:12px;margin:7px 0 9px;line-height:1.65}.launch-point{color:#87ddbc;font-size:11px;font-weight:800}.launch-experiment{background:#263144;border-left:3px solid #f1c978;border-radius:10px;padding:12px;margin-top:11px;font-size:13px}.launch-experiment p{font-size:12px;color:#d0ddee;margin:6px 0 0}.launch-caution{color:#a4b9d1;font-size:11px;line-height:1.6;margin:11px 2px 0}@media(max-width:440px){.launch-grid{grid-template-columns:1fr}}
 </style><link rel="stylesheet" href="./bey-universal.css">
 </head>
 <body data-bey-mode="home">
@@ -90,6 +91,20 @@ body.legacy #home{display:none!important}
  </nav>
  <a href="./biological-report.html" class="home-extra" style="border-color:#839477;background:linear-gradient(110deg,#283328,#192438)"><span class="home-extra-icon">◈</span><span><strong>戦闘傾向分析 <small>EXTRA RESEARCH · 試作</small></strong><span>その日の戦績から、謎の生物学的称号を判定します</span></span><span class="home-extra-go">ANALYZE ↗</span></a>
  <a href="./extra.html" class="home-extra"><span class="home-extra-icon">🎲</span><span><strong>お題箱 <small>EXTRA MODE · 試作</small></strong><span>カスタム縛りや変なお題で遊ぶ、おふざけ実験室</span></span><span class="home-extra-go">PLAY ↗</span></a>
+ <details class="launch-guide">
+  <summary><span>🎯 シュートの基本 <small>LAUNCH TECHNIQUES · 初心者ガイド</small></span><span class="launch-guide-arrow">開く ▾</span></summary>
+  <div class="launch-guide-body">
+   <p class="launch-intro">シュートの<strong>角度・着地点・強さ</strong>で動きは変わる。まずは同じベイで撃ち比べよう！</p>
+   <div class="launch-grid">
+    <div class="launch-tech"><span class="launch-tag">01 · 基本</span><strong>水平シュート</strong><p>ランチャーをほぼ水平に構え、安定した着地を狙う。まずはこれを基準に軌道を観察しよう。</p><span class="launch-point">◎ 比較実験の基準</span></div>
+    <div class="launch-tech"><span class="launch-tag">02 · 斜め</span><strong>バンクシュート</strong><p>ランチャーを少し傾けて撃つ。アタック型の動きを変え、中央へ切り込む軌道を試せる。</p><span class="launch-point">◎ 傾けすぎに注意</span></div>
+    <div class="launch-tech"><span class="launch-tag">03 · 応用</span><strong>スライディングシュート</strong><p>傾きと着地点を調整し、曲線を描いて相手へ向かう攻撃を狙う。成功率はビットや練習次第。</p><span class="launch-point">◎ 初撃の角度に注目</span></div>
+    <div class="launch-tech"><span class="launch-tag">04 · 着地</span><strong>ドロップ系の狙い</strong><p>狙った場所へ素直に落とす意識。中央寄りと外周寄りで着地点を変え、動きの違いを比べよう。</p><span class="launch-point">◎ 水平＝必ずドロップではない</span></div>
+   </div>
+   <div class="launch-experiment"><strong>🔬 研究所からの実験課題</strong><p>同じカスタム・同じ相手で、①水平 ②軽く斜め ③着地点変更を各5〜10回。<strong>勝敗だけでなく、最初の衝突と自滅の有無</strong>も見てみよう。</p></div>
+   <p class="launch-caution">※ 「どこから撃つか」と「どこに着地させるか」は別。公式大会ではシュート位置・姿勢などのルールを守り、無理な高さや角度での発射は避けよう。技の効き方はスタジアムやビットによって変わる。</p>
+  </div>
+ </details>
  <div class="home-bottom">
   <a class="home-link" href="./records.html"><span class="symbol" aria-hidden="true">▥</span><span><strong>記録を見る →</strong><small>勝ち抜き・1on1・3on3の戦績と分析</small></span></a>
  </div>
