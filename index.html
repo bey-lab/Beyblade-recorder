@@ -75,6 +75,7 @@ body.legacy #home{display:none!important}
 .bey-seven-nav:not(.bey-seven-active){display:none!important}
 .launch-guide{margin:15px 0;background:linear-gradient(145deg,#182e47,#101e31);border:1px solid #7996af;border-radius:16px;overflow:hidden}.launch-guide summary{list-style:none;cursor:pointer;padding:17px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:900;color:#f3f7ff}.launch-guide summary::-webkit-details-marker{display:none}.launch-guide summary small{display:block;font-size:10px;color:#9ebdd9;font-weight:750;letter-spacing:.07em;margin-top:4px}.launch-guide-arrow{font-size:12px;color:#f7ca51;flex-shrink:0}.launch-guide[open] .launch-guide-arrow{font-size:0}.launch-guide[open] .launch-guide-arrow::after{content:"閉じる ▴";font-size:12px}.launch-guide-body{padding:0 14px 15px}.launch-intro{color:#c6d9ec;font-size:13px;margin:0 2px 12px}.launch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.launch-tech{background:#17283e;border:1px solid #384f68;border-radius:12px;padding:13px;min-width:0}.launch-tag{display:block;color:#f1c978;font-size:10px;font-weight:900;margin-bottom:6px}.launch-tech strong{display:block;font-size:14px}.launch-tech p{color:#b9cde2;font-size:12px;margin:7px 0 9px;line-height:1.65}.launch-point{color:#87ddbc;font-size:11px;font-weight:800}.launch-experiment{background:#263144;border-left:3px solid #f1c978;border-radius:10px;padding:12px;margin-top:11px;font-size:13px}.launch-experiment p{font-size:12px;color:#d0ddee;margin:6px 0 0}.launch-caution{color:#a4b9d1;font-size:11px;line-height:1.6;margin:11px 2px 0}@media(max-width:440px){.launch-grid{grid-template-columns:1fr}}
 .launch-types-title{font-weight:900;font-size:14px;margin:16px 2px 9px;color:#f1d18d}.launch-type-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.launch-type-card{border-radius:12px;padding:12px;background:#17283e;border:1px solid #405875;border-top:3px solid var(--type-color);min-width:0}.launch-type-card.attack{--type-color:#faab82}.launch-type-card.defense{--type-color:#94bdff}.launch-type-card.stamina{--type-color:#83d7b0}.launch-type-card strong{font-size:13px;display:block}.launch-type-card span{font-size:11px;font-weight:800;color:var(--type-color);display:block;margin-top:6px}.launch-type-card p{font-size:12px;color:#c5d5e8;line-height:1.65;margin:8px 0 0}.launch-type-card p strong{font-size:inherit;display:inline;color:#eff6ff}.launch-type-foot{font-size:11px;color:#aac0d7;line-height:1.6;margin:9px 2px 4px}@media(max-width:560px){.launch-type-grid{grid-template-columns:1fr}}
+.launch-map{background:#101f33;border:1px solid #3a5672;border-radius:13px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:14px}.launch-map svg{display:block;width:100%;height:auto;max-height:315px}.launch-map-legend{display:grid;gap:9px}.launch-map-legend>div{padding:9px 11px;background:#1b2c44;border-radius:10px;border:1px solid #354d67}.launch-map-legend b{font-size:13px}.launch-map-legend .map-a{color:#83D7B0}.launch-map-legend .map-b{color:#F6CA65}.launch-map-legend .map-c{color:#F49F9F}.launch-map-legend p{font-size:11px;color:#bdcde0;line-height:1.65;margin:4px 0 0}.launch-map-legend p strong{color:#edf5ff}@media(max-width:500px){.launch-map{grid-template-columns:1fr}.launch-map svg{max-height:280px}}
 </style><link rel="stylesheet" href="./bey-universal.css">
 </head>
 <body data-bey-mode="home">
@@ -97,13 +98,42 @@ body.legacy #home{display:none!important}
   <div class="launch-guide-body">
    <p class="launch-intro">シュートの<strong>角度・着地点・強さ</strong>で動きは変わる。まずは同じベイで撃ち比べよう！</p>
    <div class="launch-types-title">🧭 タイプ別・シュートの基本</div>
-   <p class="launch-intro">迷ったらまず水平シュートから。タイプごとに<strong>何を優先するか</strong>を意識しよう。</p>
+   <p class="launch-intro">迷ったらまずフラットシュートから。タイプごとに<strong>何を優先するか</strong>を意識しよう。</p>
    <div class="launch-type-grid">
     <div class="launch-type-card attack"><strong>⚔️ アタック型</strong><span>水平〜軽い斜め</span><p>狙いは<strong>相手への強い衝突</strong>。中央へ切り込む軌道や初撃の角度を探そう。空振りと自滅に注意。</p></div>
     <div class="launch-type-card defense"><strong>🛡️ ディフェンス型</strong><span>水平を基本に</span><p>狙いは<strong>姿勢を保って攻撃を受け止める</strong>こと。中央付近を基準に、相手の攻撃が集中するなら少し外側も試そう。</p></div>
     <div class="launch-type-card stamina"><strong>🌀 スタミナ型</strong><span>水平を基本に</span><p>狙いは<strong>余計な移動を抑え、回転を長持ちさせる</strong>こと。中央寄りで安定させ、傾きや無駄な動きを減らそう。</p></div>
    </div>
    <p class="launch-type-foot">基本は目安。実際の正解はビット・相手・スタジアムで変わる。バランス型はカスタムに合う狙いを選ぼう。</p>
+   <div class="launch-types-title">📍 着地点の基本マップ</div>
+   <p class="launch-intro">スタジアムの<strong>どこに着地させるか</strong>でも戦い方が変わる。まずは3つの位置を覚えよう。</p>
+   <div class="launch-map">
+    <svg viewBox="0 0 340 258" role="img" aria-labelledby="launch-map-title launch-map-desc" xmlns="http://www.w3.org/2000/svg">
+     <title id="launch-map-title">スタジアムの着地点A・B・C</title>
+     <desc id="launch-map-desc">Aは中央付近、Bは中央から少し外側、Cは外周寄り。模式図であり実際のスタジアム形状とは異なります。</desc>
+     <rect x="39" y="12" width="262" height="232" rx="72" fill="#142940" stroke="#6985A4" stroke-width="3"/>
+     <ellipse cx="170" cy="124" rx="97" ry="89" fill="#203D59" stroke="#6182A1" stroke-width="2"/>
+     <ellipse cx="170" cy="124" rx="57" ry="51" fill="#2B4A62" stroke="#5D819E" stroke-dasharray="4 5"/>
+     <path d="M72 76 Q45 125 72 170" fill="none" stroke="#85B3D8" stroke-width="7" stroke-linecap="round"/>
+     <path d="M268 76 Q295 125 268 170" fill="none" stroke="#85B3D8" stroke-width="7" stroke-linecap="round"/>
+     <path d="M140 221 Q170 239 200 221" stroke="#D7A15C" stroke-width="14" fill="none" stroke-linecap="round"/>
+     <circle cx="170" cy="124" r="15" fill="#79D7AE" fill-opacity=".3" stroke="#83D7B0" stroke-width="2.5"/>
+     <circle cx="214" cy="92" r="15" fill="#F6CA65" fill-opacity=".3" stroke="#F6CA65" stroke-width="2.5"/>
+     <circle cx="105" cy="81" r="15" fill="#F49F9F" fill-opacity=".3" stroke="#F49F9F" stroke-width="2.5"/>
+     <g font-size="13" font-weight="bold" text-anchor="middle">
+      <text x="170" y="129" fill="#C2F4DE">A</text>
+      <text x="214" y="97" fill="#FFE7A8">B</text>
+      <text x="105" y="86" fill="#FFD1D1">C</text>
+     </g>
+     <g font-size="11" fill="#B5C8DC"><text x="170" y="9" text-anchor="middle">奥側</text><text x="170" y="258" text-anchor="middle">手前（Xゾーン側）</text></g>
+    </svg>
+    <div class="launch-map-legend">
+     <div><b class="map-a">A · 中央付近</b><p><strong>持久・防御の基本候補。</strong> 移動を抑えやすいが、相手の攻撃が集中する場合もある。</p></div>
+     <div><b class="map-b">B · 少し外側</b><p><strong>初撃の位置をずらす候補。</strong> 中央へ切り込むアタックや、中央狙いを避ける研究に。</p></div>
+     <div><b class="map-c">C · 外周寄り</b><p><strong>走りを利用する攻撃の候補。</strong> 速度やレール進入を狙える一方、空振り・自滅にも注意。</p></div>
+    </div>
+   </div>
+   <p class="launch-type-foot">※ 位置は着地点のイメージ。シュートする立ち位置ではない。実際のスタジアム形状やシュート範囲は使用環境・公式ルールに従おう。</p>
    <div class="launch-types-title">🎯 シュート技術の違い</div>
    <div class="launch-grid">
     <div class="launch-tech"><span class="launch-tag">01 · 基本</span><strong>フラットシュート</strong><p>ランチャーをほぼ水平に構えて撃つ。安定した着地を狙い、ほかのシュートを試すときの基準にしよう。</p><span class="launch-point">◎ まずはここから</span></div>
