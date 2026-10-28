@@ -10,7 +10,7 @@
 <div class="panel"><div class="entryhead"><strong id="environment">🧪 テスト環境</strong><span class="tiny">対戦記録とは別保存・この端末内</span></div></div>
 <section class="panel"><h2>01 · 練習メニュー</h2>
 <div class="grid">
-<label class="field">技術<select id="tech"><option value="flat">01 フラットシュート</option><option value="bank">02 バンクシュート</option><option value="slide">03 スライディングシュート</option><option value="match">04 実戦での使い分け</option></select></label>
+<label class="field">技術<select id="tech"><option value="flat">01 フラットシュート</option><option value="bank">02 バンクシュート</option><option value="slide">03 スライディングシュート</option></select></label>
 <label class="field">狙い<select id="target"><option value="center">A · 中央付近</option><option value="middle">B · 少し外側</option><option value="outer">C · 外周寄り</option><option value="path">狙った攻撃軌道</option><option value="counter">迎撃・カウンター</option><option value="avoid">初撃をかわす</option></select></label>
 <label class="field">使用ベイ（任意）<input id="bey" maxlength="70" placeholder="例：バハムートブリッツ"></label>
 </div>
@@ -37,13 +37,13 @@
  const env=localStorage.getItem('bey-lab-environment-v1')==='official'?'official':'test';
  const key='bey-lab-launch-training-v1-'+env;
  const el=id=>document.getElementById(id);
- const labels={flat:'フラット',bank:'バンク',slide:'スライディング',match:'実戦'};
+ const labels={flat:'フラット',bank:'バンク',slide:'スライディング',match:'実戦（過去記録）'};
  const targets={center:'A · 中央',middle:'B · 少し外側',outer:'C · 外周',path:'攻撃軌道',counter:'迎撃',avoid:'回避'};
  let data=[];try{const v=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(v))data=v.filter(x=>x&&Array.isArray(x.shots));}catch(e){}
  let shots=[];
  el('environment').textContent=env==='test'?'🧪 テスト環境':'🏆 本番環境';
  const draftkey=key+'-draft';
- try{const v=JSON.parse(localStorage.getItem(draftkey)||'null');if(v&&Array.isArray(v.shots)){shots=v.shots.filter(x=>x===1||x===0);if(labels[v.tech])el('tech').value=v.tech;if(targets[v.target])el('target').value=v.target;el('bey').value=v.bey||'';el('memo').value=v.memo||'';}}catch(e){}
+ try{const v=JSON.parse(localStorage.getItem(draftkey)||'null');if(v&&Array.isArray(v.shots)){shots=v.shots.filter(x=>x===1||x===0);if(['flat','bank','slide'].includes(v.tech))el('tech').value=v.tech;if(targets[v.target])el('target').value=v.target;el('bey').value=v.bey||'';el('memo').value=v.memo||'';}}catch(e){}
  function draft(){try{localStorage.setItem(draftkey,JSON.stringify({shots,tech:el('tech').value,target:el('target').value,bey:el('bey').value,memo:el('memo').value}));}catch(e){el('status').textContent='一時保存できません。端末の空き容量を確認してください。';}}
  function percent(n,d){return d?Math.round(100*n/d)+'%':'—';}
  function render(){
@@ -52,7 +52,7 @@
   el('shots').innerHTML=shots.map((v,i)=>'<span class="shot '+(v?'y':'n')+'" title="'+(i+1)+'発目">'+(v?'✓':'×')+'</span>').join('');
   el('undo').disabled=!shots.length;el('save').disabled=!shots.length;
   const t=el('tech').value, aim=el('target').value;
-  el('goal').textContent=(t==='match'?'実戦で狙った戦術を実行できたら成功。':aim==='path'||aim==='counter'||aim==='avoid'?'狙った動きを再現できたら成功。':'狙った場所に着地したら成功。')+' 判定基準を決めてから撃とう。';
+  el('goal').textContent=(aim==='path'||aim==='counter'||aim==='avoid'?'狙った動きを再現できたら成功。':'狙った場所に着地したら成功。')+' 判定基準を決めてから撃とう。';
   el('sessions').textContent=data.length;const all=data.flatMap(x=>x.shots);el('allshots').textContent=all.length;el('allrate').textContent=percent(all.filter(Boolean).length,all.length);
   el('techstats').innerHTML=Object.keys(labels).map(t=>{const a=data.filter(x=>x.tech===t).flatMap(x=>x.shots);return '<div class="stat"><b>'+percent(a.filter(Boolean).length,a.length)+'</b><span>'+labels[t]+'（'+a.length+'発）</span></div>';}).join('');
   el('history').innerHTML=data.length?data.slice().reverse().map((x,idx)=>{const n=x.shots.filter(Boolean).length;return '<div class="entry"><div class="entryhead"><strong>'+escapeHtml(labels[x.tech]||x.tech)+' · '+percent(n,x.shots.length)+'</strong><button class="delete" data-remove="'+(data.length-1-idx)+'">削除</button></div><div class="entrysmall">'+new Date(x.date).toLocaleString('ja-JP')+' ／ '+escapeHtml(targets[x.target]||x.target)+' ／ '+x.shots.length+'発 '+n+'成功'+(x.bey?' ／ '+escapeHtml(x.bey):'')+'</div>'+(x.memo?'<div class="entrysmall">'+escapeHtml(x.memo)+'</div>':'')+'</div>';}).join(''):'<p>まだ練習記録がない。最初の10発を撃とう！</p>';
