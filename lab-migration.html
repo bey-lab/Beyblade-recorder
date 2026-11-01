@@ -250,6 +250,14 @@ input[type=file]{display:none}
 :root[data-finish-style="flashy"] .finish-pad-grid .finishbtn small{position:absolute;bottom:2px;right:5px;font-size:10px;background:#071221da;border-radius:6px;padding:2px 5px;color:#fff;z-index:2}
 :root[data-finish-style="flashy"] .finish-pad-grid .finishbtn:before{display:none}
 :root[data-finish-style="flashy"] .finish-pad-grid .finishbtn:active{filter:brightness(1.25)}
+
+/* Flashy mode only: reinforce the B/X territories without changing buttons or events. */
+:root[data-finish-style="flashy"] .finishgrid{column-gap:22px}
+:root[data-finish-style="flashy"] .finish-side{padding:10px 11px 12px;border:1px solid #ad6572;border-radius:13px;background:linear-gradient(145deg,#572a3840,#17243b55)}
+:root[data-finish-style="flashy"] .finish-side.x{border-color:#538bc8;background:linear-gradient(145deg,#204f8940,#17243b55)}
+:root[data-finish-style="flashy"] .finish-side-title{padding:5px 8px;border-radius:7px;background:#703b485c}
+:root[data-finish-style="flashy"] .finish-side.x .finish-side-title{background:#255b945c}
+@media(max-width:650px){:root[data-finish-style="flashy"] .finishgrid{column-gap:12px}:root[data-finish-style="flashy"] .finish-side{padding:7px 5px}}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
