@@ -14,6 +14,9 @@
 :root[data-finish-style="flashy"] #finishRows .finish strong{font-size:11px;color:#fff;display:block;margin-top:38px;text-shadow:0 1px 5px #000}
 :root[data-finish-style="flashy"] #finishRows .finish small{font-size:9px;color:#d6e6fa}
 @media(max-width:720px){:root[data-finish-style="flashy"] #finishRows{gap:9px}:root[data-finish-style="flashy"] #finishRows .finish{min-height:73px}:root[data-finish-style="flashy"] #finishRows .finish strong{margin-top:28px}}
+
+/* iPad landscape: give the 3on3 arena more horizontal breathing room. */
+@media (min-width:1024px) and (orientation:landscape){main{max-width:1440px;width:100%;padding-left:18px;padding-right:18px}}
 </style><script>try{document.documentElement.dataset.finishStyle=localStorage.getItem("bey-lab-finish-style-v1")==="flashy"?"flashy":"simple"}catch(e){document.documentElement.dataset.finishStyle="simple"}</script></head><body><main><header class="top"><div><div class="tag">BEY LAB / 3ON3 BATTLE</div><h1>🏆 3on3 <span style="color:#e9c684">BATTLE</span></h1><div class="hint">プレイヤー・完成ベイはパーツ管理と共有 · 旧3on3の記録は移行しません</div></div><a href="./index.html?home=1">⌂ ホーム</a></header>
 <nav class="bey-seven-nav" aria-label="BEY LAB 基本7ページ"><a href="./index.html?home=1">⌂ ホーム</a><a href="./arena.html">👑 勝ち抜き</a><a href="./lab-migration.html?v=6">⚔️ 1on1</a><a href="./league.html" aria-current="page">🏆 3on3</a><a href="./hands.html">🧩 パーツ管理</a><a href="./records.html">📊 記録と履歴</a><a href="./data.html">💾 データ管理</a></nav>
 <section class="panel"><div class="line"><strong id="step">編成 / CASE SETUP</strong><span class="tag" id="environment"></span></div><div id="status" aria-live="polite"></div></section>
