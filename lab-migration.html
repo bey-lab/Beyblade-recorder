@@ -239,6 +239,17 @@ input[type=file]{display:none}
  .m17-compact>div>strong{font-size:27px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;overflow-wrap:normal}
  .m17-compact>div{flex:1;min-width:0}
 }
+
+/* Optional finish art: presentation only, battle handling untouched. */
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn{background-color:#101c30;background-repeat:no-repeat;background-position:center 35%;background-size:98% auto;border:1px solid #60758f;border-radius:10px;box-shadow:inset 0 0 12px #0008;min-height:92px;aspect-ratio:1.5;flex-direction:column;justify-content:center;gap:0;padding:4px}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn[data-finish="spin"]{background-image:url("./spin.png")}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn[data-finish="over"]{background-image:url("./over.png")}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn[data-finish="burst"]{background-image:url("./burst.png")}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn[data-finish="extreme"]{background-image:url("./extreme.png")}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn small{position:absolute;bottom:2px;right:5px;font-size:10px;background:#071221da;border-radius:6px;padding:2px 5px;color:#fff;z-index:2}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn:before{display:none}
+:root[data-finish-style="flashy"] .finish-pad-grid .finishbtn:active{filter:brightness(1.25)}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
@@ -248,7 +259,8 @@ input[type=file]{display:none}
  window.BEY_ENV=env;
  document.documentElement.dataset.beyEnv=env;
 })();
-</script><script src="./bey-hands.js?v=15"></script></head><body data-bey-mode="lab">
+</script><script src="./bey-hands.js?v=15"></script><script>try{document.documentElement.dataset.finishStyle=localStorage.getItem("bey-lab-finish-style-v1")==="flashy"?"flashy":"simple"}catch(e){document.documentElement.dataset.finishStyle="simple"}</script>
+</head><body data-bey-mode="lab">
 <div class="wrap">
 <header><div class="brand m17-brand"><strong>BEY LAB</strong><span class="m17-brand-sep">/</span><span class="m17-brand-title">🔬 1on1研究室</span><small>正式移植候補 · 検証環境</small></div>
 <nav class="m17-nav"><label class="m17-env-control">データ<select id="m17Environment" aria-label="検証版のテスト・本番データを切り替える"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><span id="saveState" class="hint">端末内保存</span></nav></header>
