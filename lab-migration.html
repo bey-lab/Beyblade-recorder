@@ -260,7 +260,10 @@ input[type=file]{display:none}
 @media(max-width:650px){:root[data-finish-style="flashy"] .finishgrid{column-gap:12px}:root[data-finish-style="flashy"] .finish-side{padding:7px 5px}}
 
 /* Subtle rotational ring motif shared by simple and flashy modes. */
-body{background-image:radial-gradient(circle 850px at 95% -18%,transparent 69%,#83bcff12 69.3%,#83bcff12 82%,transparent 82.3%),linear-gradient(160deg,#15243b,#08121f 65%);background-attachment:fixed;background-repeat:no-repeat}
+/* The ring is a viewport-fixed layer, not a body background that Safari may repaint on scrolling. */
+body{background:#08121f linear-gradient(160deg,#15243b,#08121f 65%) fixed}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle 850px at 95% -18%,transparent 69%,#83bcff12 69.3%,#83bcff12 82%,transparent 82.3%);background-repeat:no-repeat}
+body>.wrap{position:relative;z-index:1}
 </style><link rel="stylesheet" href="./bey-universal.css"><script>
 /* Shared mode preference. Legacy storage is never modified by this switch. */
 (function(){
