@@ -2,12 +2,18 @@
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1120"><title>BEY LAB | シュート訓練室</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:#0b1120;color:#edf5ff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(#1b3149,#0b1120 460px);min-height:100vh}main{max-width:850px;margin:auto;padding:22px 15px 95px}a{color:#b4d2ff}h1{font-size:26px;margin:7px 0}h2{font-size:17px;margin:0 0 13px}p{line-height:1.65;color:#b8cbe0}.tiny{font-size:12px;color:#abc0d5}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.14em;color:#eecb79}.panel{background:#14263c;border:1px solid #38516c;border-radius:17px;padding:17px;margin:15px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}.field{display:grid;gap:7px;color:#c2d4e8;font-size:12px;font-weight:750}input,select,textarea,button{font:inherit}input,select,textarea{width:100%;background:#223951;color:#fff;border:1px solid #54708d;border-radius:10px;padding:12px;min-height:45px}button{border:1px solid #647d98;background:#243d58;color:#fff;border-radius:11px;min-height:48px;padding:10px 13px;cursor:pointer;font-weight:800}button:disabled{opacity:.45;cursor:default}.buttonrow{display:flex;flex-wrap:wrap;gap:9px}.buttonrow>*{flex:1}.success{background:#1b5345;border-color:#5cb994}.miss{background:#5b3440;border-color:#d78d96}.primary{background:#785c2b;border-color:#e3b860}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{text-align:center;border:1px solid #38516b;background:#20364e;border-radius:12px;padding:10px}.stat b{display:block;font-size:26px}.stat span{font-size:11px;color:#bbcee2}.shots{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0}.shot{width:29px;height:29px;display:grid;place-items:center;border-radius:50%;background:#2f455b;color:#b5c7db;font-size:12px;font-weight:800}.shot.y{background:#23634d;color:#e2fff2}.shot.n{background:#70404b;color:#ffe4e7}.meter{height:10px;background:#31465c;border-radius:20px;overflow:hidden;margin:12px 0}.meter>div{height:100%;background:#6dd3a8;transition:width .2s}.entry{border-bottom:1px solid #334a61;padding:13px 0}.entry:last-child{border:0}.entryhead{display:flex;gap:9px;justify-content:space-between;flex-wrap:wrap;align-items:center}.entryhead strong{color:#f4d08a}.entrysmall{font-size:12px;color:#b7c8da;margin-top:5px}.delete{background:transparent;border-color:#6e4855;color:#f2b0bd;min-height:34px;font-size:12px;padding:5px 9px}.muted{color:#9ab0c5}.note{font-size:12px;color:#b7c9df}details summary{cursor:pointer;font-weight:800}code{color:#ecce8b}@media(max-width:480px){h1{font-size:23px}.panel{padding:13px}.stats .stat b{font-size:22px}}
+
+/* Solo shoot missions: separate state from the original free-practice mode */
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:17px 0}.mode-switch button{background:#1c3047;border-color:#4c6782}.mode-switch button.active{background:#60502f;border-color:#f2d083;color:#fff3cb;box-shadow:inset 0 0 0 1px #f2d08335}
+#missionMode[hidden],#freeMode[hidden]{display:none!important}.mission-card{background:linear-gradient(150deg,#293450,#17283f);border:1px solid #637c9d;border-radius:17px;padding:19px 15px;margin:13px 0;text-align:center;min-height:205px;display:flex;flex-direction:column;justify-content:center;gap:9px}.mission-number{font-size:11px;font-weight:900;letter-spacing:.13em;color:#eccb84}.mission-kind{font-size:11px;font-weight:850;color:#acc9e7}.mission-command{font-size:22px;font-weight:950;color:#fff;line-height:1.5}.mission-criterion{font-size:13px;line-height:1.65;color:#c9dfef}.mission-tip{font-size:12px;line-height:1.6;color:#b6c8e0;margin:7px 0 0}.mission-statgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:15px 0}.mission-stat{background:#20364e;border:1px solid #405b76;border-radius:12px;padding:10px 5px;text-align:center}.mission-stat b{display:block;font-size:25px}.mission-stat span{font-size:11px;color:#c2d0e1}.mission-metrics{display:grid;gap:8px}.mission-metric{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#192d43;border:1px solid #364e65;border-radius:10px;padding:10px 11px;font-size:12px}.mission-metric b{color:#f3dcac}.mission-log{max-height:310px;overflow-y:auto}.mission-logentry{display:flex;align-items:start;justify-content:space-between;gap:9px;border-bottom:1px solid #35506a;padding:10px 0;font-size:12px}.mission-logentry:last-child{border:0}.mission-logentry small{display:block;color:#a8bfd5;margin-top:4px}.mission-settings{display:flex;align-items:center;gap:9px;color:#c9d8e8;font-size:13px}.mission-settings input{width:20px;height:20px;min-height:0;accent-color:#ebc77d}.mission-foot{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}.mission-foot button{flex:1;min-width:125px;font-size:12px;min-height:42px}.mission-verdict button{min-height:63px;font-size:18px}@media(max-width:480px){.mission-command{font-size:19px}.mission-stat b{font-size:22px}}
 </style></head><body><main>
 <a href="./index.html">← BEY LAB ホーム</a>
 <div class="eyebrow" style="margin-top:24px">BEY LAB · LAUNCH TRAINING</div>
 <h1>🎯 シュート訓練室</h1>
 <p>技を覚えるだけでは勝てない。<strong>狙って、撃って、再現する。</strong> 1発ずつ記録して、昨日の自分を超えろ！</p>
 <div class="panel"><div class="entryhead"><strong id="environment">🧪 テスト環境</strong><span class="tiny">対戦記録とは別保存・この端末内</span></div></div>
+<div class="mode-switch" role="group" aria-label="練習モード"><button type="button" id="showFree" class="active" aria-pressed="true">🎯 自由練習</button><button type="button" id="showMission" aria-pressed="false">🔬 シュートミッション</button></div>
+<div id="freeMode">
 <section class="panel"><h2>01 · 練習メニュー</h2>
 <div class="grid">
 <label class="field">技術<select id="tech"><option value="flat">01 フラットシュート</option><option value="bank">02 バンクシュート</option><option value="slide">03 スライディングシュート</option></select></label>
@@ -30,6 +36,20 @@
 <div id="techstats" class="grid"></div></section>
 <section class="panel"><h2>04 · 練習履歴</h2><div id="history"><p>まだ練習記録がない。最初の10発を撃とう！</p></div>
 <details style="margin-top:14px"><summary>データのバックアップ</summary><p class="tiny">この訓練室の記録だけをJSONファイルに書き出す。端末変更前にはバックアップしよう。</p><button id="export" type="button">記録を書き出す（JSON）</button></details></section>
+</div>
+<div id="missionMode" hidden>
+<section class="panel"><div class="eyebrow">SOLO TRAINING · MISSION MODE</div><h2 style="margin-top:7px">🔬 シュートミッション</h2><p class="note">指令どおりにシュート！ 成功ならOK、失敗ならNG。<strong>押すたびに自動記録して次の指令へ。</strong>クリアできなくても進めるぞ。</p>
+<label class="mission-settings"><input type="checkbox" id="missionPower"> シュートパワー測定器あり（出力ミッションを追加）</label>
+<div class="mission-card" aria-live="polite"><div class="mission-number" id="missionNum">MISSION 01</div><div class="mission-kind" id="missionKind">精密操作</div><div class="mission-command" id="missionCommand">指令を準備中...</div><div class="mission-criterion" id="missionCriterion"></div></div>
+<p id="missionTip" class="mission-tip"></p>
+<div class="buttonrow mission-verdict"><button type="button" class="success" id="missionOK">✓ OK · 成功</button><button type="button" class="miss" id="missionNG">✕ NG · 失敗</button></div>
+<div class="mission-statgrid"><div class="mission-stat"><b id="missionTotal">0</b><span>累計挑戦</span></div><div class="mission-stat"><b id="missionRate">—</b><span>成功率</span></div><div class="mission-stat"><b id="missionStreak">0</b><span>連続成功</span></div></div>
+<div class="mission-foot"><button type="button" id="missionUndo">↶ 1発戻す</button><button type="button" id="missionSkip">↷ 次のお題へ（未記録）</button></div><p id="missionStatus" role="status" class="tiny"></p>
+</section>
+<section class="panel"><h2>📊 ミッション別の成果</h2><p class="tiny">実際に判定した発射だけを集計。成功率は自己判定であり、対戦勝率とは別。</p><div id="missionMetrics" class="mission-metrics"></div></section>
+<section class="panel"><h2>📜 直近の挑戦</h2><div id="missionHistory" class="mission-log"></div><div class="mission-foot"><button type="button" id="missionExport">記録を書き出す（JSON）</button><button type="button" id="missionReset" class="delete">ミッション記録を全削除</button></div></section>
+<p class="tiny">※ 単独練習を想定した課題です。ゾーン突入などは周囲に人や壊れやすい物がないことを確認してください。技の成功が実戦の勝利に直結するとは限りません。</p>
+</div>
 <p class="tiny">※ 成功・失敗は自分で判定する練習指標。実戦の勝率とは別。公式戦とテストの切り替えはホームで行ってください。</p>
 </main>
 <script>
@@ -66,6 +86,78 @@
  el('clear').onclick=()=>{if(!shots.length||confirm('今回の未保存の練習だけリセットしますか？')){shots=[];draft();render();el('status').textContent='今回の練習をリセットしました。';}};
  el('history').onclick=e=>{const btn=e.target.closest('button[data-remove]');if(!btn)return;const i=Number(btn.dataset.remove);if(!confirm('この練習記録を削除しますか？'))return;const old=data.slice();data.splice(i,1);try{persist();render();}catch(e){data=old;alert('削除に失敗しました。');}};
  el('export').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,environment:env,exportedAt:new Date().toISOString(),sessions:data},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='bey-lab-shoot-training-'+env+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+
+ // Independent mission mode: one shot is stored immediately, no impact on free-practice data.
+ const missionKey='bey-lab-shoot-missions-v1-'+env;
+ const missionModeKey='bey-lab-shoot-training-mode-v1';
+ const missionPowerKey='bey-lab-shoot-missions-power-v1';
+ const M=[
+  {id:'center',type:'精密操作',name:'中央に着地せよ！',ok:'中央付近に最初の着地ができたらOK。',tip:'位置が安定するシュート角度を探そう。'},
+  {id:'leftRear',type:'精密操作',name:'左奥に着地せよ！',ok:'自分から見てスタジアム左奥に最初の着地ができたらOK。',tip:'見る方向を固定して挑戦しよう。'},
+  {id:'rightRear',type:'精密操作',name:'右奥に着地せよ！',ok:'自分から見てスタジアム右奥に最初の着地ができたらOK。',tip:'着地点の左右差に注目。'},
+  {id:'leftNear',type:'精密操作',name:'左手前に着地せよ！',ok:'自分から見て左手前に最初の着地ができたらOK。',tip:'ランチャー位置を変えすぎないように。'},
+  {id:'rightNear',type:'精密操作',name:'右手前に着地せよ！',ok:'自分から見て右手前に最初の着地ができたらOK。',tip:'安全な姿勢で狙おう。'},
+  {id:'inside',type:'回避・位置取り',name:'Xラインの内側へ着地せよ！',ok:'エクストリームラインの内側へ着地し、そのまま外周レールへ直行しなければOK。',tip:'実戦では初期位置の制御に応用できるかもしれない。'},
+  {id:'quiet',type:'安定着地',name:'中央に跳ねずに撃て！',ok:'中央付近に着地し、大きな跳ね上がりがなければOK。',tip:'着地点だけでなく着地姿勢も意識しよう。'},
+  {id:'flatCenter',type:'フラット',name:'フラットで中央を狙え！',ok:'水平を意識して撃ち、中央付近に着地できたらOK。',tip:'まずは再現性を優先。'},
+  {id:'flatRear',type:'フラット',name:'フラットで右奥を狙え！',ok:'フラットシュートで、右奥に最初の着地ができたらOK。',tip:'狙う方向を明確にしてから撃とう。'},
+  {id:'bankLeft',type:'バンク',name:'バンクで左奥を狙え！',ok:'バンクシュートで左奥へ着地できたらOK。',tip:'角度をつけすぎないところから探ろう。'},
+  {id:'bankRight',type:'バンク',name:'バンクで右奥を狙え！',ok:'バンクシュートで右奥へ着地できたらOK。',tip:'着地後の軌道も観察しよう。'},
+  {id:'bankInside',type:'バンク',name:'バンクでXライン内側を狙え！',ok:'バンクシュートでラインの内側に最初の着地ができたらOK。',tip:'「着地」だけを判定し、実戦の回避性能とは分けよう。'},
+  {id:'slideLeft',type:'スライディング',name:'スライディングで左奥を狙え！',ok:'スライディングシュートを使い、左奥に着地できたらOK。',tip:'狙った位置と、その後の軌道は別々に観察。'},
+  {id:'slideRight',type:'スライディング',name:'スライディングで右奥を狙え！',ok:'スライディングシュートを使い、右奥に着地できたらOK。',tip:'フォームを切り替える練習。'},
+  {id:'reverse',type:'特殊技術',name:'リバースダッシュを決めろ！',ok:'レールに乗ったあと、狙った逆向きのダッシュができたらOK。',tip:'スタジアムやビットによって難度が変わる。'},
+  {id:'over',type:'変則課題',name:'自らオーバーゾーンへ入れ！',ok:'対戦相手なしで、自分のベイがオーバーゾーンに入ったらOK。',tip:'勝つためではなく軌道制御の実験。自爆も今日は成功だ。'},
+  {id:'extreme',type:'変則課題',name:'自らエクストリームゾーンへ入れ！',ok:'対戦相手なしで、自分のベイがエクストリームゾーンに入ったらOK。',tip:'競技での有効性とは無関係の制御課題。'},
+  {id:'survive',type:'変則課題',name:'オーバーゾーン手前で生還せよ！',ok:'オーバーゾーン近くに接近したあと、ゾーンに入らず場内で回り続けたらOK。',tip:'ギリギリの軌道を観察。無理に指で止めないこと。'},
+  {id:'power5k',type:'出力制御',name:'フラットでパワー5000台を出せ！',ok:'測定器でフラットシュートの数値が5000〜5999ならOK。',tip:'対応するパワー測定器があるときだけ出題。',power:true},
+  {id:'power4k',type:'出力制御',name:'パワー4000台を狙え！',ok:'測定器の数値が4000〜4999ならOK。',tip:'無理に強く引かず、出力を調整してみよう。',power:true}
+ ];
+ let missionData={records:[],current:null,previous:null};
+ try{const obj=JSON.parse(localStorage.getItem(missionKey)||'null');if(obj&&Array.isArray(obj.records)){missionData.records=obj.records.filter(x=>x&&M.some(m=>m.id===x.id)&&(x.ok===true||x.ok===false)).slice(-20000);missionData.current=typeof obj.current==='string'?obj.current:null;missionData.previous=typeof obj.previous==='string'?obj.previous:null;}}catch(e){}
+ let missionPower=false;try{missionPower=localStorage.getItem(missionPowerKey)==='yes';}catch(e){}
+ el('missionPower').checked=missionPower;
+ function pool(){return M.filter(m=>!m.power||missionPower);}
+ function chooseMission(exclude){const p=pool().filter(m=>m.id!==exclude);return (p.length?p:pool())[Math.floor(Math.random()*(p.length||1))].id;}
+ function activeMission(){return M.find(m=>m.id===missionData.current)||M[0];}
+ if(!pool().some(m=>m.id===missionData.current))missionData.current=chooseMission(null);
+ function saveMission(){try{localStorage.setItem(missionKey,JSON.stringify(missionData));return true;}catch(e){el('missionStatus').textContent='保存に失敗しました。空き容量を確認してください。';return false;}}
+ function missionRender(){
+  const m=activeMission(),rs=missionData.records,w=rs.filter(x=>x.ok).length;
+  el('missionNum').textContent='MISSION '+String(rs.length+1).padStart(2,'0');
+  el('missionKind').textContent=m.type;
+  el('missionCommand').textContent=m.name;
+  el('missionCriterion').textContent='成功条件：'+m.ok;
+  el('missionTip').textContent='🔎 '+m.tip;
+  el('missionTotal').textContent=rs.length;
+  el('missionRate').textContent=percent(w,rs.length);
+  let streak=0;for(let i=rs.length-1;i>=0&&rs[i].ok;i--)streak++;el('missionStreak').textContent=streak;
+  el('missionUndo').disabled=!rs.length;
+  const used=M.filter(m=>!m.power||missionPower).map(m=>{const a=rs.filter(x=>x.id===m.id);return {m,n:a.length,w:a.filter(x=>x.ok).length};}).filter(x=>x.n).sort((a,b)=>b.n-a.n);
+  el('missionMetrics').innerHTML=used.length?used.map(x=>'<div class="mission-metric"><span>'+escapeHtml(x.m.name)+' <span class="muted">('+x.n+'発)</span></span><b>'+percent(x.w,x.n)+'</b></div>').join(''):'<p class="tiny">まだデータなし。最初の指令に挑戦しよう！</p>';
+  el('missionHistory').innerHTML=rs.length?rs.slice(-12).reverse().map(x=>{const d=M.find(m=>m.id===x.id);return '<div class="mission-logentry"><span>'+(x.ok?'✅':'❌')+' '+escapeHtml(d?d.name:x.id)+'<small>'+new Date(x.at).toLocaleString('ja-JP')+'</small></span><strong>'+(x.ok?'OK':'NG')+'</strong></div>';}).join(''):'<p class="tiny">まだ記録はありません。</p>';
+ }
+ function missionJudge(ok){
+  const old=JSON.stringify(missionData);
+  const current=activeMission();
+  missionData.records.push({id:current.id,ok,at:new Date().toISOString()});
+  missionData.previous=current.id;missionData.current=chooseMission(current.id);
+  if(!saveMission()){missionData=JSON.parse(old);return;}
+  el('missionStatus').textContent=(ok?'✓ 成功を記録！':'✕ 失敗を記録！')+' 次のミッションへ。';missionRender();
+ }
+ el('missionOK').onclick=()=>missionJudge(true);
+ el('missionNG').onclick=()=>missionJudge(false);
+ el('missionUndo').onclick=()=>{if(!missionData.records.length)return;const old=JSON.stringify(missionData);const last=missionData.records.pop();missionData.current=last.id;missionData.previous=null;if(!saveMission()){missionData=JSON.parse(old);return;}el('missionStatus').textContent='直前の判定を取り消しました。';missionRender();};
+ el('missionSkip').onclick=()=>{const old=missionData.current;missionData.current=chooseMission(old);if(!saveMission()){missionData.current=old;return;}el('missionStatus').textContent='未記録で次の指令へ。';missionRender();};
+ el('missionPower').onchange=()=>{missionPower=el('missionPower').checked;try{localStorage.setItem(missionPowerKey,missionPower?'yes':'no');}catch(e){}if(!pool().some(m=>m.id===missionData.current))missionData.current=chooseMission(null);saveMission();missionRender();};
+ el('missionReset').onclick=()=>{if(!confirm('ミッションの全挑戦記録を削除しますか？ この操作は取り消せません。自由練習の記録は残ります。'))return;const old=JSON.stringify(missionData);missionData.records=[];missionData.previous=null;missionData.current=chooseMission(null);if(!saveMission()){missionData=JSON.parse(old);return;}el('missionStatus').textContent='ミッション記録を全削除しました。';missionRender();};
+ function exportMission(){const blob=new Blob([JSON.stringify({version:1,environment:env,exportedAt:new Date().toISOString(),records:missionData.records,current:missionData.current},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='bey-lab-shoot-missions-'+env+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);}
+ el('missionExport').onclick=exportMission;
+ function showTrainingMode(mode){const isMission=mode==='mission';el('freeMode').hidden=isMission;el('missionMode').hidden=!isMission;el('showFree').classList.toggle('active',!isMission);el('showMission').classList.toggle('active',isMission);el('showFree').setAttribute('aria-pressed',String(!isMission));el('showMission').setAttribute('aria-pressed',String(isMission));try{localStorage.setItem(missionModeKey,mode);}catch(e){}}
+ el('showFree').onclick=()=>showTrainingMode('free');
+ el('showMission').onclick=()=>showTrainingMode('mission');
+ let initialTrainingMode='free';try{initialTrainingMode=localStorage.getItem(missionModeKey)==='mission'?'mission':'free';}catch(e){}
+ missionRender();showTrainingMode(initialTrainingMode);
  window.addEventListener('pagehide',draft);render();
 })();
 </script></body></html>
