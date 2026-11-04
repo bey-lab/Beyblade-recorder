@@ -92,14 +92,14 @@
  const missionModeKey='bey-lab-shoot-training-mode-v1';
  const missionPowerKey='bey-lab-shoot-missions-power-v1';
  const M=[
-  {id:'center',type:'精密操作',name:'中央に着地せよ！',ok:'中央付近に最初の着地ができたらOK。',tip:'位置が安定するシュート角度を探そう。'},
-  {id:'leftRear',type:'精密操作',name:'左奥に着地せよ！',ok:'自分から見てスタジアム左奥に最初の着地ができたらOK。',tip:'見る方向を固定して挑戦しよう。'},
-  {id:'rightRear',type:'精密操作',name:'右奥に着地せよ！',ok:'自分から見てスタジアム右奥に最初の着地ができたらOK。',tip:'着地点の左右差に注目。'},
-  {id:'leftNear',type:'精密操作',name:'左手前に着地せよ！',ok:'自分から見て左手前に最初の着地ができたらOK。',tip:'ランチャー位置を変えすぎないように。'},
-  {id:'rightNear',type:'精密操作',name:'右手前に着地せよ！',ok:'自分から見て右手前に最初の着地ができたらOK。',tip:'安全な姿勢で狙おう。'},
+  {id:'center',retired:true,type:'精密操作',name:'中央に着地せよ！',ok:'中央付近に最初の着地ができたらOK。',tip:'位置が安定するシュート角度を探そう。'},
+  {id:'leftRear',retired:true,type:'精密操作',name:'左奥に着地せよ！',ok:'自分から見てスタジアム左奥に最初の着地ができたらOK。',tip:'見る方向を固定して挑戦しよう。'},
+  {id:'rightRear',retired:true,type:'精密操作',name:'右奥に着地せよ！',ok:'自分から見てスタジアム右奥に最初の着地ができたらOK。',tip:'着地点の左右差に注目。'},
+  {id:'leftNear',retired:true,type:'精密操作',name:'左手前に着地せよ！',ok:'自分から見て左手前に最初の着地ができたらOK。',tip:'ランチャー位置を変えすぎないように。'},
+  {id:'rightNear',retired:true,type:'精密操作',name:'右手前に着地せよ！',ok:'自分から見て右手前に最初の着地ができたらOK。',tip:'安全な姿勢で狙おう。'},
   {id:'inside',type:'回避・位置取り',name:'Xラインの内側へ着地せよ！',ok:'エクストリームラインの内側へ着地し、そのまま外周レールへ直行しなければOK。',tip:'実戦では初期位置の制御に応用できるかもしれない。'},
-  {id:'quiet',type:'安定着地',name:'中央に跳ねずに撃て！',ok:'中央付近に着地し、大きな跳ね上がりがなければOK。',tip:'着地点だけでなく着地姿勢も意識しよう。'},
-  {id:'flatCenter',type:'フラット',name:'フラットで中央を狙え！',ok:'水平を意識して撃ち、中央付近に着地できたらOK。',tip:'まずは再現性を優先。'},
+  {id:'quiet',retired:true,type:'安定着地',name:'中央に跳ねずに撃て！',ok:'中央付近に着地し、大きな跳ね上がりがなければOK。',tip:'着地点だけでなく着地姿勢も意識しよう。'},
+  {id:'flatCenter',retired:true,type:'フラット',name:'フラットで中央を狙え！',ok:'水平を意識して撃ち、中央付近に着地できたらOK。',tip:'まずは再現性を優先。'},
   {id:'flatRear',type:'フラット',name:'フラットで右奥を狙え！',ok:'フラットシュートで、右奥に最初の着地ができたらOK。',tip:'狙う方向を明確にしてから撃とう。'},
   {id:'bankLeft',type:'バンク',name:'バンクで左奥を狙え！',ok:'バンクシュートで左奥へ着地できたらOK。',tip:'角度をつけすぎないところから探ろう。'},
   {id:'bankRight',type:'バンク',name:'バンクで右奥を狙え！',ok:'バンクシュートで右奥へ着地できたらOK。',tip:'着地後の軌道も観察しよう。'},
@@ -111,14 +111,38 @@
   {id:'extreme',type:'変則課題',name:'自らエクストリームゾーンへ入れ！',ok:'対戦相手なしで、自分のベイがエクストリームゾーンに入ったらOK。',tip:'競技での有効性とは無関係の制御課題。'},
   {id:'survive',type:'変則課題',name:'オーバーゾーン手前で生還せよ！',ok:'オーバーゾーン近くに接近したあと、ゾーンに入らず場内で回り続けたらOK。',tip:'ギリギリの軌道を観察。無理に指で止めないこと。'},
   {id:'power5k',type:'出力制御',name:'フラットでパワー5000台を出せ！',ok:'測定器でフラットシュートの数値が5000〜5999ならOK。',tip:'対応するパワー測定器があるときだけ出題。',power:true},
-  {id:'power4k',type:'出力制御',name:'パワー4000台を狙え！',ok:'測定器の数値が4000〜4999ならOK。',tip:'無理に強く引かず、出力を調整してみよう。',power:true}
+  {id:'power4k',type:'出力制御',name:'パワー4000台を狙え！',ok:'測定器の数値が4000〜4999ならOK。',tip:'無理に強く引かず、出力を調整してみよう。',power:true},
+  {id:'flatLeft',type:'フラット',name:'フラットで左奥を狙え！',ok:'フラットシュートで左奥に最初の着地ができたらOK。',tip:'同じフォームで狙う方向を変えてみよう。'},
+  {id:'flatInside',type:'フラット',name:'フラットでXライン内側を狙え！',ok:'フラットシュートでエクストリームラインの内側に着地できたらOK。',tip:'外周へ流されない初期位置を狙おう。'},
+  {id:'bankQuiet',type:'バンク',name:'バンクで中央に静かに着地せよ！',ok:'バンクで中央付近に着地し、大きく跳ね上がらなければOK。',tip:'角度と着地の安定を両立させよう。'},
+  {id:'bankOver',type:'バンク',name:'バンクで自らオーバーゾーンへ入れ！',ok:'相手なしでバンクシュートを撃ち、自分のベイがオーバーゾーンに入ったらOK。',tip:'高出力が必要とは限らない。軌道を観察して安全な範囲で挑戦。'},
+  {id:'slideCenter',type:'スライディング',name:'スライディングで中央へ切り込め！',ok:'スライディングで着地後、中央付近へ切り込む軌道を描いたらOK。',tip:'発射角と着地位置の組み合わせを探ろう。'},
+  {id:'slideInside',type:'スライディング',name:'スライディングでXライン内側を狙え！',ok:'スライディングでラインの内側に最初の着地ができたらOK。',tip:'変則フォームでも着地位置を制御できるか試す。'},
+  {id:'slideOver',type:'スライディング',name:'スライディングで自らオーバーへ突入せよ！',ok:'相手なしでスライディングシュートを撃ち、オーバーゾーンに入れたらOK。',tip:'高度な自滅制御。無理な姿勢で撃たないこと。'},
+  {id:'slideExtreme',type:'スライディング',name:'スライディングで自らエクストリームへ！',ok:'相手なしでスライディングシュートを撃ち、エクストリームゾーンに入ったらOK。',tip:'実戦の勝敗ではなく狙った軌道の再現性を確認。'},
+  {id:'power2k',type:'出力制御',name:'パワー2000台を出せ！',ok:'測定器の数値が2000〜2999ならOK。',tip:'弱い出力を狙って再現する。',power:true},
+  {id:'power3k',type:'出力制御',name:'パワー3000台を出せ！',ok:'測定器の数値が3000〜3999ならOK。',tip:'力を抜いても狙いどおりに撃てるか。',power:true},
+  {id:'power6k',type:'出力制御',name:'パワー6000台を出せ！',ok:'測定器の数値が6000〜6999ならOK。',tip:'出力を上げつつ姿勢を保とう。',power:true},
+  {id:'power8k',type:'出力制御',name:'パワー8000台を出せ！',ok:'測定器の数値が8000〜8999ならOK。',tip:'測定器の表示範囲・ランチャーの仕様内で挑戦。',power:true},
+  {id:'power10k',type:'出力制御',name:'パワー10000以上を出せ！',ok:'測定器の数値が10000以上ならOK。',tip:'高難度。測定器・ランチャーの仕様を守り、無理な力で引かないこと。',power:true},
+  {id:'combo3kBank',type:'複合制御',name:'パワー3000台のバンクで中央を狙え！',ok:'測定値3000〜3999、バンクシュート、中央付近への着地をすべて達成したらOK。',tip:'出力・角度・着地点を同時に制御する。',power:true},
+  {id:'combo5kSlide',type:'複合制御',name:'パワー5000台のスライディングで右奥へ！',ok:'測定値5000〜5999、スライディング、右奥への着地をすべて達成したらOK。',tip:'難しいからこそ、できたときの価値がある。',power:true},
+  {id:'combo2kFlat',type:'複合制御',name:'パワー2000台でフラット、Xライン内側へ！',ok:'測定値2000〜2999、フラット、Xライン内側への着地をすべて達成したらOK。',tip:'弱い出力でも位置を狙う複合課題。',power:true},
+  {id:'combo8kBank',type:'複合制御',name:'パワー8000台のバンクで左奥を狙え！',ok:'測定値8000〜8999、バンク、左奥への着地をすべて達成したらOK。',tip:'出力に振り回されず位置を狙おう。',power:true}
  ];
  let missionData={records:[],current:null,previous:null};
  try{const obj=JSON.parse(localStorage.getItem(missionKey)||'null');if(obj&&Array.isArray(obj.records)){missionData.records=obj.records.filter(x=>x&&M.some(m=>m.id===x.id)&&(x.ok===true||x.ok===false)).slice(-20000);missionData.current=typeof obj.current==='string'?obj.current:null;missionData.previous=typeof obj.previous==='string'?obj.previous:null;}}catch(e){}
  let missionPower=false;try{missionPower=localStorage.getItem(missionPowerKey)==='yes';}catch(e){}
  el('missionPower').checked=missionPower;
- function pool(){return M.filter(m=>!m.power||missionPower);}
- function chooseMission(exclude){const p=pool().filter(m=>m.id!==exclude);return (p.length?p:pool())[Math.floor(Math.random()*(p.length||1))].id;}
+ function pool(){return M.filter(m=>!m.retired&&(!m.power||missionPower));}
+ function chooseMission(exclude){
+  const choices=pool(),last=M.find(m=>m.id===exclude),recent=missionData.records.slice(-4).map(x=>x.id);
+  // Different controls on consecutive missions; avoid recently repeated questions when possible.
+  const distinct=choices.filter(m=>m.id!==exclude&&(!last||m.type!==last.type));
+  const fresh=distinct.filter(m=>!recent.includes(m.id));
+  const candidates=fresh.length?fresh:distinct.length?distinct:choices.filter(m=>m.id!==exclude);
+  return (candidates.length?candidates:choices)[Math.floor(Math.random()*(candidates.length||choices.length))].id;
+ }
  function activeMission(){return M.find(m=>m.id===missionData.current)||M[0];}
  if(!pool().some(m=>m.id===missionData.current))missionData.current=chooseMission(null);
  function saveMission(){try{localStorage.setItem(missionKey,JSON.stringify(missionData));return true;}catch(e){el('missionStatus').textContent='保存に失敗しました。空き容量を確認してください。';return false;}}
@@ -133,7 +157,7 @@
   el('missionRate').textContent=percent(w,rs.length);
   let streak=0;for(let i=rs.length-1;i>=0&&rs[i].ok;i--)streak++;el('missionStreak').textContent=streak;
   el('missionUndo').disabled=!rs.length;
-  const used=M.filter(m=>!m.power||missionPower).map(m=>{const a=rs.filter(x=>x.id===m.id);return {m,n:a.length,w:a.filter(x=>x.ok).length};}).filter(x=>x.n).sort((a,b)=>b.n-a.n);
+  const used=M.filter(m=>(!m.power||missionPower||rs.some(x=>x.id===m.id))).map(m=>{const a=rs.filter(x=>x.id===m.id);return {m,n:a.length,w:a.filter(x=>x.ok).length};}).filter(x=>x.n).sort((a,b)=>b.n-a.n);
   el('missionMetrics').innerHTML=used.length?used.map(x=>'<div class="mission-metric"><span>'+escapeHtml(x.m.name)+' <span class="muted">('+x.n+'発)</span></span><b>'+percent(x.w,x.n)+'</b></div>').join(''):'<p class="tiny">まだデータなし。最初の指令に挑戦しよう！</p>';
   el('missionHistory').innerHTML=rs.length?rs.slice(-12).reverse().map(x=>{const d=M.find(m=>m.id===x.id);return '<div class="mission-logentry"><span>'+(x.ok?'✅':'❌')+' '+escapeHtml(d?d.name:x.id)+'<small>'+new Date(x.at).toLocaleString('ja-JP')+'</small></span><strong>'+(x.ok?'OK':'NG')+'</strong></div>';}).join(''):'<p class="tiny">まだ記録はありません。</p>';
  }
