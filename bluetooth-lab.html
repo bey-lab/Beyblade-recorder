@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1120"><title>BEY LAB | Bluetooth接続実験室</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;color-scheme:dark;background:#0b1120;color:#f2f6ff}*{box-sizing:border-box}body{margin:0;background:linear-gradient(#20334a,#0b1120 520px);min-height:100vh}main{max-width:760px;padding:24px 17px 80px;margin:auto}a{color:#b7d5ff}h1{font-size:26px;margin:13px 0}h2{font-size:18px;margin:0 0 12px}p{line-height:1.75;color:#c0d0e2}.eyebrow{font-size:11px;color:#e8ca8c;font-weight:850;letter-spacing:.14em}.panel{background:#14263d;border:1px solid #3a536c;border-radius:16px;padding:17px;margin:15px 0}.muted{font-size:12px;color:#a9bfd5}button{appearance:none;border:1px solid #708eab;border-radius:12px;background:#24425f;padding:13px 14px;min-height:51px;color:white;font:inherit;font-weight:850;cursor:pointer}button:disabled{opacity:.4;cursor:default}.primary{background:#6b5227;border-color:#efc77c}.row{display:flex;flex-wrap:wrap;gap:10px}.row button{flex:1}.state{display:flex;align-items:center;gap:12px;margin:13px 0;padding:14px;border-radius:12px;background:#20384f}.dot{height:13px;width:13px;background:#899aaf;border-radius:50%;flex-shrink:0}.dot.ok{background:#6ae6ad}.dot.bad{background:#ff9a9a}pre{background:#071322;border:1px solid #304860;border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:12px;max-height:350px;overflow-y:auto}.warn{border-left:3px solid #e9b96b;padding:10px 13px;background:#322d29;color:#e8d7b8;font-size:13px;line-height:1.7}code{color:#f1d49a}@media(max-width:460px){h1{font-size:23px}.panel{padding:13px}}
+</style></head>
+<body><main>
+<a href="./index.html">← BEY LAB ホームへ</a>
+<div class="eyebrow" style="margin-top:22px">BEY LAB · EXPERIMENT 001</div>
+<h1>ᛒ Bluetooth接続実験室</h1>
+<p>バトルパスがiPadのWebページから見つかるか、接続できるかを検証する独立実験。<strong>シュートミッションや対戦データには一切触れません。</strong></p>
+<div class="panel"><h2>01 · 実験環境</h2><div class="state"><span class="dot" id="dot"></span><div><strong id="state">未接続</strong><div class="muted" id="detail">待機中</div></div></div><p class="muted">Web Bluetooth: <strong id="capability">確認中</strong></p><div class="warn">Spin Meterを切断し、ベイバトルパスを接続待機状態にしてから試してください。実験ページは接続・サービス照会のみ。機器へのコマンド送信、データ消去、シュート履歴の変更は行いません。</div></div>
+<div class="panel"><h2>02 · 発見と接続</h2><p>「パスを探す」を押すとBluetooth機器選択画面が開きます。<code>BEYBLADE_TOOL01</code> など該当する機器だけを選択してください。</p><div class="row"><button class="primary" id="connect">🔎 パスを探す・接続</button><button id="disconnect" disabled>切断</button></div><p class="muted">機器が出てこない場合はキャンセルしてOK。初回はBluetoothの許可を求められる場合があります。</p></div>
+<div class="panel"><h2>03 · 接続結果</h2><p class="muted">接続した機器の名前と、公開されたサービスUUIDを確認します。数値取得は次の実験です。</p><pre id="log" aria-live="polite">まだ実験を開始していません。</pre><button id="copy">ログをコピー</button><p class="muted">実験ログに個人情報や機器識別子が表示される場合があります。共有前に確認してください。</p></div>
+<p class="muted">このページは実験001です。正しく接続できても、Safariのホーム画面版で通信できることを意味しません。</p>
+</main><script>
+(()=>{'use strict';
+ const $=id=>document.getElementById(id);
+ const SERVICE='55c4f000-f8eb-11ec-b939-0242ac120002';
+ let device=null;
+ let lines=[];
+ const add=(message)=>{lines.push(new Date().toLocaleTimeString('ja-JP')+'  '+message);$('log').textContent=lines.join('\n');};
+ const status=(name,detail,kind)=>{$('state').textContent=name;$('detail').textContent=detail;$('dot').className='dot'+(kind?' '+kind:'');};
+ const supported=!!(navigator.bluetooth&&typeof navigator.bluetooth.requestDevice==='function');
+ $('capability').textContent=supported?'利用可能':'このブラウザでは利用できません';
+ if(!supported){status('利用不可','Web Bluetoothが使えないブラウザです','bad');$('connect').disabled=true;}
+ $('connect').addEventListener('click',async()=>{
+  if(!supported)return;
+  $('connect').disabled=true;lines=[];add('実験開始：接続操作のみ。データ書き込みなし。');
+  try{
+   status('機器選択中','Bluetoothの機器一覧を確認してください');
+   device=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:[SERVICE]});
+   add('発見した機器名: '+(device.name||'(名前なし)'));
+   device.addEventListener('gattserverdisconnected',()=>{add('切断を検知しました');status('切断','Bluetooth接続が終了しました');$('disconnect').disabled=true;});
+   status('接続中','GATTサーバに接続しています');
+   const server=await device.gatt.connect();
+   add('GATT接続: '+(server.connected?'成功':'未接続'));
+   status('接続成功','サービスを照会しています','ok');
+   $('disconnect').disabled=false;
+   try{
+    const services=await server.getPrimaryServices();
+    add('取得可能なサービス: '+services.length+'個');
+    for(const svc of services)add('サービスUUID: '+svc.uuid);
+    if(!services.length)add('サービス0件。接続自体は成功しています。');
+   }catch(e){add('サービス照会不可: '+e.name+' / '+e.message);add('接続成功とサービス照会の可否は別です。');}
+   status('接続成功','実験001完了：接続できました','ok');
+  }catch(e){
+   add('接続できませんでした: '+(e&&e.name||'Error')+' / '+(e&&e.message||String(e)));
+   status('接続未完了',e&&e.name==='NotFoundError'?'機器が選ばれませんでした。パスの待機状態を確認してください。':'ログのエラー内容を確認してください','bad');
+   $('disconnect').disabled=true;
+  }finally{$('connect').disabled=false;}
+ });
+ $('disconnect').addEventListener('click',()=>{if(device&&device.gatt&&device.gatt.connected)device.gatt.disconnect();else status('未接続','待機中');$('disconnect').disabled=true;});
+ $('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(lines.join('\n'));$('copy').textContent='✓ コピーしました';}catch(e){$('copy').textContent='コピー不可：長押しして選択してください';}});
+})();
+</script></body></html>
