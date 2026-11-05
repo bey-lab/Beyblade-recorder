@@ -1,0 +1,46 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1120"><title>BEY LAB | Bluetooth実験002</title><style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;background:#0b1120;color:#edf5ff}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(#203451,#0b1120 570px)}main{max-width:790px;margin:auto;padding:24px 15px 90px}a{color:#b5d4ff}h1{font-size:25px}h2{font-size:17px;margin:0 0 13px}p{line-height:1.7;color:#c0d3e6}.tag{font-size:11px;color:#f5d388;letter-spacing:.12em;font-weight:900}.panel{background:#14263d;border:1px solid #3c5875;border-radius:16px;padding:17px;margin:14px 0}.label{font-size:12px;color:#aac0d7}.state{background:#1e3852;border-radius:10px;padding:13px;margin:13px 0;font-weight:800}.state.ok{border-left:4px solid #6edcaa}.state.bad{border-left:4px solid #e998a1}.buttons{display:flex;gap:9px;flex-wrap:wrap}.buttons button{flex:1}button{font:inherit;color:#fff;font-weight:850;border:1px solid #6a84a0;background:#26435d;border-radius:10px;min-height:50px;padding:11px;cursor:pointer}button:disabled{opacity:.45}button.primary{background:#73552d;border-color:#f0c57c}.large{font-size:52px;font-weight:950;text-align:center;margin:10px 0;color:#e7faf4;letter-spacing:.015em}.note{font-size:12px;color:#b4c9de}.warning{border-left:3px solid #e6ba73;background:#312c2c;padding:10px 12px;font-size:12px;line-height:1.8;color:#ecdbc4}pre{font-size:11px;line-height:1.6;background:#081626;border:1px solid #354b62;border-radius:10px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:340px;overflow:auto}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.two>div{background:#203950;border-radius:10px;padding:12px;text-align:center}.two b{font-size:22px;display:block}@media(max-width:480px){h1{font-size:22px}.large{font-size:42px}}
+</style></head><body><main><a href="./bluetooth-lab.html">← 実験001へ</a><div class="tag" style="margin-top:24px">BEY LAB · EXPERIMENT 002</div><h1>📡 シュートパワー受信実験</h1><p>実験001で成功したBluetooth接続を使い、バトルパスの<strong>読み取り・通知</strong>を観測します。シュートミッションや戦績データには触れません。</p>
+<section class="panel"><h2>01 · 接続状態</h2><div id="status" class="state">未接続 · 準備完了</div><div class="label">Web Bluetooth: <span id="cap">確認中</span></div><div class="buttons" style="margin-top:14px"><button class="primary" id="connect">🔎 接続して受信開始</button><button id="disconnect" disabled>切断</button></div><p class="warning">Spin Meterを切断し、バトルパスを接続待機にしてください。このページは<strong>機器への書き込み命令を一切送信しません</strong>。公式アプリとの同時接続は避けてください。</p></section>
+<section class="panel"><h2>02 · シュートデータ</h2><div class="label">受信したデータからの推定値（公式値と照合するまで暫定）</div><div class="large" id="power">—</div><div class="two"><div><b id="events">0</b><span class="label">通知回数</span></div><div><b id="lastType">—</b><span class="label">最後のページ種別</span></div></div><p class="note">接続後、まずはベイをセットして通常どおり1発撃ってみよう。機器から通知が来れば、16進データと推定数値を下のログに記録する。</p></section>
+<section class="panel"><h2>03 · 実験ログ</h2><pre id="log">まだ受信していません。</pre><div class="buttons"><button id="copy">ログをコピー</button><button id="clear">画面ログを消す</button></div><p class="note">ログには機器名や生データが含まれます。共有時には個人情報を確認してください。自動で外部送信しません。</p></section>
+<p class="note">解析参考：Simone Marzulli氏のDiZZi通信解析。受信する先頭バイトの意味はまだすべて確定していません。</p>
+</main><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const SERVICE='55c4f000-f8eb-11ec-b939-0242ac120002',NOTIFY='55c4f002-f8eb-11ec-b939-0242ac120002';
+let dev=null,char=null,received=0,lines=[];
+const add=(s)=>{lines.push(new Date().toLocaleTimeString('ja-JP')+' '+s);if(lines.length>220)lines.shift();$('log').textContent=lines.join('\n');};
+const status=(s,ok=false,bad=false)=>{$('status').textContent=s;$('status').className='state'+(ok?' ok':bad?' bad':'');};
+const hex=(arr)=>Array.from(arr,b=>b.toString(16).padStart(2,'0')).join(' ');
+const observe=(dv,source)=>{const bytes=new Uint8Array(dv.buffer,dv.byteOffset,dv.byteLength);const kind=bytes.length?'0x'+bytes[0].toString(16):'空';received++;$('events').textContent=received;$('lastType').textContent=kind;
+ add(source+' ['+bytes.length+' bytes] '+hex(bytes));
+ if(bytes.length>=3&&bytes[0]===0xb0){const candidate=bytes[1]|(bytes[2]<<8);$('power').textContent=candidate.toLocaleString('ja-JP');add('b0ページ先頭の推定RPM: '+candidate+'（公式値との一致を要確認）');}
+ else if(bytes.length>=3&&bytes[0]===0xa0){add('a0ヘッダーを受信（シュート数値とは未確定）');}
+};
+const supported=!!(navigator.bluetooth&&navigator.bluetooth.requestDevice);
+$('cap').textContent=supported?'利用可能':'非対応';if(!supported){$('connect').disabled=true;status('このブラウザはWeb Bluetooth非対応',false,true);}
+async function disconnect(){if(dev&&dev.gatt&&dev.gatt.connected)dev.gatt.disconnect();$('disconnect').disabled=true;$('connect').disabled=false;status('切断済み');}
+$('disconnect').onclick=disconnect;
+$('connect').onclick=async()=>{
+ $('connect').disabled=true;lines=[];received=0;$('events').textContent='0';$('lastType').textContent='—';$('power').textContent='—';add('実験002開始：読み取りと通知のみ。書き込みなし。');
+ try{
+  status('機器を選択してください');
+  dev=await navigator.bluetooth.requestDevice({filters:[{namePrefix:'BEYBLADE_TOOL'}],optionalServices:[SERVICE]});
+  add('発見した機器: '+(dev.name||'名前なし'));
+  dev.addEventListener('gattserverdisconnected',()=>{add('Bluetoothが切断されました');status('切断されました');$('disconnect').disabled=true;$('connect').disabled=false;});
+  status('接続中…');const server=await dev.gatt.connect();add('GATT接続成功');
+  $('disconnect').disabled=false;
+  const svc=await server.getPrimaryService(SERVICE);add('対象サービス発見: '+svc.uuid);
+  char=await svc.getCharacteristic(NOTIFY);add('読取／通知のCharacteristic発見: '+char.uuid);
+  add('特性: Read='+char.properties.read+' Notify='+char.properties.notify);
+  if(char.properties.notify){await char.startNotifications();char.addEventListener('characteristicvaluechanged',e=>observe(e.target.value,'通知'));add('通知待機開始：ベイを装着して1発撃ってください');}
+  else add('Notify特性が使えません。初期値のReadを試します。');
+  if(char.properties.read){try{const v=await char.readValue();observe(v,'初期読取');}catch(e){add('初期Readエラー: '+e.name+' '+e.message);}}
+  status('接続中 · '+(char.properties.notify?'シュート通知を待機':'読取のみ可能'),true);
+ }catch(e){add('接続/受信開始エラー: '+e.name+' / '+e.message);status('受信開始に失敗: '+e.name,false,true);$('connect').disabled=false;if(!dev||!dev.gatt||!dev.gatt.connected)$('disconnect').disabled=true;}
+};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(lines.join('\n'));$('copy').textContent='✓ コピーしました';}catch(e){$('copy').textContent='コピー不可';}};
+$('clear').onclick=()=>{lines=[];$('log').textContent='画面ログを消しました（機器の履歴は変更しません）';};
+})();
+</script></body></html>
