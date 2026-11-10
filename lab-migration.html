@@ -357,6 +357,7 @@ body>.wrap{position:relative;z-index:1}
 const KEY="bey-lab-migration-1on1-v1-"+window.BEY_ENV, ARENA_KEY="bey-lab-migration-arena-v1-"+window.BEY_ENV;
 const FIN=[["spin","スピン",1,"◉"],["over","オーバー",2,"↗"],["burst","バースト",2,"✦"],["extreme","エクストリーム",3,"⚡"]];
 const $=id=>document.getElementById(id);
+$("environmentBadge").textContent=window.BEY_ENV==="official"?"🏆 本番データ":"🧪 テストデータ";
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const clean=(s,max=70)=>typeof s==="string"?s.trim().slice(0,max):"";
 const day=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
