@@ -23,7 +23,7 @@ const $=id=>document.getElementById(id),types={spin:1,over:2,burst:2,extreme:3},
 const sample=()=>{const events=[];let i=0;const a={blade:'バハムートブリッツ',ratchet:'5-70',bit:'R'},b={blade:'シルバーウルフ',ratchet:'9-70',bit:'FB'},c={...a,bit:'B'};function add(w,l,f,d,mode){events.push({id:'sample:'+i++,mode,date:d,finish:f,points:types[f],winner:w,loser:l})}for(let j=0;j<7;j++)add(b,a,'spin','2026-10-21','arena');for(let j=0;j<3;j++)add(a,b,'extreme','2026-10-21','arena');for(let j=0;j<6;j++)add(c,b,j%2?'over':'spin','2026-11-21','lab');for(let j=0;j<4;j++)add(b,c,'spin','2026-11-21','lab');return events};
 function load(env){const qa=[],out=[],seen=new Set();function push(e){if(!e||!types[e.finish]||!e.date||!valid(e.winner)||!valid(e.loser)){qa.push('不完全な対戦記録を除外');return}if(seen.has(e.id)){qa.push('重複IDを除外: '+e.id);return}seen.add(e.id);out.push(e)}
 function read(k){try{return JSON.parse(localStorage.getItem(k))||{}}catch{return {}}}
-const arena=read('bey-lab-arena-v2-'+env);for(const r of arr(arena.rooms))for(const m of arr(r?.results)){if(!m?.winner||!m?.loser)continue;push({id:'arena:'+txt(r.id)+':'+txt(m.id||m.time),mode:'arena',date:date(m.time)||r.date,finish:m.finish,points:types[m.finish],stadium:m.stadium||null,winner:{...clone(m.winner),player:txt(m.winner.player).trim()},loser:{...clone(m.loser),player:txt(m.loser.player).trim()}})}
+const arena=read('bey-lab-arena-v2-'+env);for(const r of arr(arena.rooms))for(const m of arr(r?.results)){if(!m?.winner||!m?.loser)continue;push({id:'arena:'+txt(r.id)+':'+txt(m.id||m.time),mode:'arena',date:date(m.time)||r.date,finish:m.finish,points:types[m.finish],stadium:Object.prototype.hasOwnProperty.call(m,"stadium")?(m.stadium||null):"__legacy__",winner:{...clone(m.winner),player:txt(m.winner.player).trim()},loser:{...clone(m.loser),player:txt(m.loser.player).trim()}})}
 const lab=read('bey-lab-migration-1on1-v1-'+env);const ls=arr(lab.sessions);for(const sess of ls){for(const m of arr(sess.matches))ingestLab(m,sess);for(const old of arr(sess.records))qa.push('旧1on1記録を対象外（互換解析未実装）')}if(lab.activeMatch){const sess=ls.find(s=>s.id===lab.activeId)||{};ingestLab(lab.activeMatch,sess)}
 function ingestLab(m,sess){for(const [index,e] of arr(m?.events).entries()){const side=e?.side;if(side!=='B'&&side!=='X')continue;const other=side==='B'?'X':'B';push({id:'lab:'+txt(m.id)+':'+txt(e.id||index),mode:'lab',date:date(e.time)||sess.date,finish:e.finish,points:types[e.finish],stadium:e.stadium||null,winner:{...clone(m.slots?.[side]),player:txt(m.slots?.[side]?.player).trim()},loser:{...clone(m.slots?.[other]),player:txt(m.slots?.[other]?.player).trim()}})}}
 const league=read('bey-lab-3on3-v2-'+env);function part(s){const p=txt(s).split(' · ').filter(Boolean);if(p.length===3)return {blade:p[0],ratchet:p[1],bit:p[2]};if(p.length===2)return {blade:p[0],ratchet:'',bit:p[1]};return {blade:p[0]||'',ratchet:'',bit:''}}
@@ -136,7 +136,7 @@ function tests(){const a=sample(),first=a.filter(x=>x.date==='2026-10-21'),p=x=>
 const STADIUM_IDS=['normal','extreme','wide'];
 function stadiumFor(e,environment){
  if(STADIUM_IDS.includes(e.stadium))return e.stadium;
- if(environment==='official'&&e.mode==='arena'&&e.date==='2026-11-21')return 'extreme';
+ if(environment==='official'&&e.mode==='arena'&&e.date==='2026-11-21'&&e.stadium==='__legacy__')return 'extreme';
  return 'unknown';
 }
 function stadiumResearchRefresh(){
