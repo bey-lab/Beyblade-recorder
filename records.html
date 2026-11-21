@@ -13,6 +13,7 @@
 .custom-diagnostic{border-collapse:separate;border-spacing:0 5px}.custom-diagnostic tbody td{background:#203149}.custom-diagnostic tbody td:first-child{border-left:4px solid var(--rc);border-radius:8px 0 0 8px}.score-pill{display:inline-block;padding:5px 9px;border-radius:18px;color:var(--rc);border:1px solid var(--rc);font-weight:900}.score-track{height:5px;background:#35475d;border-radius:8px;margin-top:5px}.score-track i{display:block;background:var(--rc);height:100%;border-radius:8px}.score-note{color:#b9c9dd;font-size:11px;margin-top:5px}
 @media(max-width:690px){.finish-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.score-note{display:none}}
 </style></head><body><main><a href="./index.html">← ホームへ</a>　<a href="./records-legacy.html">旧記録室を見る</a><h1>📊 バトル記録室</h1><p>3モード → 共通フィニッシュ記録 → ブレード・カスタム相性分析</p><div class="warn">🔬 勝率・カスタム比較・研究履歴を表示。記録データは読み取り専用で、変更・削除しません。旧形式の集計は「旧記録室」から確認できます。</div>
+<section class="panel" id="stadiumResearch" aria-label="スタジアム別勝率研究"><h2>🏟️ スタジアム別勝率研究</h2><p class="muted">総合ランキングとは別集計。フィニッシュ単位で、使用スタジアムごとの勝率を比較します。</p><div class="controls"><label>記録環境<select id="stadiumEnv"><option value="test">🧪 テスト</option><option value="official">🏆 本番</option></select></label><label>スタジアム<select id="stadiumFilter"><option value="extreme">エクストリーム</option><option value="normal">ノーマル</option><option value="wide">ワイド</option><option value="unknown">未指定・不明</option></select></label><label>プレイヤー<select id="stadiumPlayer"><option value="">全プレイヤー</option></select></label></div><div id="stadiumNote" class="muted"></div><div id="stadiumBladeResults"></div><details style="margin-top:12px"><summary style="cursor:pointer;font-weight:800;padding:10px 0">カスタム別の勝率を見る</summary><div id="stadiumCustomResults"></div></details><p class="muted" style="font-size:12px;margin-top:12px">※ 2026/11/21の本番・勝ち抜き記録でスタジアム情報のないものだけ、集計時にエクストリーム扱い。元の保存記録は変更しません。他の未指定記録は「不明」に分類します。</p></section>
 <p><a href="./rankings.html" style="display:block;text-align:center;background:#243a56;border:1px solid #d0ac70;border-radius:12px;padding:15px;font-weight:800;text-decoration:none;color:#ffe3a9">🏆 研究所・通算勝率ランキングを見る</a></p><section class="panel" id="todayPanel"><h2>📅 今日の研究結果</h2><p class="muted">今日使ったカスタムを自動表示します。</p><div id="playerTabs" class="player-tabs" role="group" aria-label="プレイヤー別の戦績"></div><div id="todayResults"></div></section><section class="panel"><h2>🗂 カスタム研究履歴</h2><p class="muted">記録のある日だけを表示。過去の同じカスタムを日付ごとに追跡します。</p><div class="controls"><label>履歴を見るブレード<select id="historyBlade"></select></label><label>履歴カスタム<select id="historyCustom"></select></label></div><div id="history"></div></section><section class="panel"><h2>⚖️ カスタム比較</h2><div class="controls"><label>比較するブレード<select id="compareBlade"></select></label><label>カスタム A<select id="compareA"></select></label><label>カスタム B<select id="compareB"></select></label><label>対戦相手<select id="compareOpponent"></select></label></div><div id="comparison"></div><div id="comparisonComment" class="warn" style="margin-top:12px"></div></section><div class="controls"><label>データ<select id="source"><option value="sample">🧪 架空の検証データ</option><option value="test">端末内 TEST（読み取り）</option><option value="official">端末内 OFFICIAL（読み取り）</option></select></label><label>分析日付<input type="date" id="date"></label><label>期間<select id="period"><option value="all">全期間</option><option value="day">指定日だけ</option></select></label><label>モード<select id="mode"><option value="all">全モード</option><option value="arena">勝ち抜き</option><option value="lab">1on1</option><option value="league">3on3</option></select></label></div>
 <div class="controls"><label>ブレード<select id="blade"></select></label><label>カスタム<select id="custom"></select></label><label>対戦相手のブレード<select id="opponent"></select></label></div>
 <div id="cards" class="cards"></div><section class="panel"><h2>対戦相性・研究結果</h2><div id="report"></div></section><section class="panel"><h2>カスタム別の成績</h2><div id="customs"></div></section><section class="panel"><h2>読取品質・除外理由</h2><div id="quality"></div></section><section class="panel"><h2>自動テスト</h2><div id="tests"></div></section><p class="muted">注：1on1と3on3の「4点先取試合の勝利数」と、ここでいう「フィニッシュ勝率」は異なります。旧形式・判読不能な記録は推測せず除外します。</p></main>
@@ -22,12 +23,12 @@ const $=id=>document.getElementById(id),types={spin:1,over:2,burst:2,extreme:3},
 const sample=()=>{const events=[];let i=0;const a={blade:'バハムートブリッツ',ratchet:'5-70',bit:'R'},b={blade:'シルバーウルフ',ratchet:'9-70',bit:'FB'},c={...a,bit:'B'};function add(w,l,f,d,mode){events.push({id:'sample:'+i++,mode,date:d,finish:f,points:types[f],winner:w,loser:l})}for(let j=0;j<7;j++)add(b,a,'spin','2026-10-21','arena');for(let j=0;j<3;j++)add(a,b,'extreme','2026-10-21','arena');for(let j=0;j<6;j++)add(c,b,j%2?'over':'spin','2026-11-21','lab');for(let j=0;j<4;j++)add(b,c,'spin','2026-11-21','lab');return events};
 function load(env){const qa=[],out=[],seen=new Set();function push(e){if(!e||!types[e.finish]||!e.date||!valid(e.winner)||!valid(e.loser)){qa.push('不完全な対戦記録を除外');return}if(seen.has(e.id)){qa.push('重複IDを除外: '+e.id);return}seen.add(e.id);out.push(e)}
 function read(k){try{return JSON.parse(localStorage.getItem(k))||{}}catch{return {}}}
-const arena=read('bey-lab-arena-v2-'+env);for(const r of arr(arena.rooms))for(const m of arr(r?.results)){if(!m?.winner||!m?.loser)continue;push({id:'arena:'+txt(r.id)+':'+txt(m.id||m.time),mode:'arena',date:date(m.time)||r.date,finish:m.finish,points:types[m.finish],winner:{...clone(m.winner),player:txt(m.winner.player).trim()},loser:{...clone(m.loser),player:txt(m.loser.player).trim()}})}
+const arena=read('bey-lab-arena-v2-'+env);for(const r of arr(arena.rooms))for(const m of arr(r?.results)){if(!m?.winner||!m?.loser)continue;push({id:'arena:'+txt(r.id)+':'+txt(m.id||m.time),mode:'arena',date:date(m.time)||r.date,finish:m.finish,points:types[m.finish],stadium:m.stadium||null,winner:{...clone(m.winner),player:txt(m.winner.player).trim()},loser:{...clone(m.loser),player:txt(m.loser.player).trim()}})}
 const lab=read('bey-lab-migration-1on1-v1-'+env);const ls=arr(lab.sessions);for(const sess of ls){for(const m of arr(sess.matches))ingestLab(m,sess);for(const old of arr(sess.records))qa.push('旧1on1記録を対象外（互換解析未実装）')}if(lab.activeMatch){const sess=ls.find(s=>s.id===lab.activeId)||{};ingestLab(lab.activeMatch,sess)}
-function ingestLab(m,sess){for(const [index,e] of arr(m?.events).entries()){const side=e?.side;if(side!=='B'&&side!=='X')continue;const other=side==='B'?'X':'B';push({id:'lab:'+txt(m.id)+':'+txt(e.id||index),mode:'lab',date:date(e.time)||sess.date,finish:e.finish,points:types[e.finish],winner:{...clone(m.slots?.[side]),player:txt(m.slots?.[side]?.player).trim()},loser:{...clone(m.slots?.[other]),player:txt(m.slots?.[other]?.player).trim()}})}}
+function ingestLab(m,sess){for(const [index,e] of arr(m?.events).entries()){const side=e?.side;if(side!=='B'&&side!=='X')continue;const other=side==='B'?'X':'B';push({id:'lab:'+txt(m.id)+':'+txt(e.id||index),mode:'lab',date:date(e.time)||sess.date,finish:e.finish,points:types[e.finish],stadium:e.stadium||null,winner:{...clone(m.slots?.[side]),player:txt(m.slots?.[side]?.player).trim()},loser:{...clone(m.slots?.[other]),player:txt(m.slots?.[other]?.player).trim()}})}}
 const league=read('bey-lab-3on3-v2-'+env);function part(s){const p=txt(s).split(' · ').filter(Boolean);if(p.length===3)return {blade:p[0],ratchet:p[1],bit:p[2]};if(p.length===2)return {blade:p[0],ratchet:'',bit:p[1]};return {blade:p[0]||'',ratchet:'',bit:''}}
 function fin(v){const f=txt(v);return f.includes('エクストリーム')?'extreme':f.includes('バースト')?'burst':f.includes('オーバー')?'over':f.includes('スピン')?'spin':null}
-function ingestLeague(m,index){for(const [j,e] of arr(m.events).entries()){const side=Number(e?.side);if(side!==0&&side!==1)continue;const a=e?.active?.[side],b=e?.active?.[1-side];if(!Number.isInteger(a)||!Number.isInteger(b)||!m.slots?.[a]||!m.slots?.[b]){qa.push('3on3 機体位置不明を除外');continue}const finish=fin(e.finish);push({id:'league:'+index+':'+j,mode:'league',date:date(e.time)||date(m.ended),finish,points:types[finish],winner:{...part(m.slots[a]),player:txt(m.players?.[side]).trim()},loser:{...part(m.slots[b]),player:txt(m.players?.[1-side]).trim()}})}}
+function ingestLeague(m,index){for(const [j,e] of arr(m.events).entries()){const side=Number(e?.side);if(side!==0&&side!==1)continue;const a=e?.active?.[side],b=e?.active?.[1-side];if(!Number.isInteger(a)||!Number.isInteger(b)||!m.slots?.[a]||!m.slots?.[b]){qa.push('3on3 機体位置不明を除外');continue}const finish=fin(e.finish);push({id:'league:'+index+':'+j,mode:'league',date:date(e.time)||date(m.ended),finish,points:types[finish],stadium:e.stadium||null,winner:{...part(m.slots[a]),player:txt(m.players?.[side]).trim()},loser:{...part(m.slots[b]),player:txt(m.players?.[1-side]).trim()}})}}
 arr(league.completed).forEach(ingestLeague);if(league.phase==='battle'&&arr(league.events).length)ingestLeague(league,'active');
 return {events:out,qa}}
 const state={events:[],qa:[]};function options(id,values,all){let sel=$(id),prev=sel.value;sel.innerHTML='<option value="">'+all+'</option>'+values.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');if(values.includes(prev))sel.value=prev;else if(id==='blade'&&values.length)sel.value=values[0]}
@@ -131,6 +132,50 @@ function renderCompare(){
 }
 
 function tests(){const a=sample(),first=a.filter(x=>x.date==='2026-10-21'),p=x=>x.blade==='バハムートブリッツ',s=summarize(first,p),checks=[['10件を読める',first.length===10],['3勝7敗',s.wins===3&&s.loss===7],['勝率30%',s.rate===.3],['得点9対7',s.pts===9&&s.against===7],['別カスタムを分離',new Set(a.filter(x=>x.winner.blade==='バハムートブリッツ').map(x=>x.winner.bit)).size===2]];$('tests').innerHTML=checks.map(([n,ok])=>'<div class="'+(ok?'ok':'bad')+'">'+(ok?'PASS':'FAIL')+' '+n+'</div>').join('')}
+/* Stadium-only analysis: existing overall calculations and stored records are unchanged. */
+const STADIUM_IDS=['normal','extreme','wide'];
+function stadiumFor(e,environment){
+ if(STADIUM_IDS.includes(e.stadium))return e.stadium;
+ if(environment==='official'&&e.mode==='arena'&&e.date==='2026-11-21')return 'extreme';
+ return 'unknown';
+}
+function stadiumResearchRefresh(){
+ const env=$('stadiumEnv').value,stadium=$('stadiumFilter').value;
+ const all=load(env).events;
+ const eligible=all.filter(e=>stadiumFor(e,env)===stadium);
+ const playerEl=$('stadiumPlayer'),selected=playerEl.value;
+ const players=[...new Set(eligible.flatMap(e=>[e.winner.player,e.loser.player]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'));
+ playerEl.innerHTML='<option value="">全プレイヤー</option>'+players.map(p=>'<option value="'+esc(p)+'">'+esc(p)+'</option>').join('');
+ playerEl.value=players.includes(selected)?selected:'';
+ const player=playerEl.value;
+ const ev=player?eligible.filter(e=>e.winner.player===player||e.loser.player===player):eligible;
+ const make=(groupBy)=>{
+  const groups=new Map();
+  for(const e of ev){
+   for(const [who,isWin] of [[e.winner,true],[e.loser,false]]){
+    if(player&&who.player!==player)continue;
+    const id=groupBy==='blade'?who.blade:key(who);
+    if(!id)continue;
+    if(!groups.has(id))groups.set(id,{id,w:0,l:0});
+    groups.get(id)[isWin?'w':'l']++;
+   }
+  }
+  const rows=[...groups.values()].sort((a,b)=>(b.w+b.l)-(a.w+a.l)||a.id.localeCompare(b.id,'ja'));
+  if(!rows.length)return '<p class="muted">この条件での記録はありません。</p>';
+  return '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="text-align:left;padding:9px">機体</th><th style="text-align:right;padding:9px">勝敗</th><th style="text-align:right;padding:9px">勝率</th></tr></thead><tbody>'+rows.map(r=>{
+   const rate=(100*r.w/(r.w+r.l)).toFixed(1)+'%';
+   const label=groupBy==='blade'?r.id:build(partsFromKey(r.id));
+   return '<tr style="border-top:1px solid #3d526b"><td style="padding:9px">'+esc(label)+'</td><td style="text-align:right;white-space:nowrap;padding:9px">'+r.w+'勝 '+r.l+'敗</td><td style="text-align:right;font-weight:900;white-space:nowrap;padding:9px">'+rate+'</td></tr>';
+  }).join('')+'</tbody></table></div>';
+ };
+ $('stadiumNote').textContent='対象：'+ev.length+'フィニッシュ / '+(env==='official'?'本番':'テスト')+' / '+({normal:'ノーマル',extreme:'エクストリーム',wide:'ワイド',unknown:'未指定・不明'}[stadium]);
+ $('stadiumBladeResults').innerHTML='<h3 style="margin-top:12px">ブレード別</h3>'+make('blade');
+ $('stadiumCustomResults').innerHTML=make('custom');
+}
+$('stadiumEnv').value=(()=>{try{return localStorage.getItem('bey-lab-environment-v1')==='official'?'official':'test'}catch(e){return 'test'}})();
+for(const id of ['stadiumEnv','stadiumFilter'])$(id).addEventListener('change',stadiumResearchRefresh);
+$('stadiumPlayer').addEventListener('change',stadiumResearchRefresh);
+stadiumResearchRefresh();
 $('source').addEventListener('change',()=>{const val=$('source').value;const r=val==='sample'?{events:sample(),qa:[]}:load(val);state.events=r.events;state.qa=r.qa;refreshOptions();compareChoices();historyChoices();render()});$('blade').addEventListener('change',()=>{refreshOptions();render()});for(const id of ['date','period','mode','custom','opponent'])$(id).addEventListener('change',render);$('compareBlade').addEventListener('change',updateCompareBuilds);for(const id of ['compareA','compareB','compareOpponent'])$(id).addEventListener('change',renderCompare);$('historyBlade').addEventListener('change',historyBuilds);$('historyCustom').addEventListener('change',renderHistory);$('date').value=date(new Date());const selected=(()=>{try{return localStorage.getItem('bey-lab-environment-v1')==='official'?'official':'test'}catch{return 'test'}})();$('source').value=selected;const initial=load(selected);state.events=initial.events;state.qa=initial.qa;refreshOptions();compareChoices();historyChoices();tests();render();
 })();
 </script></body></html>
