@@ -160,7 +160,7 @@ function stadiumResearchRefresh(){
     groups.get(id)[isWin?'w':'l']++;
    }
   }
-  const rows=[...groups.values()].sort((a,b)=>(b.w+b.l)-(a.w+a.l)||a.id.localeCompare(b.id,'ja'));
+  const rows=[...groups.values()].sort((a,b)=>(b.w/(b.w+b.l))-(a.w/(a.w+a.l))||(b.w+b.l)-(a.w+a.l)||a.id.localeCompare(b.id,'ja'));
   if(!rows.length)return '<p class="muted">この条件での記録はありません。</p>';
   return '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th style="text-align:left;padding:9px">機体</th><th style="text-align:right;padding:9px">勝敗</th><th style="text-align:right;padding:9px">勝率</th></tr></thead><tbody>'+rows.map(r=>{
    const rate=(100*r.w/(r.w+r.l)).toFixed(1)+'%';
